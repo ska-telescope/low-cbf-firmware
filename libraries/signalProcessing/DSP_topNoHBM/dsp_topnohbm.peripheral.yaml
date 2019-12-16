@@ -1,0 +1,30 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : dsp_topnohbm
+hdl_library_description: "DSP top level module, for boards with no HBM"
+
+
+peripherals:
+  - peripheral_name        : dsp_topnohbm
+    peripheral_description : "Access to HBM memory"
+    slave_ports:
+      - slave_name        : StatCtrl
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "DSP top monitor and control"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : IC_rsts
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Resets to the interconnect module. Different bits reset different submodules in the interconnect."
+          - - field_name        : anotherregister
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "this register is needed because of a bug in ARGS"
+            

@@ -1,0 +1,430 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : axi4_quadspi_prom
+hdl_library_description: "Quad SPI IP registers"
+
+peripherals: 
+  - peripheral_name        : axi4_quadspi_prom
+    peripheral_description : "Registers associated with Xilinx AXI4 SPI interface IP"
+
+    slave_ports:
+      - slave_name        : axi4_quadspi_prom
+        slave_type        : reg_ip
+        slave_protocol    : full
+        number_of_slaves  : 1
+        slave_description : "Registers associated with Xilinx AXI4 SPI interface IP"
+        fields: 
+          #################################
+          - srr:
+            - field_name        : reset
+              width             : 32
+              address_offset    : 0x40
+              field_description : "The only allowed operation on this register is a write of 0x0000000a, which resets the AXI Quad SPI core."
+              #access_mode       : WO
+
+          #################################
+          - spicr:
+            - field_name        : loop
+              width             : 1
+              bit_offset        : 0
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "Local loopback mode"
+              reset_value       : 0
+            - field_name        : spe
+              width             : 1
+              bit_offset        : 1
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "SPI system enable. Setting this bit to 1 enables the SPI devices"
+              reset_value       : 0            
+            - field_name        : master
+              width             : 1
+              bit_offset        : 2
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "Master (SPI master mode). Setting this bit configures the SPI device as a master or a slave."
+              reset_value       : 0    
+            - field_name        : cpol
+              width             : 1
+              bit_offset        : 3
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "Setting this bit defines clock polarity."
+              reset_value       : 0    
+            - field_name        : cpha
+              width             : 1
+              bit_offset        : 4
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "Clock Phase. Setting this bit selects one of two fundamentally different transfer formats."
+              reset_value       : 0    
+            - field_name        : tx_fifo_reset
+              width             : 1
+              bit_offset        : 5
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "When written to 1, this bit forces a reset of the transmit FIFO to the empty condition. One AXI clock cycle after reset, this bit is again set to 0."
+              reset_value       : 0   
+            - field_name        : rx_fifo_reset
+              width             : 1
+              bit_offset        : 6
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "When written to 1, this bit forces a reset of the receive FIFO to the empty condition. One AXI clock cycle after reset, this bit is again set to 0."
+              reset_value       : 0   
+            - field_name        : manual_slave_select
+              width             : 1
+              bit_offset        : 7
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "This bit forces the data in the slave select register to be asserted on the slave select output anytime the device is configured as a master and the device is enabled (SPE asserted)."
+              reset_value       : 1   
+            - field_name        : master_inhibit
+              width             : 1
+              bit_offset        : 8
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "This bit inhibits master transactions. This bit has no effect on slave operation."
+              reset_value       : 1   
+            - field_name        : lsb_first
+              width             : 1
+              bit_offset        : 9
+              address_offset    : 0x60
+              access_mode       : RW
+              field_description : "This bit selects LSB first data transfer format. The default transfer format is MSB first."
+              reset_value       : 0
+
+          #################################
+          - spisr:
+            - field_name        : rx_empty
+              width             : 1
+              bit_offset        : 0
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "When a receive FIFO exists, this bit is set High when the receive FIFO is empty. The occupancy of the FIFO is decremented with each FIFO read operation."
+              reset_value       : 1
+            - field_name        : rx_full
+              width             : 1
+              bit_offset        : 1
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "When a receive FIFO exists, this bit is set High when the receive FIFO is full. The occupancy of the FIFO is incremented with the completion of each SPI transaction."
+              reset_value       : 0
+            - field_name        : tx_empty
+              width             : 1
+              bit_offset        : 2
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "When a transmit FIFO exists, this bit is set to High when the transmit FIFO is empty. This bit goes High as soon as the TX FIFO becomes empty. While this bit is High, the last byte of the data that is to be transmitted would still be in the pipeline. The occupancy of the FIFO is decremented with the completion of each SPI transfer."
+              reset_value       : 1
+            - field_name        : tx_full
+              width             : 1
+              bit_offset        : 3
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "When a transmit FIFO exists, this bit is set High when the transmit FIFO is full."
+              reset_value       : 0
+            - field_name        : modf
+              width             : 1
+              bit_offset        : 4
+              address_offset    : 0x64
+              access_mode       : RO
+              side_effect       : CLR
+              field_description : "Mode-fault error flag. This flag is set if the SS signal goes active while the SPI device is configured as a master. MODF is automatically cleared by reading the SPISR."
+              reset_value       : 0
+            - field_name        : slave_mode_select
+              width             : 1
+              bit_offset        : 5
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "Slave_Mode_Select flag. This flag is asserted when the core is configured in slave mode. Slave_Mode_Select is activated as soon as the master SPI core asserts the chip select pin for the core."
+              reset_value       : 1
+            - field_name        : cpol_cpha_error
+              width             : 1
+              bit_offset        : 6
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "CPOL_CPHA_Error flag. Set when The CPOL and CPHA are set to 01 or 10. When the SPI memory is chosen as either Winbond, Micron or Spansion, and CPOL and CPHA are configured as 01 or 10, this bit is set."
+              reset_value       : 0
+            - field_name        : slave_mode_error
+              width             : 1
+              bit_offset        : 7
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "Slave mode error flag. This bit is set when the core is configured with dual or quad SPI mode and the master is set to 0 in the control register (SPICR)."
+              reset_value       : 1
+            - field_name        : msb_error
+              width             : 1
+              bit_offset        : 8
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "MSB error flag. This bit is set when the core is configured to transfer the SPI transactions in either dual or quad SPI mode and LSB first bit is set in the control register (SPICR)."
+              reset_value       : 0
+            - field_name        : loopback_error
+              width             : 1
+              bit_offset        : 9
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "Loopback error flag. When the SPI command, address, and data bits are set to be transferred in other than standard SPI protocol mode and this bit is set in control register (SPICR)."
+              reset_value       : 0
+            - field_name        : command_error
+              width             : 1
+              bit_offset        : 10
+              address_offset    : 0x64
+              access_mode       : RO
+              field_description : "Command error flag. When the core is configured in dual/quad SPI mode and the first entry in the SPI DTR FIFO (after reset) do not match with the supported command list for the particular memory, this bit is set."
+              reset_value       : 0
+
+          #################################
+          - - field_name        : spi_dtr
+              address_offset    : 0x68
+              width             : 8             
+              field_description : "SPI data transmit register"
+              #access_mode       : WO
+              reset_value       : 0x0
+
+          #################################
+          - - field_name        : spi_drr
+              address_offset    : 0x6c
+              width             : 8 
+              field_description : "SPI data receive register"
+              access_mode       : RO     
+
+          #################################
+          - - field_name        : spissr
+              address_offset    : 0x70
+              width             : 2
+              field_description : "SPI Slave select register. Active-Low, one-hot encoded slave select vector"
+              access_mode       : RW
+              reset_value       : 0x3
+
+          #################################
+          - - field_name        : tx_fifo_ocy
+              address_offset    : 0x74
+              width             : 8
+              field_description : "Transmit FIFO occupancy register. The binary value plus 1 yields the occupancy."
+              access_mode       : RO
+              reset_value       : 0x0
+
+          #################################
+          - - field_name        : rx_fifo_ocy
+              address_offset    : 0x78
+              width             : 8
+              field_description : "Receive FIFO occupancy register. The binary value plus 1 yields the occupancy."
+              access_mode       : RO     
+              reset_value       : 0x0
+
+          #################################
+          - dgier:
+            - field_name        : gie
+              width             : 1
+              bit_offset        : 31
+              address_offset    : 0x1c
+              access_mode       : RW
+              field_description : "Global Interrupt Enable."
+              reset_value       : 0
+
+          #################################
+          - ipisr:
+            - field_name        : modf
+              width             : 1
+              bit_offset        : 0
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Mode-fault error interrupt occured"
+              reset_value       : 0          
+            - field_name        : slave_modf
+              width             : 1
+              bit_offset        : 1
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Slave mode-fault error interrupt occured"
+              reset_value       : 0   
+            - field_name        : dtr_empty
+              width             : 1
+              bit_offset        : 2
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Data transmit register/FIFO empty interrupt occured"
+              reset_value       : 0 
+            - field_name        : dtr_underrun
+              width             : 1
+              bit_offset        : 3
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Data transmit register/FIFO underrun interrupt occured"
+              reset_value       : 0 
+            - field_name        : drr_full
+              width             : 1
+              bit_offset        : 4
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Data receive register/FIFO full interrupt occured"
+              reset_value       : 0 
+            - field_name        : drr_overrun
+              width             : 1
+              bit_offset        : 5
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Data receive register/FIFO overrun interrupt occured"
+              reset_value       : 0 
+            - field_name        : tx_fifo_half_empty
+              width             : 1
+              bit_offset        : 6
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Transmit FIFO half empty interrupt occured"
+              reset_value       : 0 
+            - field_name        : slave_select_mode
+              width             : 1
+              bit_offset        : 7
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Slave select mode interrupt occured"
+              reset_value       : 0 
+            - field_name        : drr_not_empty
+              width             : 1
+              bit_offset        : 8
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "DRR not empty interrupt occured"
+              reset_value       : 0 
+            - field_name        : cpol_cpha_error
+              width             : 1
+              bit_offset        : 9
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "CPOL_CPHA error interrupt occured"
+              reset_value       : 0 
+            - field_name        : slave_mode_error
+              width             : 1
+              bit_offset        : 10
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "I/O mode instruction error interrupt occured"
+              reset_value       : 0 
+            - field_name        : msb_error
+              width             : 1
+              bit_offset        : 11
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "MSB error interrupt occured"
+              reset_value       : 0 
+            - field_name        : loopback_error
+              width             : 1
+              bit_offset        : 12
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Loopback error interrupt occured"
+              reset_value       : 0 
+            - field_name        : command_error
+              width             : 1
+              bit_offset        : 13
+              address_offset    : 0x20
+              access_mode       : RW
+              field_description : "Command error interrupt occured"
+              reset_value       : 0 
+
+          #################################
+          - ipier:
+            - field_name        : modf
+              width             : 1
+              bit_offset        : 0
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Mode-fault error interrupt enable"
+              reset_value       : 0          
+            - field_name        : slave_modf
+              width             : 1
+              bit_offset        : 1
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Slave mode-fault error interrupt enable"
+              reset_value       : 0   
+            - field_name        : dtr_empty
+              width             : 1
+              bit_offset        : 2
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Data transmit register/FIFO empty interrupt enable"
+              reset_value       : 0 
+            - field_name        : dtr_underrun
+              width             : 1
+              bit_offset        : 3
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Data transmit register/FIFO underrun interrupt enable"
+              reset_value       : 0 
+            - field_name        : drr_full
+              width             : 1
+              bit_offset        : 4
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Data receive register/FIFO full interrupt enable"
+              reset_value       : 0 
+            - field_name        : drr_overrun
+              width             : 1
+              bit_offset        : 5
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Data receive register/FIFO overrun interrupt enable"
+              reset_value       : 0 
+            - field_name        : tx_fifo_half_empty
+              width             : 1
+              bit_offset        : 6
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Transmit FIFO half empty interrupt enable"
+              reset_value       : 0 
+            - field_name        : slave_select_mode
+              width             : 1
+              bit_offset        : 7
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Slave select mode interrupt enable"
+              reset_value       : 0 
+            - field_name        : drr_not_empty
+              width             : 1
+              bit_offset        : 8
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "DRR not empty interrupt enable"
+              reset_value       : 0 
+            - field_name        : cpol_cpha_error
+              width             : 1
+              bit_offset        : 9
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "CPOL_CPHA error interrupt enable"
+              reset_value       : 0 
+            - field_name        : slave_mode_error
+              width             : 1
+              bit_offset        : 10
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "I/O mode instruction error interrupt enable"
+              reset_value       : 0 
+            - field_name        : msb_error
+              width             : 1
+              bit_offset        : 11
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "MSB error interrupt enable"
+              reset_value       : 0 
+            - field_name        : loopback_error
+              width             : 1
+              bit_offset        : 12
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Loopback error interrupt enable"
+              reset_value       : 0 
+            - field_name        : command_error
+              width             : 1
+              bit_offset        : 13
+              access_mode       : RW
+              address_offset    : 0x28
+              field_description : "Command error interrupt enable"
+              reset_value       : 0             

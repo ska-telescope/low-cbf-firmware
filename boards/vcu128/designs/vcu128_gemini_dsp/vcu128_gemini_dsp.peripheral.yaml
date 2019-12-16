@@ -1,0 +1,51 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : vcu128_gemini_dsp
+hdl_library_description: "Monitor & Control Registers for vcu128 Gemini DSP"
+
+peripherals:
+
+
+  - peripheral_name        : system
+    peripheral_description : "General control registers for the vcu128 Gemini dsp firmware"
+
+    slave_ports:
+      - slave_name        : system
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "General control registers for the Gemini LRU dsp firmware"
+        fields:
+          #################################
+          - status:
+            - field_name        : clocks_locked
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "All clocks locked"
+          #################################
+          - qsfpGTY:
+            - field_name        : resets
+              width             : 4
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Set reset on GTYs for qsfp1 (gemini), qsfp2 (4x25GE), qsfp3 (100GE), qsfp4 (40GE), with bits 0 to 3 respectively"
+          #################################
+          - - field_name        : build_date
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Build Date of firmware"
+          #################################
+          - time:
+            - field_name        : uptime
+              width             : 14
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Number of seconds since programming"
+            - field_name        : wrapped
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicates if uptime counter has wrapped"

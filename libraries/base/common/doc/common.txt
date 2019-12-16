@@ -1,0 +1,115 @@
+Contents:
+
+1) Introduction
+2) Pipeline
+3) Math +, *
+4) RAM
+5) FIFO
+6) IO
+7) Auxiliary
+
+
+1) Introduction
+
+The common(pkg) contains useful constants and functions. The common library
+contains entities that may be use in any VHDL design. Each entity typically
+has several architectures:
+
+. rtl      = Register Transfer Level VHDL that will cause the synthesis tool
+             to infer appropriate build in blocks and logic
+. stratix4 = Block created with the Altera MegaWizard for Stratix IV
+. virtex4  = Block created with the Xilinx Core Generator for Virtex 4
+
+
+
+2) Pipeline
+
+The pipeline entity supports any width >= 1 and any pipeline >= 0. Note:
+
+. A pipeline of 0 implies a wire (a combinatorial short)
+. For large pipeline values one better uses a FIFO
+
+
+
+3) Math +, *
+
+The math entities provides:
+
+. Basic building blocks for +, * and several combinations of *, + that can be
+  mapped efficiently on FPGA DSP resources.
+. Some higher level DSP blocks that like e.g. common_adder_tree.
+
+
+
+4) RAM
+
+The used memory naming convention is as follows (by example):
+
+. r        = single port read only memory (ROM)
+. rw       = single port ram, shared address for both write read address
+. r_w      = dual port ram with separate write address and read address
+. rw_rw    = dual port ram with separate address per port
+. cr_cw    = dual port ram with separate clock and address per port one r one w
+. crw_crw  = dual port ram with separate clock and address per port both rw
+
+Note:
+
+- Using a r_w RAM with the same address effectively makes it a rw RAM
+- Using a rw_rw RAM with only a write port and a read port effectively makes it
+  a r_w RAM
+- Using a crw_crw RAM with the same clock effectively makes it a rw_rw RAM
+
+==> The crw_crw RAM covers all other variants either by
+  . not using some input (set to constant value)
+  . not using some output ports (left open)
+  . connecting some input ports together (clk or address).
+
+For clarity and optimal synthesis it may be wise to at least have:
+
+. common_rom.vhd
+. common_ram_r_w.vhd      -- covers also rw
+. common_ram_crw_crw.vhd  -- covers also rw_rw
+
+The memories all have the same data width for both read and write and also for
+both ports. Different aspect ratio memories (e.g. write byte, read word) are
+less common, so they can be added to the common library when needed. Typcially
+different aspect ratio memories can not be inferred from RTL code.
+
+The memory also have the following control signals:
+
+. rst    = asynchronous reset
+. clken  = clock enable per clock domain
+. wr_en  = write enable per port
+. rd_en  = read enable per port
+. rd_val = read valid per port
+
+Typcially the rd_en is not needed (i.e. always '1'), the read data then always
+shows the data for the read address. The rd_en is then only used to drive
+rd_val to account for the memory read latency.
+
+The RAM contents can not be reset, only the I/O registers. Reseting the data
+I/O registers is of little use. Therefore use RAM without reset, except for 
+letting apply the rst input to rd_val.
+
+
+
+5) FIFO
+
+Single clock (sc) and dual clock (dc) FIFOs will be needed.
+
+a) common_fifo_sc.vhd
+b) common_fifo_dc.vhd
+
+
+
+6) IO
+
+a) common_inout           -- tristate buffer
+
+
+
+7) Auxiliary
+
+a) common_switch
+b) common_pulse_extend
+c) common_counter

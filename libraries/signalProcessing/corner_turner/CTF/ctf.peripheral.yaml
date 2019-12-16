@@ -1,0 +1,76 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : ctf
+hdl_library_description: "Fine Corner Turner Configuration"
+
+peripherals:
+
+
+  - peripheral_name        : config
+    peripheral_description : "CTF Configuration"
+
+    slave_ports:
+      - slave_name        : setup
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Basic CTC control functionality"
+        fields:
+          - - field_name        : full_reset
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Start or restart CTC after (re)configuring it."
+
+          - - field_name        : running
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Is the CTC running, i.e. are we after reset and before halt_timestamp?"
+              
+          - - field_name        : halt_timestamp_high
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Upper 32 bit. At which timestamp shall the CTF stop? (Upper&Lower=0 means never)"
+              
+          - - field_name        : halt_timestamp_low
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Lower 32 bit. At which timestamp shall the CTF stop? (Upper&Lower=0 means never)"
+
+
+      - slave_name        : stations
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Set up coarse delay values for the CTC"
+        dual_clock        : true
+        fields:
+          - - field_name        : table
+              width             : 32
+              number_of_fields  : 1024
+              access_mode       : RW
+              field_description : "Translate station position into station number: Lower 16 bit: station_1, Upper 16 bit: station_2. PISA uses only the first 3 addresses."
+
+      - slave_name        : report
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Error and Debug Signals coming from the CTF"
+        fields:
+
+          - - field_name        : write_address
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Current write address inside the HBM in 256bit words. Only valid if CTF is halted."
+
+          - - field_name        : read_address
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Current read address inside the HBM in 256bit words. Only valid if CTF is halted."
+
+
+

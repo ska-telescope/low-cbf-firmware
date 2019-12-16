@@ -1,0 +1,16 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : fpga
+
+hdl_library_name  : kcu105_eeprom_test
+fpga_name         : kcu105_eeprom_test
+fpga_description  : "Top level board file for eeprom test image"
+
+peripherals:
+  - peripheral_name        : kcu105_eeprom_test/system
+  - peripheral_name        : dhcp/dhcp
+  - peripheral_name        : gemini_subscription/gemini_subscription
+  - peripheral_name        : axi4_quadspi_prom/axi4_quadspi_prom
+  - peripheral_name        : system_monitor/system_monitor
+  - peripheral_name        : kcu105_board/sfp
+

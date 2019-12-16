@@ -1,0 +1,18 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : hbm
+hdl_library_description: "HBM IP registers"
+
+peripherals:
+  - peripheral_name        : hbm
+    peripheral_description : "Registers associated with Xilinx HBM Stack controller IP"
+
+    slave_ports:
+      - slave_name        : hbm
+        slave_type        : reg_ip
+        slave_protocol    : lite
+        number_of_slaves  : 1
+        slave_span        : 0x400000
+        slave_description : "Registers associated with Xilinx HBM Stack controller IP"

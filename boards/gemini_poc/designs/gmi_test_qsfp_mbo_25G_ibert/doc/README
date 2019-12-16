@@ -1,0 +1,5 @@
+python $RADIOHDL/tools/radiohdl/base/vivado_config.py -t gmi -l gmi_test_qsfp_mbo_25G_ibert -r -v3
+
+
+Note:
+copied from /home/hiemstra/xilinx/gmi_test_qsfp_mbo/ibert_ultrascale_gty_0_ex/

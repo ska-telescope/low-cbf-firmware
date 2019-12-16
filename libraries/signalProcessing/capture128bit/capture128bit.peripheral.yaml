@@ -1,0 +1,109 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : capture128bit
+hdl_library_description: "capture 128bit wide bus packets for MACE to read back"
+
+peripherals:
+  - peripheral_name        : capture128bit
+    peripheral_description : "Registers associated with LFAA Decode"
+    slave_ports:
+      - slave_name        : capbuf
+        slave_type        : RAM
+        number_of_slaves  : 1
+        slave_description : "Packet capture memory."
+        fields            :
+          - - field_name        : data
+              width             : 32
+              user_width        : 128
+              access_mode       : RW
+              number_of_fields  : 16384
+              interface         : simple
+              reset_value       : 0
+              field_description : "Capture memory. 16384 x 32bit words = 4096 x 128bit words"
+      #################################################################
+      - slave_name        : cap128ctrl
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Control capture of packets"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "1 to enable capture of packets. Rising edge resets the packet capture module."
+          #################################
+          - - field_name        : DontCareMask0
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Mask bits(31:0). A 1 indicates the bit should be ignored by the trigger"
+          #################################
+          - - field_name        : DontCareMask1
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Mask bits(63:32). A 1 indicates the bit should be ignored by the trigger"
+          #################################
+          - - field_name        : DontCareMask2
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Mask bits(95:64). A 1 indicates the bit should be ignored by the trigger" 
+          #################################
+          - - field_name        : DontCareMask3
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Mask bits(127:96). A 1 indicates the bit should be ignored by the trigger"
+          #################################
+          - - field_name        : trigger0
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "trigger bits(31:0). Packets are captured when the header matches trigger and dont care bits" 
+          #################################
+          - - field_name        : trigger1
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "trigger bits(63:32). Packets are captured when the header matches trigger and dont care bits" 
+          #################################
+          - - field_name        : trigger2
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "trigger bits(95:64). Packets are captured when the header matches trigger and dont care bits" 
+          #################################
+          - - field_name        : trigger3
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "trigger bits(127:96). Packets are captured when the header matches trigger and dont care bits" 
+          #################################
+          - - field_name        : capWrAddr
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Current write address into the capture buffer"
+          #################################
+          - - field_name        : packetsCaptured
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Number of packets captured"
+          #################################
+          - - field_name        : packetLocations
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              number_of_fields  : 32
+              field_description : "bits(15:0)=start address in the capture buffer of a packet, bits(31:16) = end address of a packet in the capture buffer" 
+
+
+        
+       
+              

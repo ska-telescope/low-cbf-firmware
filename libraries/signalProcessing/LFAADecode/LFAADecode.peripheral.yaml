@@ -1,0 +1,191 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : LFAADecode
+hdl_library_description: "Monitor and Control of decoding of LFAA data"
+
+peripherals:
+  - peripheral_name        : LFAADecode
+    peripheral_description : "Registers associated with LFAA Decode"
+    slave_ports:
+      - slave_name        : VCStats
+        slave_type        : RAM
+        number_of_slaves  : 1
+        slave_description : "Status for each virtual channel. 8 words per virtual channel, with the first 3072 words used for stationID1, and the second 3072 words used for stationID2. Each group of 8 words has (1) most recent logical channel in bits(15:0), most recent nof_contributing_antennas in bits(31:16), (2) Most recent packet number, (3) bits(31:28) = 4 bit count of packets with out of order packet numbers (wraps on overflow), bits(27:0) = Fractional time for the most recent packet count (units of 4 ns) , (4) Unix time in seconds of the most recent packet, (5) most recent SPEAD timestamp bits(31:0), (6) most recent SPEAD timestamp bits(47:32), (7) most recent SPEAD sync time, bits(31:0), (8) most recent SPEAD sync time, bits(47:32)."
+        fields            :
+          - - field_name        : data
+              width             : 32
+              user_width        : 32
+              access_mode       : RW
+              number_of_fields  : 6144
+              interface         : simple
+              reset_value       : 0
+              field_description : "Status for each virtual channel."
+      #################################################################
+      - slave_name        : StatCtrl
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Registers associated with LFAA Decode"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : packetGenMode
+              width             : 3
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "0 for normal operation (data comes from the LFAA 40GE input). Non-zero values generate dummy packets based on the virtual channel table. 1 - Generate packets full of zeros. 2 - pseudo-random values uniformly distributed in the range -1 to 1. 3 - pseudo-random values uniformly distributed between -7 and 7. 4 - pseudo-random values uniformly distributed between -15 and 15, 5 - psuedo-random values uniformly distributed between -31 and 31, 6 - pseudo-random values uniformly distributed between -63 and 63, 7 - pseudo-random values uniformly distributed between -127 and 127. Pseudo-random values are twice as likely to be 0 as other possible values."
+          #################################
+          - - field_name        : testGenFrameStart
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x5CCBA618
+              field_description : "UNIX time in seconds to start generating test packets. Changing this register resets the start time for test packet generation, so that it is this value plus how ever many integration times, of 902ms, are required for the start time to be in the future."
+          ################################
+          - - field_name        : testGenCtrl
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Transition this bit from 0 to 1 to enable test data generation. This also triggers reading of testGenFrameStart so the test packets are aligned to the desired timestamp."
+          #################################
+          - - field_name        : testCurrentFrameStartSeconds
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Next time to start a frame in seconds. This value is derived by adding multiples of the time for a full integration to testGenFrameStart"
+          #################################
+          - - field_name        : testCurrentFrameStartFrac
+              width             : 24
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Next time to start a frame, fraction of a second in 64ns steps"
+          #################################
+          - - field_name        : randSeed
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Seed for the LFSR used to generate test data. This is loaded when testGenCtrl transitions from 0 to 1."
+          #################################
+          - - field_name        : SPEAD_packet_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of LFAA SPEAD packets received, 32 bit wrapping, reset on write"
+          #################################
+          - - field_name        : NONSPEAD_packet_count
+              width             : 16
+              access_mode       : CS
+              reset_value       : 0x0
+              field_description : "Count of non-LFAA SPEAD packets received, 32 bit saturating, reset on write"
+          #################################
+          - - field_name        : badEthernetFrames
+              width             : 16
+              access_mode       : CS
+              reset_value       : 0x0
+              field_description : "Count of ethernet packets with errors (e.g. too short, too long, or FCS bad)"
+          #################################
+          - - field_name        : badIPUDPFrames
+              width             : 16
+              access_mode       : CS
+              reset_value       : 0x0
+              field_description : "Count of ethernet packets with bad IP or UDP checksums"
+          #################################
+          - - field_name        : NoVirtualChannelCount
+              width             : 16
+              access_mode       : CS
+              reset_value       : 0x0
+              field_description : "Count of packets that did not match an entry in the virtual channel table"
+          #################################
+          - - field_name        : stationID1
+              width             : 10
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "ID of the first station expected at this LRU"
+          #################################
+          - - field_name        : stationID2
+              width             : 10
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "ID of the second station expected at this LRU"
+          ################################# 
+          - - field_name        : VCTable
+              width             : 32
+              access_mode       : RW
+              number_of_fields  : 1024
+              field_description : "Virtual channel table. Two sets of virtual channels, one for stationID1 at address 0-383, and one for stationID2 at address 512-895. For each table, bits(8:0) = frequency_id, bits(12:9) = beam_id, bits(15:13) = substation_id, bits(20:16) = subarray_id, bits(30:21) = station_id, bit(31) = invalid (i.e. set to 1 to indicate this entry is invalid). "
+          #################################
+
+      - slave_name        : VStats
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Voltage Histogram and Power Statistics for LFAA data"
+        dual_clock        : true
+        fields:
+          #################################
+          - control:
+            - field_name        : VHRun
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Transition from 0 to 1 clears the current voltage histogram then starts compiling a new voltage histogram"
+            - field_name        : PowerRun
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Transition from 0 to 1 clears the current channel power values, and start capturing new data"
+            - field_name        : VHRunning
+              width             : 1
+              access_mode       : RO
+              field_description : "Indicates that voltage histogram capture is running"
+            - field_name        : PowerRunning
+              width             : 1
+              access_mode       : RO
+              field_description : "Indicates that LFAA channel power capture is running" 
+            - field_name        : VHDrops
+              width             : 1
+              access_mode       : RO
+              field_description : "Indicates that samples which should have been accumulated into the voltage histogram have been dropped because the input data rate exceeded the rate at which samples can be processed. This can only happen if two or more packets for the selected station and virtual channel arrive close to each other in time, which should not occur in normal operation. If this does occur then the histogram data is still valid, as VHSamplesDone only accumulates samples that are processed."
+          #################################
+          - - field_name        : VHStation
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Station id to capture voltage histogram for. If 0, use stationID1, if 1 use stationID2, as defined in LFAA Decode registers"
+          #################################
+          - - field_name        : VHChannel
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Virtual channel to capture voltage histogram for"  
+          #################################
+          - - field_name        : VHMaxSamples
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Number of LFAA samples to accumulate in the voltage histogram"
+          #################################
+          - - field_name        : VHSamplesDone
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Number of LFAA samples currently accumulated into the voltage histogram"
+          #################################
+          - - field_name        : ChannelPower
+              width             : 32
+              access_mode       : RO
+              number_of_fields  : 3072  
+              reset_value       : 0x0
+              field_description : "Accumulated channel power. Each block of 8 words holds data for a particular virtual channel, with (station 1 Packets accumulated, station 1 Vpol energy, station 1 Hpol energy, unused, station 2 Packets accumulated, station 2 Vpol energy, station 2 Hpol energy, unused). Accumulation for a channel stops when the energy exceeds 2^31. Station 1 and station 2 refer to stationID1 and stationID2 defined in the LFAA Decode module. To reduce resource use, a subset of 512 samples are accumulated for every 2048 sample packet, so the average power per sample can be calculated as, e.g. Vpol energy/(packets accumulated * 512)"
+          #################################
+          - - field_name        : VHistogram
+              width             : 32
+              access_mode       : RO
+              number_of_fields  : 1024  
+              reset_value       : 0x0
+              field_description : "Voltage histogram. Entries 0 to 255 contain the voltage histogram for Vpol real, 256 to 511 are the voltage histogram for Vpol Imaginary, 512 to 767 are the voltage histogram for Hpol real, 768 to 1023 are the voltage histogram for Hpol Imaginary"
+            
+
+            
+        
+       
+              

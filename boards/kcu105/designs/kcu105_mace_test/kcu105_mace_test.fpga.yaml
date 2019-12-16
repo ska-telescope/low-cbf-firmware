@@ -1,0 +1,19 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : fpga
+
+hdl_library_name  : kcu105_mace_test
+fpga_name         : kcu105_mace_test
+fpga_description  : "General test file for KCU105 harwdare"
+
+peripherals:
+  - peripheral_name        : kcu105_mace_test/system
+  - peripheral_name        : kcu105_board/sfp
+  - peripheral_name        : dhcp/dhcp
+  - peripheral_name        : gemini_subscription/gemini_subscription
+  - peripheral_name        : system_monitor/system_monitor
+  - peripheral_name        : kcu105_board/ethernet_mace
+  - peripheral_name        : kcu105_mace_test/demo
+  - peripheral_name        : axi4_quadspi_prom/axi4_quadspi_prom
+
+

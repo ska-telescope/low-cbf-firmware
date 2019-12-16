@@ -1,0 +1,59 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : dsp_top
+hdl_library_description: "DSP top level module"
+
+peripherals:
+  - peripheral_name        : dsp_top
+    peripheral_description : "Access to HBM memory"
+    slave_ports:
+      - slave_name        : HBMdebug
+        slave_type        : RAM
+        number_of_slaves  : 1
+        slave_description : "access to the DSP memory"
+        fields            :
+          - - field_name        : data
+              width             : 32
+              user_width        : 32
+              access_mode       : RW
+              number_of_fields  : 1048576
+              interface         : simple
+              reset_value       : 0
+              field_description : "4MByte page to access the HBM. Page defined in the HBM page register in dsp_top.statctrl MACE slave."
+      #################################################################
+      - slave_name        : StatCtrl
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "DSP top monitor and control"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : HBMpage
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Base address into the HBM. Must be 4 Mbyte aligned. Selects the 4 MByte page of the HBM stack 0 accessed by the HBMdebug MACE slave."
+          #################################
+          - - field_name        : mace2hbmwidth_axi_rst
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Reset to the MACE side of the AXI width converter used for MACE access to the HBM"
+          #################################
+          - - field_name        : HBMwidth2HBM_axi_rst
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Reset to the HBM side of the AXI width converter used for MACE access to the HBM"
+          #################################
+          - - field_name        : IC_rsts
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Resets to the interconnect module. Different bits reset different submodules in the interconnect."
+            
+        
+       
+              

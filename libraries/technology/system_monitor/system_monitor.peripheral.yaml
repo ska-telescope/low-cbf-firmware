@@ -1,0 +1,1313 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : system_monitor
+hdl_library_description: "System Management IP registers"
+
+peripherals:
+  - peripheral_name        : system_monitor
+    peripheral_description : "Registers associated with Xilinx System Management IP"
+
+    slave_ports:
+      - slave_name        : system_monitor
+        slave_type        : reg_ip
+        slave_protocol    : lite
+        number_of_slaves  : 1
+        slave_span        : 0x2000
+        slave_description : "Registers associated with Xilinx System Management IP"
+        fields:
+          #################################
+          - srr:
+            - field_defaults: {access_mode: WO, address_offset: 0x0}
+            - field_name        : reset
+              width             : 32
+              field_description : "The only allowed operation on this register is a write of 0x0000_000A, which resets the System Management Wizard IP Core. The reset is active only for 16 clock cycles."
+
+          #################################
+          - sr:
+            - field_defaults: {access_mode: RO, address_offset: 0x4}
+            - field_name        : channel
+              width             : 6
+              bit_offset        : 0
+              field_description : "The ADC input MUX channel selection for the current ADC conversion is placed on these outputs at the end of an ADC conversion."
+            - field_name        : eoc
+              width             : 1
+              bit_offset        : 6
+              field_description : "End of Conversion signal. This signal transitions to an active-High at the end of an ADC conversion when the measurement is written to the SYSMON hard macro status register. This bit is cleared when a read operation is performed on status register."
+            - field_name        : eos
+              width             : 1
+              bit_offset        : 7
+              field_description : "End of Sequence. This signal transitions to an active-High when the measurement data from the last channel in the auto sequence is written to the status registers. This bit is cleared when a read operation is performed on status register."
+            - field_name        : busy
+              width             : 1
+              bit_offset        : 8
+              field_description : "ADC busy signal. This signal transitions High during an ADC conversion."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 9
+              field_description : "Used to indicate that a DRP port lock request has been made by the Joint Test Action Group (JTAG) interface."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 10
+              field_description : "Used to indicate that a write to DRP through JTAG interface or I2C transaction has occurred. This bit is cleared when a successful DRP read/write operation through the FPGA logic is performed. The DRP read/write through the FPGA logic fails, if JTAGLOCKED = 1"
+            - field_name        : jtag_busy
+              width             : 1
+              bit_offset        : 11
+              field_description : "Used to indicate that a JTAG DRP or I2C transaction is in progress."
+
+          #################################
+          - aosr:
+            - field_defaults: {access_mode: RO, address_offset: 0x8}
+            - field_name        : ot
+              width             : 1
+              bit_offset        : 0
+              field_description : "SYSMON Over-Temperature Alarm Status. Over-Temperature alarm output interrupt occurs when the die temperature exceeds a factory set limit of 125�C."
+            - field_name        : alm0
+              width             : 1
+              bit_offset        : 1
+              field_description : "SYSMON Temperature-Sensor Status. SYSMON temperature-sensor alarm output interrupt occurs when device temperature exceeds user-defined threshold."
+            - field_name        : alm1
+              width             : 1
+              bit_offset        : 2
+              field_description : "SYSMON VCCINT-Sensor Status. SYSMON VCCINT-sensor alarm output interrupt occurs when VCCINT exceeds user-defined threshold."
+            - field_name        : alm2
+              width             : 1
+              bit_offset        : 3
+              field_description : "SYSMON VCCAUX-Sensor Status. SYSMON VCCAUX-sensor alarm output interrupt occurs when VCCAUX exceeds user-defined threshold."
+            - field_name        : alm3
+              width             : 1
+              bit_offset        : 4
+              field_description : "SYSMON VBRAM-Sensor Status. SYSMON VBRAM-sensor alarm output interrupt occurs when VBRAM exceeds user-defined threshold."
+            - field_name        : alm7
+              width             : 1
+              bit_offset        : 8
+              field_description : "Logical ORing of ALARM bits 0 to 6. This is direct output from the SYSMON macro."
+            - field_name        : alm8
+              width             : 1
+              bit_offset        : 9
+              field_description : "Alarms for User Supplies 0"
+            - field_name        : alm9
+              width             : 1
+              bit_offset        : 10
+              field_description : "Alarms for User Supplies 1"
+            - field_name        : alm10
+              width             : 1
+              bit_offset        : 11
+              field_description : "Alarms for User Supplies 2"
+            - field_name        : alm11
+              width             : 1
+              bit_offset        : 12
+              field_description : "Alarms for User Supplies 3"
+            - field_name        : alm15
+              width             : 1
+              bit_offset        : 16
+              field_description : "Logical ORing of ALARM bits 8 to 14. This is direct output from the SYSMON macro."
+
+          #################################
+          - convstr:
+            - field_defaults: {access_mode: WO, address_offset: 0xc}
+            - field_name        : convst
+              width             : 1
+              bit_offset        : 0
+              field_description : "A rising edge on the CONVST input initiates start of ADC conversion in event-driven sampling mode. For the selected channel the CONVST bit in the register needs to be set to 1 and again reset to 0 to start a new conversion cycle. The conversion cycle ends with EOC bit going High."
+            - field_name        : temp_rd_wait_cycle_reg
+              width             : 16
+              bit_offset        : 2
+              field_description : "Wait cycle for temperature update. Temperature update logic waits for this count of the S_AXI_ACLK."
+              reset_value       : 0x3e8
+
+          #################################
+          - sysmonrr:
+            - field_defaults: {access_mode: WO, address_offset: 0x10}
+            - field_name        : sysmon_reset
+              width             : 1
+              bit_offset        : 0
+              field_description : "Writing 1 to this bit position resets the SYSMON hard macro. The reset is released only after 0 is written to this register."
+
+
+          #################################
+          - gier:
+            - field_defaults: {access_mode: RW, address_offset: 0x5c}
+            - field_name        : gier
+              width             : 1
+              bit_offset        : 31
+              field_description : "Global Interrupt Enable Register. It enables all individually enabled interrupts to be passed to the interrupt controller."
+
+          #################################
+          - ipisr:
+            - field_defaults: {access_mode: RW, address_offset: 0x60}
+            - field_name        : ot
+              width             : 1
+              bit_offset        : 0
+              field_description : "Over-Temperature Alarm Interrupt. Over-Temperature alarm output interrupt occurs when the die temperature exceeds a factory set limit of 125 �C."
+            - field_name        : alm0
+              width             : 1
+              bit_offset        : 1
+              field_description : "SYSMON Temperature-Sensor Interrupt. SYSMON temperature-sensor alarm output interrupt occurs when device temperature exceeds the user-defined threshold."
+            - field_name        : alm1
+              width             : 1
+              bit_offset        : 2
+              field_description : "SYSMON VCCINT-Sensor Interrupt. SYSMON VCCINT-sensor alarm output interrupt occurs when VCCINT exceeds the user-defined threshold."
+            - field_name        : alm2
+              width             : 1
+              bit_offset        : 3
+              field_description : "SYSMON VCCAUX-Sensor Interrupt. SYSMON VCCAUX-sensor alarm output interrupt occurs when VCCAUX exceeds the user-defined threshold."
+            - field_name        : eos
+              width             : 1
+              bit_offset        : 4
+              field_description : "End of Sequence Interrupt. This signal transitions to an active-High when the measurement data from the last channel in the auto sequence is written to the status registers."
+            - field_name        : eoc
+              width             : 1
+              bit_offset        : 5
+              field_description : "End of Conversion Signal Interrupt. This signal transitions to an active-High at the end of an ADC conversion when the measurement is written to the SYSMON hard macro status register."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 6
+              field_description : "JTAGLOCKED Interrupt. This signal is used to indicate that a DRP port lock request has been made by the Joint Test Action Group (JTAG) interface."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 7
+              field_description : "JTAGMODIFIED Interrupt. This signal indicates that a write to DRP through the JTAG interface has occurred. It is cleared by writing 1 to this bit position."
+            - field_name        : ot_deactive
+              width             : 1
+              bit_offset        : 8
+              field_description : "OT Deactive Interrupt. This signal indicates that falling edge of the Over Temperature signal is detected. It is cleared by writing 1 to this bit position. The OT Deactive signal is generated locally from the core. This signal indicates that the SYSMON macro has deactivated the Over Temperature signal output."
+            - field_name        : alm0_deactive
+              width             : 1
+              bit_offset        : 9
+              field_description : "ALM[0] Deactive Interrupt. This signal indicates that the falling edge of the Over Temperature signal is detected. It is cleared by writing 1 to this bit position. The ALM[0] signal is generated locally from the core. This signal indicates that the SYSMON macro has deactivated the Over Temperature signal output."
+            - field_name        : alm3
+              width             : 1
+              bit_offset        : 10
+              field_description : "SYSMON VBRAM-Sensor Interrupt. SYSMON VBRAM-sensor alarm output interrupt occurs when VBRAM exceeds user-defined threshold."
+            - field_name        : alm8
+              width             : 1
+              bit_offset        : 14
+              field_description : "SYSMON VUSER0-Sensor Interrupt. The SYSMON VUSER0-sensor alarm output interrupt occurs when VUSER0 exceeds the user-defined threshold."
+            - field_name        : alm9
+              width             : 1
+              bit_offset        : 15
+              field_description : "SYSMON VUSER1-Sensor Interrupt. The SYSMON VUSER1-sensor alarm output interrupt occurs when VUSER1 exceeds the user-defined threshold."
+            - field_name        : alm10
+              width             : 1
+              bit_offset        : 16
+              field_description : "SYSMON VUSER2-Sensor Interrupt. The SYSMON VUSER2-sensor alarm output interrupt occurs when VUSER2 exceeds the user-defined threshold."
+            - field_name        : alm11
+              width             : 1
+              bit_offset        : 17
+              field_description : "SYSMON VUSER3-Sensor Interrupt. The SYSMON VUSER3 sensor alarm output interrupt occurs when VUSER0 exceeds the user-defined threshold."
+
+          #################################
+          - ipier:
+            - field_defaults: {access_mode: RW, address_offset: 0x68}
+            - field_name        : ot
+              width             : 1
+              bit_offset        : 0
+              field_description : "Over-Temperature Alarm Interrupt"
+            - field_name        : alm0
+              width             : 1
+              bit_offset        : 1
+              field_description : "SYSMON Temperature-Sensor Interrupt"
+            - field_name        : alm1
+              width             : 1
+              bit_offset        : 2
+              field_description : "SYSMON VCCINT-Sensor Interrupt"
+            - field_name        : alm2
+              width             : 1
+              bit_offset        : 3
+              field_description : "SYSMON VCCAUX-Sensor Interrupt"
+            - field_name        : eos
+              width             : 1
+              bit_offset        : 4
+              field_description : "End of Sequence Interrupt"
+            - field_name        : eoc
+              width             : 1
+              bit_offset        : 5
+              field_description : "End of Conversion Signal Interrupt"
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 6
+              field_description : "JTAGLOCKED Interrupt"
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 7
+              field_description : "JTAGMODIFIED Interrupt"
+            - field_name        : ot_deactive
+              width             : 1
+              bit_offset        : 8
+              field_description : "OT Deactive Interrupt"
+            - field_name        : alm0_deactive
+              width             : 1
+              bit_offset        : 9
+              field_description : "ALM[0] Deactive Interrupt"
+            - field_name        : alm3
+              width             : 1
+              bit_offset        : 10
+              field_description : "SYSMON VBRAM-Sensor Interrupt"
+            - field_name        : alm8
+              width             : 1
+              bit_offset        : 14
+              field_description : "SYSMON VUSER0-Sensor Interrupt"
+            - field_name        : alm9
+              width             : 1
+              bit_offset        : 15
+              field_description : "SYSMON VUSER1-Sensor Interrupt"
+            - field_name        : alm10
+              width             : 1
+              bit_offset        : 16
+              field_description : "SYSMON VUSER2-Sensor Interrupt"
+            - field_name        : alm11
+              width             : 1
+              bit_offset        : 17
+              field_description : "SYSMON VUSER3-Sensor Interrupt"
+
+          #################################
+          - temperature:
+            - field_defaults    : {access_mode: RO, address_offset: 0x400}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "10-bit Most Significant Bit (MSB) justified result of on-device temperature measurement is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vccint:
+            - field_defaults    : {access_mode: RO, address_offset: 0x404}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of on-device VCCINT supply monitor measurement is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vccaux:
+            - field_defaults    : {access_mode: RO, address_offset: 0x408}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of on-device VCCAUX Data supply monitor measurement is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vpvn:
+            - field_defaults    : {access_mode: RO, address_offset: 0x40c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the dedicated analog input chann"
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vrefp:
+            - field_defaults    : {access_mode: RO, address_offset: 0x410}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the reference input VREFP is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vrefn:
+            - field_defaults    : {access_mode: RO, address_offset: 0x414}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the reference input VREFN is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vbram:
+            - field_defaults    : {access_mode: RO, address_offset: 0x418}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the reference input VBRAM is stored in this register"
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - supply_offset:
+            - field_defaults    : {access_mode: RO, address_offset: 0x420}
+            - field_name        : value
+              width             : 16
+              field_description : "The calibration coefficient for the supply sensor offset is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - adc_offset:
+            - field_defaults    : {access_mode: RO, address_offset: 0x424}
+            - field_name        : value
+              width             : 16
+              field_description : "The calibration coefficient for the ADC offset calibration is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - gain_error:
+            - field_defaults    : {access_mode: RO, address_offset: 0x428}
+            - field_name        : value
+              width             : 16
+              field_description : "The calibration coefficient for the gain error is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux0:
+            - field_defaults    : {access_mode: RO, address_offset: 0x440}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 0 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux1:
+            - field_defaults    : {access_mode: RO, address_offset: 0x444}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 1 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux2:
+            - field_defaults    : {access_mode: RO, address_offset: 0x448}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 2 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux3:
+            - field_defaults    : {access_mode: RO, address_offset: 0x44c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 3 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux4:
+            - field_defaults    : {access_mode: RO, address_offset: 0x450}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 4 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux5:
+            - field_defaults    : {access_mode: RO, address_offset: 0x454}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 5 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux6:
+            - field_defaults    : {access_mode: RO, address_offset: 0x458}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 6 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux7:
+            - field_defaults    : {access_mode: RO, address_offset: 0x45c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 7 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux8:
+            - field_defaults    : {access_mode: RO, address_offset: 0x460}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 8 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux9:
+            - field_defaults    : {access_mode: RO, address_offset: 0x464}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 9 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux10:
+            - field_defaults    : {access_mode: RO, address_offset: 0x468}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 10 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux11:
+            - field_defaults    : {access_mode: RO, address_offset: 0x46c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 11 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux12:
+            - field_defaults    : {access_mode: RO, address_offset: 0x470}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 12 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux13:
+            - field_defaults    : {access_mode: RO, address_offset: 0x474}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 13 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux14:
+            - field_defaults    : {access_mode: RO, address_offset: 0x478}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 14 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vaux15:
+            - field_defaults    : {access_mode: RO, address_offset: 0x47c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of A/D conversion on the auxiliary analog input 15 is stored in this register."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_temp:
+            - field_defaults    : {access_mode: RO, address_offset: 0x480}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified maximum temperature measurement."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_vccint:
+            - field_defaults    : {access_mode: RO, address_offset: 0x484}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified maximum VCCINT measurement."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_vccaux:
+            - field_defaults    : {access_mode: RO, address_offset: 0x488}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified maximum VCCAUX measurement."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_vbram:
+            - field_defaults    : {access_mode: RO, address_offset: 0x48c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified maximum VBRAM measurement."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_temp:
+            - field_defaults    : {access_mode: RO, address_offset: 0x490}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified minimum temperature measurement"
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_vccint:
+            - field_defaults    : {access_mode: RO, address_offset: 0x494}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified minimum VCCINT measurement"
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_vccaux:
+            - field_defaults    : {access_mode: RO, address_offset: 0x498}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified minimum VCCAUX measurement."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_vbram:
+            - field_defaults    : {access_mode: RO, address_offset: 0x49c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified minimum VBRAM measurement."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - - field_name        : i2c_address
+              address_offset    : 0x4e0
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The I2C address captured by initial conversion on Vp/Vn channel."
+
+          #################################
+          - flags:
+            - field_defaults: {access_mode: RO, address_offset: 0x4fc}
+            - field_name        : alm0
+              width             : 1
+              bit_offset        : 0
+              field_description : "Alarm 0 status"
+            - field_name        : alm1
+              width             : 1
+              bit_offset        : 1
+              field_description : "Alarm 1 status"
+            - field_name        : alm2
+              width             : 1
+              bit_offset        : 2
+              field_description : "Alarm 2 status"
+            - field_name        : ot
+              width             : 1
+              bit_offset        : 3
+              field_description : "OT status"
+            - field_name        : alm3
+              width             : 1
+              bit_offset        : 4
+              field_description : "Alarm 3 status"
+            - field_name        : alm4
+              width             : 1
+              bit_offset        : 5
+              field_description : "Alarm 4 status"
+            - field_name        : alm5
+              width             : 1
+              bit_offset        : 6
+              field_description : "Alarm 5 status"
+            - field_name        : alm6
+              width             : 1
+              bit_offset        : 7
+              field_description : "Alarm 6 status"
+            - field_name        : ref
+              width             : 1
+              bit_offset        : 9
+              field_description : "Indicates system monitor ADC is using the internal voltage reference (High) or external reference (Low)"
+            - field_name        : jtgr
+              width             : 1
+              bit_offset        : 10
+              field_description : "A logic 1 indicates that the bitstream setting BITSTREAM.GENERAL.JTAG_SYSMON = STATUSONLY has been set to restrict access to read only. See DRP JTAG Interface for more information."
+            - field_name        : jtgd
+              width             : 1
+              bit_offset        : 11
+              field_description : "A logic 1 indicates that the bitstream setting for SYSMON has been set to BITSTREAM.GENERAL.JTAG_SYSMON = DISABLE to disable all JTAG access. See DRP JTAG Interface for more information."
+
+          #################################
+          - - field_name        : configuration0
+              address_offset    : 0x500
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Configuration Register 0."
+
+          #################################
+          - - field_name        : configuration1
+              address_offset    : 0x504
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Configuration Register 1."
+
+          #################################
+          - - field_name        : configuration2
+              address_offset    : 0x508
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Configuration Register 2."
+
+          #################################
+          - - field_name        : configuration3
+              address_offset    : 0x50c
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Configuration Register 3."
+
+          #################################
+          - - field_name        : sequence8
+              address_offset    : 0x518
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Sequencer channel selection (Vuser0-3)."
+
+          #################################
+          - - field_name        : sequence9
+              address_offset    : 0x51c
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Sequencer average selection (Vuser0-3)."
+
+          #################################
+          - - field_name        : sequence0
+              address_offset    : 0x520
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 0 (ADC channel selection)."
+
+          #################################
+          - - field_name        : sequence1
+              address_offset    : 0x524
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 1 (ADC channel selection)."
+
+          #################################
+          - - field_name        : sequence2
+              address_offset    : 0x528
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 2 (ADC channel averaging enable)."
+
+          #################################
+          - - field_name        : sequence3
+              address_offset    : 0x52c
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 3 (ADC channel averaging enable)."
+
+          #################################
+          - - field_name        : sequence4
+              address_offset    : 0x530
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 4 (ADC channel analog-input mode)."
+
+          #################################
+          - - field_name        : sequence5
+              address_offset    : 0x534
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 5 (ADC channel analog-input mode)."
+
+          #################################
+          - - field_name        : sequence6
+              address_offset    : 0x538
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 6 (ADC channel acquisition time)."
+
+          #################################
+          - - field_name        : sequence7
+              address_offset    : 0x53c
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "SYSMON Sequence Register 7 (ADC channel acquisition time)."
+
+
+          #################################
+          - - field_name        : alarm_threshold0
+              address_offset    : 0x540
+              width             : 16
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 0 (Temperature Upper)."
+
+          #################################
+          - - field_name        : alarm_threshold1
+              address_offset    : 0x544
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 1 (VCCINT Upper)."
+
+          #################################
+          - - field_name        : alarm_threshold2
+              address_offset    : 0x548
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 2 (VCCAUX Upper)."
+
+          #################################
+          - - field_name        : alarm_threshold3
+              address_offset    : 0x54c
+              access_mode       : RW
+              width             : 16
+              bit_offset        : 0
+              field_description : "The 10-bit MSB justified alarm threshold register 3 (OT Upper)."
+
+          #################################
+          - - field_name        : alarm_threshold4
+              address_offset    : 0x550
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 4 (Temperature Lower)."
+
+          #################################
+          - - field_name        : alarm_threshold5
+              address_offset    : 0x554
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 5 (VCCINT Lower)."
+
+          #################################
+          - - field_name        : alarm_threshold6
+              address_offset    : 0x558
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 6 (VCCAUX Lower)."
+
+          #################################
+          - - field_name        : alarm_threshold7
+              address_offset    : 0x55c
+              access_mode       : RW
+              width             : 16
+              field_description : "The 10-bit MSB justified alarm threshold register 7 (OT Lower)"
+
+          #################################
+          - - field_name        : alarm_threshold8
+              address_offset    : 0x560
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 8 (VBRAM Upper)"
+
+          #################################
+          - - field_name        : alarm_threshold12
+              address_offset    : 0x570
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 12 (VBRAM Lower)"
+
+          #################################
+          - - field_name        : alarm_threshold16
+              address_offset    : 0x580
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 16 (VUSER0 Upper)"
+
+          #################################
+          - - field_name        : alarm_threshold17
+              address_offset    : 0x584
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 17 (VUSER1 Upper)"
+
+          #################################
+          - - field_name        : alarm_threshold18
+              address_offset    : 0x588
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 18 (VUSER2 Upper)"
+
+          #################################
+          - - field_name        : alarm_threshold19
+              address_offset    : 0x58c
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 19 (VUSER3 Upper)"
+
+          #################################
+          - - field_name        : alarm_threshold22
+              address_offset    : 0x5a0
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 14 (VUSER0 Lower)."
+
+          #################################
+          - - field_name        : alarm_threshold23
+              address_offset    : 0x5a4
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 15 (VUSER1 Lower)."
+
+          #################################
+          - - field_name        : alarm_threshold24
+              address_offset    : 0x5a8
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 16 (VUSER2 Lower)."
+
+          #################################
+          - - field_name        : alarm_threshold25
+              address_offset    : 0x5ac
+              access_mode       : RW
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified alarm threshold register 17 (VUSER3 Lower)."
+
+          #################################
+          - vuser0:
+            - field_defaults    : {access_mode: RO, address_offset: 0x600}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of the on-chip VUSER0 supply monitor measurement is stored at this location."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vuser1:
+            - field_defaults    : {access_mode: RO, address_offset: 0x604}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of the on-chip VUSER1 supply monitor measurement is stored at this location."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vuser2:
+            - field_defaults    : {access_mode: RO, address_offset: 0x608}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of the on-chip VUSER2 supply monitor measurement is stored at this location."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - vuser3:
+            - field_defaults    : {access_mode: RO, address_offset: 0x60c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "The 10-bit MSB justified result of the on-chip VUSER3 supply monitor measurement is stored at this location."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_vuser0:
+            - field_defaults    : {access_mode: RO, address_offset: 0x680}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Maximum VUSER0 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_vuser1:
+            - field_defaults    : {access_mode: RO, address_offset: 0x684}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Maximum VUSER1 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_vuser2:
+            - field_defaults    : {access_mode: RO, address_offset: 0x688}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Maximum VUSER2 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - max_vuser3:
+            - field_defaults    : {access_mode: RO, address_offset: 0x68c}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Maximum VUSER3 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_vuser0:
+            - field_defaults    : {access_mode: RO, address_offset: 0x6a0}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Minimum VUSER0 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_vuser1:
+            - field_defaults    : {access_mode: RO, address_offset: 0x6a4}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Minimum VUSER1 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_vuser2:
+            - field_defaults    : {access_mode: RO, address_offset: 0x6a8}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Minimum VUSER2 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+          #################################
+          - min_vuser3:
+            - field_defaults    : {access_mode: RO, address_offset: 0x6ac}
+            - field_name        : value
+              width             : 10
+              bit_offset        : 6
+              field_description : "Minimum VUSER3 measurement recorded since power-up or the last System Monitor reset."
+            - field_name        : jtag_modified
+              width             : 1
+              bit_offset        : 17
+              field_description : "The JTAGMODIFIED bit is cleared when a DRP read/write operation through the FPGA logic is successful."
+            - field_name        : jtag_locked
+              width             : 1
+              bit_offset        : 16
+              field_description : "If JTAGLOCKED = 1, a DRP read/write through the FPGA logic fails"
+
+
+
+

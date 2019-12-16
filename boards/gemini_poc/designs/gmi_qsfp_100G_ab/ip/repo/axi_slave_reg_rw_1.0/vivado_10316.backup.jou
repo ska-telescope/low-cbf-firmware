@@ -1,0 +1,29 @@
+#-----------------------------------------------------------
+# Vivado v2016.4 (64-bit)
+# SW Build 1756540 on Mon Jan 23 19:11:19 MST 2017
+# IP Build 1755317 on Mon Jan 23 20:30:07 MST 2017
+# Start of session at: Tue May 16 12:29:08 2017
+# Process ID: 10316
+# Current directory: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_100G_ab/ip/repo/axi_slave_reg_rw_1.0
+# Command line: vivado
+# Log file: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_100G_ab/ip/repo/axi_slave_reg_rw_1.0/vivado.log
+# Journal file: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_100G_ab/ip/repo/axi_slave_reg_rw_1.0/vivado.jou
+#-----------------------------------------------------------
+start_gui
+open_project /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/gmi_qsfp_100G_ab.xpr
+open_bd_design {/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/gmi_qsfp_100G_ab.srcs/sources_1/bd/bd/gmi_qsfp_axi.bd}
+ipx::edit_ip_in_project -upgrade true -name axi_slave_reg_rw_v1_0_project -directory /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/gmi_qsfp_100G_ab.tmp/axi_slave_reg_rw_v1_0_project /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/ip_repo/axi_slave_reg_rw_1.0/axi_slave_reg_rw_1.0/component.xml
+ipx::add_bus_interface blah [ipx::current_core]
+set_property abstraction_type_vlnv xilinx.com:interface:aximm_rtl:1.0 [ipx::get_bus_interfaces blah -of_objects [ipx::current_core]]
+set_property bus_type_vlnv xilinx.com:interface:aximm:1.0 [ipx::get_bus_interfaces blah -of_objects [ipx::current_core]]
+set_property interface_mode master [ipx::get_bus_interfaces blah -of_objects [ipx::current_core]]
+ipx::remove_bus_interface blah [ipx::current_core]
+current_project gmi_qsfp_100G_ab
+current_project axi_slave_reg_rw_v1_0_project
+close_project
+set_property -dict [list CONFIG.NUM_MI {5}] [get_bd_cells axi_interconnect_0]
+ipx::edit_ip_in_project -upgrade true -name axi_slave_reg_rw_v1_0_project -directory /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/gmi_qsfp_100G_ab.tmp/axi_slave_reg_rw_v1_0_project /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/ip_repo/axi_slave_reg_rw_1.0/axi_slave_reg_rw_1.0/component.xml
+current_project gmi_qsfp_100G_ab
+ipx::edit_ip_in_project -upgrade true -name axi_slave_led_reg_v1_0_project -directory /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/gmi_qsfp_100G_ab.tmp/axi_slave_led_reg_v1_0_project /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_100G_ab_build_170511_171027/ip_repo/axi_slave_led_reg_1.0/axi_slave_led_reg_1.0/axi_slave_led_reg_1.0/component.xml
+close_project
+close_project

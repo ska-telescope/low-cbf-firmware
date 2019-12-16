@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_DSP_top_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="axi4_full_pkg" />
+            <top_module name="axi4_lite_pkg" />
+            <top_module name="axi4_stream_pkg" />
+            <top_module name="axi_bram_ctrl_funcs" />
+            <top_module name="capture128bit_reg_pkg" />
+            <top_module name="capturefine_capturefine_reg_pkg" />
+            <top_module name="common_mem_pkg" />
+            <top_module name="common_pkg" />
+            <top_module name="ctc_config_reg_pkg" />
+            <top_module name="ctc_pkg" />
+            <top_module name="dsp_top_pkg" />
+            <top_module name="dsp_top_reg_pkg" />
+            <top_module name="glbl" />
+            <top_module name="interconnect_reg_pkg" />
+            <top_module name="lfaadecode_lfaadecode_reg_pkg" />
+            <top_module name="run2_tb_pkg" />
+            <top_module name="setup_ctc_pkg" />
+            <top_module name="tb_DSP_top" />
+            <top_module name="tech_memory_component_pkg" />
+            <top_module name="technology_pkg" />
+            <top_module name="technology_select_pkg" />
+            <top_module name="timingcontrol_timingcontrol_reg_pkg" />
+            <top_module name="vcomponents" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="81000000001fs"></ZoomEndTime>
+      <Cursor1Time time="39279859000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="289"></NameColumnWidth>
+      <ValueColumnWidth column_width="234"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="29" />
+   <wvobject type="array" fp_name="/tb_DSP_top/cmd_file_name">
+      <obj_property name="ElementShortName">cmd_file_name[1:20]</obj_property>
+      <obj_property name="ObjectShortName">cmd_file_name[1:20]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_DSP_top/data_clk">
+      <obj_property name="ElementShortName">data_clk</obj_property>
+      <obj_property name="ObjectShortName">data_clk</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/LFAA40GE_sosi">
+      <obj_property name="ElementShortName">LFAA40GE_sosi</obj_property>
+      <obj_property name="ObjectShortName">LFAA40GE_sosi</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/LFAAingest_data">
+      <obj_property name="ElementShortName">LFAAingest_data[127:0]</obj_property>
+      <obj_property name="ObjectShortName">LFAAingest_data[127:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/LFAAingest_valid">
+      <obj_property name="ElementShortName">LFAAingest_valid</obj_property>
+      <obj_property name="ObjectShortName">LFAAingest_valid</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group144">
+      <obj_property name="label">IC CTC output data</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/CTCgeni/o_data">
+         <obj_property name="ElementShortName">o_data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">o_data[63:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/CTCgeni/o_sop">
+         <obj_property name="ElementShortName">o_sop</obj_property>
+         <obj_property name="ObjectShortName">o_sop</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/CTCgeni/o_valid">
+         <obj_property name="ElementShortName">o_valid</obj_property>
+         <obj_property name="ObjectShortName">o_valid</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/o_errorCounts">
+      <obj_property name="ElementShortName">o_errorCounts[15:0]</obj_property>
+      <obj_property name="ObjectShortName">o_errorCounts[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf2/o_errorCounts">
+      <obj_property name="ElementShortName">o_errorCounts[15:0]</obj_property>
+      <obj_property name="ObjectShortName">o_errorCounts[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/clrInBufErrors">
+      <obj_property name="ElementShortName">clrInBufErrors</obj_property>
+      <obj_property name="ObjectShortName">clrInBufErrors</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/o_goodPacket">
+      <obj_property name="ElementShortName">o_goodPacket</obj_property>
+      <obj_property name="ObjectShortName">o_goodPacket</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf2/o_goodPacket">
+      <obj_property name="ElementShortName">o_goodPacket</obj_property>
+      <obj_property name="ObjectShortName">o_goodPacket</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group142">
+      <obj_property name="label">LFAA URAM buffer1 in</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAData1">
+         <obj_property name="ElementShortName">LFAAData1[63:0]</obj_property>
+         <obj_property name="ObjectShortName">LFAAData1[63:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAValid1">
+         <obj_property name="ElementShortName">LFAAValid1</obj_property>
+         <obj_property name="ObjectShortName">LFAAValid1</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAeof1">
+         <obj_property name="ElementShortName">LFAAeof1</obj_property>
+         <obj_property name="ObjectShortName">LFAAeof1</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAsof1">
+         <obj_property name="ElementShortName">LFAAsof1</obj_property>
+         <obj_property name="ObjectShortName">LFAAsof1</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/input_fsm">
+      <obj_property name="ElementShortName">input_fsm</obj_property>
+      <obj_property name="ObjectShortName">input_fsm</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/blockUsed">
+      <obj_property name="ElementShortName">blockUsed[31:0]</obj_property>
+      <obj_property name="ObjectShortName">blockUsed[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/blockUsedTemp">
+      <obj_property name="ElementShortName">blockUsedTemp[31:0]</obj_property>
+      <obj_property name="ObjectShortName">blockUsedTemp[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group143">
+      <obj_property name="label">LFAA URAM buffer2 in</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAData2">
+         <obj_property name="ElementShortName">LFAAData2[63:0]</obj_property>
+         <obj_property name="ObjectShortName">LFAAData2[63:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAValid2">
+         <obj_property name="ElementShortName">LFAAValid2</obj_property>
+         <obj_property name="ObjectShortName">LFAAValid2</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAeof2">
+         <obj_property name="ElementShortName">LFAAeof2</obj_property>
+         <obj_property name="ObjectShortName">LFAAeof2</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAAsof2">
+         <obj_property name="ElementShortName">LFAAsof2</obj_property>
+         <obj_property name="ObjectShortName">LFAAsof2</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/wrAddrFullDel2">
+      <obj_property name="ElementShortName">wrAddrFullDel2[11:0]</obj_property>
+      <obj_property name="ObjectShortName">wrAddrFullDel2[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/wrAddrDel1">
+      <obj_property name="ElementShortName">wrAddrDel1[11:0]</obj_property>
+      <obj_property name="ObjectShortName">wrAddrDel1[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/nextBlockStartFull">
+      <obj_property name="ElementShortName">nextBlockStartFull[11:0]</obj_property>
+      <obj_property name="ObjectShortName">nextBlockStartFull[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/blockStartFull">
+      <obj_property name="ElementShortName">blockStartFull[11:0]</obj_property>
+      <obj_property name="ObjectShortName">blockStartFull[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/blockStart">
+      <obj_property name="ElementShortName">blockStart[4:0]</obj_property>
+      <obj_property name="ObjectShortName">blockStart[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/o_data">
+      <obj_property name="ElementShortName">o_data[63:0]</obj_property>
+      <obj_property name="ObjectShortName">o_data[63:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/o_outputMux">
+      <obj_property name="ElementShortName">o_outputMux[4:0]</obj_property>
+      <obj_property name="ObjectShortName">o_outputMux[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/o_valid">
+      <obj_property name="ElementShortName">o_valid</obj_property>
+      <obj_property name="ObjectShortName">o_valid</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/output_fsm">
+      <obj_property name="ElementShortName">output_fsm</obj_property>
+      <obj_property name="ObjectShortName">output_fsm</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/bufRdAddr">
+      <obj_property name="ElementShortName">bufRdAddr[11:0]</obj_property>
+      <obj_property name="ObjectShortName">bufRdAddr[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/bufWE">
+      <obj_property name="ElementShortName">bufWE[0:0]</obj_property>
+      <obj_property name="ObjectShortName">bufWE[0:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/bufWrAddr">
+      <obj_property name="ElementShortName">bufWrAddr[11:0]</obj_property>
+      <obj_property name="ObjectShortName">bufWrAddr[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_DSP_top/dsp_topi/ICinst/LFAABuf1/bufDin">
+      <obj_property name="ElementShortName">bufDin[65:0]</obj_property>
+      <obj_property name="ObjectShortName">bufDin[65:0]</obj_property>
+   </wvobject>
+</wave_config>

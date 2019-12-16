@@ -1,0 +1,63 @@
+Imported into RADIOHDL from /home/hiemstra/xilinx/gmi_heater_test_25G/
+
+
+1. Compile command:
+
+python $RADIOHDL/tools/radiohdl/base/vivado_config.py -t gmi -l gmi_heater_alt -r -v3
+
+
+2. Test on hardware: the Gemini board:
+
+Refer to $RADIOHDL/boards/vcu108/designs/vcu108_heater/doc/README.txt
+
+To get rid of the Vivado message sizelimit:
+set_param messaging.defaultLimit 100000
+
+# Enable on all heaters (write to all addresses):
+for {set x 0x44a00000} {$x<0x44a00100} {incr x} {
+   create_hw_axi_txn wr_txn [get_hw_axis hw_axi_1] -address [format %08x $x] -data 0xffffffff -type write -force
+   run_hw_axi [get_hw_axi_txns wr_txn]
+}
+
+# Watch the temperature rising quickly... The 0xffffffff means all heaters (bitwise enable)
+
+# Read out XOR on all heaters (readout all addresses):
+for {set x 0x44a00000} {$x<0x44a00100} {incr x} {
+   create_hw_axi_txn rd_txn [get_hw_axis hw_axi_1] -address [format %08x $x] -len 4 -type read -force
+   run_hw_axi [get_hw_axi_txns rd_txn]
+}   
+    
+
+
+
+
+
+Got this design example from:
+https://forums.xilinx.com/t5/Virtex-Family-FPGAs/Heater/td-p/740143
+
+""
+pedro_uno:
+01-08-2017 06:03 PM - edited 01-17-2017 08:42 AM
+
+I put together a little "heater" pipeline for stressing the point of load regulator and thermal management of an FPGA board.  
+If you are interested in such a thing you can clone the git repository from here: https://github.com/hdlguy/heater
+
+You can just look at the  heater channel here: https://github.com/hdlguy/heater/blob/master/source/heater.v  
+It uses a balanced number of DSP48, BRAM, SRL and flip-flops.  I instantiate a number of these channels to fill up the part.  
+Then I use a VIO or Zynq to enable the channels individually to control the current load.  
+The data source is an LFSR so the toggle rate is exactly 50%. A checker at the end of the pipeline detects and latches any errors.
+
+There is a project in there for a MicroZed board but I never got believable temperature values out of that board.  
+I need to read up on the XADC driver for linux on Zynq.
+
+There is also another project in the repository for a little Avnet Artix 50t board.  
+I just use a JTAG connection to enable channels with a VIO core and monitor for errors.
+Sixteen channels of heater fill up the 50t pretty well but I found I could only enable thirteen of them before the power supply went into 
+over current and rebooted the FPGA.  It runs 400MHz on a -1 speed grade part.  
+I hit 123C with no heat sink or fan but never saw any data errors.
+
+I hope someone else finds this useful.
+""
+
+
+

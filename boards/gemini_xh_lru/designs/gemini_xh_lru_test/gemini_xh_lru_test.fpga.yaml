@@ -1,0 +1,44 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : fpga
+
+hdl_library_name  : gemini_xh_lru_test
+fpga_name         : gemini_xh_lru_test
+fpga_description  : "General test file for Gemini XH LRU harwdare"
+
+peripherals:
+  - peripheral_name        : gemini_xh_lru_test/system
+  - peripheral_name        : gemini_xh_lru_board/pmbus
+  - peripheral_name        : gemini_xh_lru_board/mbo
+  - peripheral_name        : gemini_xh_lru_board/qsfp
+  - peripheral_name        : gemini_xh_lru_board/sfp
+  - peripheral_name        : gemini_xh_lru_board/onewire_prom
+  - peripheral_name        : gemini_xh_lru_board/onewire_prom
+    peripheral_group       : backplane_prom
+  - peripheral_name        : gemini_xh_lru_board/humidity
+  - peripheral_name        : gemini_xh_lru_board/ddr4
+  - peripheral_name        : dhcp/dhcp
+  - peripheral_name        : gemini_subscription/gemini_subscription
+  - peripheral_name        : axi4_quadspi_prom/axi4_quadspi_prom
+  - peripheral_name        : system_monitor/system_monitor
+  - peripheral_name        : gemini_xh_lru_board/ethernet_mace
+  - peripheral_name        : gemini_xh_lru_board/ethernet_qsfp
+    peripheral_group       : qsfpc
+  - peripheral_name        : gemini_xh_lru_board/ethernet_qsfp
+    peripheral_group       : qsfpd
+  - peripheral_name        : gemini_xh_lru_board/ethernet_quad_qsfp
+    peripheral_group       : qsfpa
+  - peripheral_name        : gemini_xh_lru_board/ethernet_quad_qsfp
+    peripheral_group       : qsfpb
+  - peripheral_name        : gemini_xh_lru_board/ethernet_mbo
+    peripheral_group       : mboa
+  - peripheral_name        : gemini_xh_lru_board/ethernet_mbo
+    peripheral_group       : mbob
+  - peripheral_name        : gemini_xh_lru_board/ethernet_mbo
+    peripheral_group       : mboc
+  - peripheral_name        : gemini_xh_lru_board/backplane_control
+  - peripheral_name        : hbm/hbm
+    peripheral_group       : left
+  - peripheral_name        : hbm/hbm
+    peripheral_group       : right
+

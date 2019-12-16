@@ -1,0 +1,33 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : cor
+hdl_library_description: "Correlator Configuration"
+
+peripherals:
+
+
+  - peripheral_name        : config
+    peripheral_description : "CTF Configuration"
+
+    slave_ports:
+      - slave_name        : setup
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Basic COR control functionality"
+        fields:
+          - - field_name        : full_reset
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Start or restart COR."
+
+          - - field_name        : dummy
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Without this, MACE fails to create the required VHDL files"
+              
+
+

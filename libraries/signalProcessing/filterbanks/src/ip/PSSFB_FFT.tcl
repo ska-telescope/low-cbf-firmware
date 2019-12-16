@@ -1,0 +1,3 @@
+create_ip -name xfft -vendor xilinx.com -library ip -version 9.1 -module_name fft64_16bit
+set_property -dict [list CONFIG.Component_Name {fft64_16bit} CONFIG.transform_length {64} CONFIG.xk_index {true}  CONFIG.implementation_options {pipelined_streaming_io} CONFIG.throttle_scheme {realtime} CONFIG.complex_mult_type {use_mults_performance} CONFIG.number_of_stages_using_block_ram_for_data_and_phase_factors {0}] [get_ips fft64_16bit]
+create_ip_run [get_ips fft64_16bit]

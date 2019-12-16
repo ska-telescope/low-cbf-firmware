@@ -1,0 +1,137 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : kcu105_mace_test
+hdl_library_description: "Monitor & Control Registers for KCU105"
+
+peripherals:
+  - peripheral_name        : system
+    peripheral_description : "General control registers for the KCU105 test firmware"
+
+    slave_ports:
+      - slave_name        : system
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "General control registers for the KCU105 test firmware"
+        fields:
+          #################################
+          - status:
+            - field_name        : clocks_locked
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "All clocks locked"
+          #################################
+          - - field_name        : build_date
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Build Date of firmware"
+          #################################
+          - time:
+            - field_name        : uptime
+              width             : 14
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Number of seconds since programming"
+            - field_name        : wrapped
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicates if uptime counter has wrapped"
+          #################################
+          #################################
+          - cnx0:
+            - field_name        : client0IP
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "IP address of Gemini client 0"
+          #################################
+          - cnx1:
+            - field_name        : client0Port
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "UDP Port of Gemini client 0"
+          #################################
+          - cnx2:
+            - field_name        : client0LastUsed
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "TOD when client0 last accessed Gemini"
+          #################################
+          #################################
+          - cnx3:
+            - field_name        : client1IP
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "IP address of Gemini client 1"
+          #################################
+          - cnx4:
+            - field_name        : client1Port
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "UDP Port of Gemini client 1"
+          #################################
+          - cnx5:
+            - field_name        : client1LastUsed
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "TOD when client1 last accessed Gemini"
+          #################################
+          #################################
+          - cnx6:
+            - field_name        : client2IP
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "IP address of Gemini client 2"
+          #################################
+          - cnx7:
+            - field_name        : client2Port
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "UDP Port of Gemini client 2"
+          #################################
+          - cnx8:
+            - field_name        : client2LastUsed
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "TOD when client2 last accessed Gemini"
+          #################################
+          - xyz:
+            - field_name        : testbram
+              width             : 32
+              access_mode       : RW
+              number_of_fields  : 2048
+              reset_value       : 0x0
+              field_description : "RAM for tests"
+
+   #################################
+   #################################
+
+  - peripheral_name        : demo
+    peripheral_description : "Memory block for ICL demo"
+
+    slave_ports:
+      - slave_name        : client
+        slave_type        : RAM
+        number_of_slaves  : 1
+        slave_description : "Memory block for ICL demo"
+        fields            :
+          #################################
+          - - field_name        : data
+              width             : 32
+              user_width        : 32
+              access_mode       : RW
+              number_of_fields  : 2048
+              field_description : "Demo read/write space for software"
+

@@ -1,0 +1,87 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : captureFine
+hdl_library_description: "capture output of coarse corner turn or filterbanks for MACE to read back"
+
+peripherals:
+  - peripheral_name        : captureFine
+    peripheral_description : "Registers associated with capture of fine channelised data or CTC output"
+    slave_ports:
+      - slave_name        : capbuf
+        slave_type        : RAM
+        number_of_slaves  : 1
+        slave_description : "Packet capture memory."
+        fields            :
+          - - field_name        : data
+              width             : 32
+              user_width        : 32
+              access_mode       : RW
+              number_of_fields  : 16384
+              interface         : simple
+              reset_value       : 0
+              field_description : "Capture memory. 16384 x 32bit words, e.g. 4 packets of 4096 words, or 256 packets of 64 words (but limited to 32 packets by the packetLocations registers)."
+      #################################################################
+      - slave_name        : capFineCtrl
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Control capture of packets"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "1 to enable capture of packets. Rising edge resets the packet capture module."
+          #################################
+          - - field_name        : BusSel
+              width             : 4
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Select which output bus to capture. 0 = Coarse Corner Turner Correlator output, 1 = Coarse Corner turner PSS and PST output, 2 = Correlator Filterbank, 3 = PSS Filterbank, 4 = PST Filterbank"
+          #################################
+          - - field_name        : CaptureStation
+              width             : 9
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Station ID to capture"
+          #################################
+          - - field_name        : CaptureVirtualChannel
+              width             : 9
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Virtual Channel to capture"
+          #################################
+          - - field_name        : CapturePacketCount
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Packet count to start capture at; all packets after this will be captured until the buffer is full. Units of 2048 coarse samples, as per the LFAA SPEAD header."
+          #################################
+          - - field_name        : capWrAddr
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Current write address into the capture buffer"
+          #################################
+          - - field_name        : packetsCaptured
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Number of packets captured"
+          #################################
+          - - field_name        : packetLocations
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              number_of_fields  : 32
+              field_description : "bits(15:0)=start address in the capture buffer of a packet, bits(31:16) = end address of a packet in the capture buffer" 
+          #################################
+          - - field_name        : packetCounts
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              number_of_fields  : 32
+              field_description : "timestamp for each captured packet"

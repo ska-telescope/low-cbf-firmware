@@ -1,0 +1,2204 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : vcu128_board
+hdl_library_description: "Monitor & Control Registers for VCU128 gemini"
+
+peripherals:
+  - peripheral_name        : pmbus
+    peripheral_description : "Monitor and Control registers for power supplies"
+
+    slave_ports:
+      - slave_name        : control
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Global Monitor and Control registers for power supplies"
+        fields:
+          #################################
+          - control:
+            - field_name        : monitor_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "Enable hardware monitoring"
+            - field_name        : clear_fault_flags
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Clear the fault fpgas from the harwdare"
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previosuly uploaded program"
+
+          #################################
+          - status:
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c Transaction error occured"
+            - field_name        : alert
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c Interrupt"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicated monitor FSM is idle"
+
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+      ##################################################################
+      - slave_name        : vcc0V72
+        slave_type        : reg
+        number_of_slaves  : 3
+        slave_description : "0.72V core supplies"
+        fields:
+          #################################
+          - status:
+            - field_name        : unknown
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator unknown error"
+            - field_name        : comms
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator communication error"
+            - field_name        : temp
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator tmeperature error"
+            - field_name        : undervolt
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator input under voltage"
+            - field_name        : overcurrent
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator output over current"
+            - field_name        : overvoltage
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator output over voltage"
+            - field_name        : "off"
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator Off"
+            - field_name        : busy
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator busy"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator input failure"
+            - field_name        : power
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator output power too high"
+            - field_name        : output
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V regulator output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V Output voltage LSB 2^-13"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V BMR466 Supply A Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "0.72V Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc0v85
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "0.85V VCC_IO & VBRAM supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : toff_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn off limit warning"
+            - field_name        : ton_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn on limit warning"
+            - field_name        : vout_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Maximum allowed Vout warning"
+            - field_name        : undervolt_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : undervolt_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage warning"
+            - field_name        : overvoltage_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout over voltage warning"
+            - field_name        : overvoltage_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Input failure"
+            - field_name        : output_iout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current fault"
+            - field_name        : output_vout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage LSB 2^-12"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_int:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc0v9
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "0.9V MGT VCC supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : toff_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn off limit warning"
+            - field_name        : ton_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn on limit warning"
+            - field_name        : vout_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Maximum allowed Vout warning"
+            - field_name        : undervolt_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : undervolt_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage warning"
+            - field_name        : overvoltage_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout over voltage warning"
+            - field_name        : overvoltage_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Input failure"
+            - field_name        : output_iout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current fault"
+            - field_name        : output_vout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage LSB 2^-12"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_int:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc1v2_tr
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "1.2V MGT VTT supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : toff_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn off limit warning"
+            - field_name        : ton_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn on limit warning"
+            - field_name        : vout_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Maximum allowed Vout warning"
+            - field_name        : undervolt_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : undervolt_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage warning"
+            - field_name        : overvoltage_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout over voltage warning"
+            - field_name        : overvoltage_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Input failure"
+            - field_name        : output_iout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current fault"
+            - field_name        : output_vout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage LSB 2^-12"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_int:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc1v2_ddr
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "1.2V DDR4 supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : toff_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn off limit warning"
+            - field_name        : ton_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn on limit warning"
+            - field_name        : vout_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Maximum allowed Vout warning"
+            - field_name        : undervolt_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : undervolt_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage warning"
+            - field_name        : overvoltage_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout over voltage warning"
+            - field_name        : overvoltage_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Input failure"
+            - field_name        : output_iout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current fault"
+            - field_name        : output_vout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage LSB 2^-12"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_int:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc1v8
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "1.8V VCCaux, & Vcco supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : toff_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn off limit warning"
+            - field_name        : ton_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn on limit warning"
+            - field_name        : vout_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Maximum allowed Vout warning"
+            - field_name        : undervolt_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : undervolt_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage warning"
+            - field_name        : overvoltage_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout over voltage warning"
+            - field_name        : overvoltage_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Input failure"
+            - field_name        : output_iout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current fault"
+            - field_name        : output_vout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage LSB 2^-12"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_int:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc2v5
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "2.5V Clock supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : toff_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn off limit warning"
+            - field_name        : ton_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn on limit warning"
+            - field_name        : vout_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Maximum allowed Vout warning"
+            - field_name        : undervolt_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : undervolt_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage warning"
+            - field_name        : overvoltage_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout over voltage warning"
+            - field_name        : overvoltage_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Input failure"
+            - field_name        : output_iout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current fault"
+            - field_name        : output_vout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage LSB 2^-12"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_int:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc3v3
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "3.3V Optics & Clock supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : toff_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn off limit warning"
+            - field_name        : ton_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Turn on limit warning"
+            - field_name        : vout_max_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Maximum allowed Vout warning"
+            - field_name        : undervolt_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : undervolt_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage warning"
+            - field_name        : overvoltage_warn
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout over voltage warning"
+            - field_name        : overvoltage_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Vout under voltage fault"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Input failure"
+            - field_name        : output_iout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current fault"
+            - field_name        : output_vout
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Voltage input exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output voltage LSB 2^-12"
+          #################################
+          - iout_a:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - iout_b:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Output current exponent"
+          #################################
+          - temp_a:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_b:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Inductor Temperature exponent"
+          #################################
+          - temp_int:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Supply Internal Temperature exponent"
+
+      ##################################################################
+      - slave_name        : vcc12v
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "12V Bus convertor supply"
+        fields:
+          #################################
+          - status:
+            - field_name        : unknown
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator unknown error"
+            - field_name        : comms
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator communication error"
+            - field_name        : temp
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator tmeperature error"
+            - field_name        : undervolt
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator input under voltage"
+            - field_name        : overcurrent
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator output over current"
+            - field_name        : overvoltage
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator output over voltage"
+            - field_name        : "off"
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator off"
+            - field_name        : busy
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator busy"
+            - field_name        : powergood
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator power good is negated"
+            - field_name        : manufacturer
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator manufacturer fault"
+            - field_name        : input
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator input failure"
+            - field_name        : power
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator power fault"
+            - field_name        : output
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Regulator output voltage fault"
+          #################################
+          - vin:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Input voltage mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Input voltage exponent"
+          #################################
+          - - field_name        : vout
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Output voltage LSB 2^-11"
+          #################################
+          - iout:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : " Output current mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Output current exponent"
+          #################################
+          - temp:
+            - field_name        : mantissa
+              width             : 11
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Temperature mantissa"
+            - field_name        : exponent
+              width             : 5
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Temperature exponent"
+          #################################
+          - - field_name        : temp_int
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Internal Temperature LSB 2^-11"
+
+  #################################
+  #################################
+  - peripheral_name        : sfp
+    peripheral_description : "Monitor and Control registers for SFP+ module"
+
+    slave_ports:
+      - slave_name        : sfp
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Monitor and Control registers for SFP+ module"
+        fields:
+          #################################
+          - status:
+            - field_name        : tx_disable
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "TX Disable Pin State"
+            - field_name        : rate_select
+              width             : 2
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Rate Select"
+            - field_name        : tx_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Transmitter fault"
+            - field_name        : rx_los
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "RX power lost"
+            - field_name        : not_ready
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Monitoring ready status"
+            - field_name        : present
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP Module present"
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c transaction error"
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicated monitor FSM is idle"
+            - field_name        : rx_locked
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "RX lane locked"
+
+          #################################
+          - control:
+            - field_name        : monitor_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "Enable hardware monitoring"
+            - field_name        : tx_disable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Disable the SFP transmitter"
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previously uploaded program"
+          #################################
+          - - field_name        : voltage
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP supply voltage, units of 100uV"
+          #################################
+          - - field_name        : tx_bias
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP transmitter laser bias, units of 2uA"
+          #################################
+          - - field_name        : tx_power
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP transmitter power, units of 0.1uW"
+          #################################
+          - - field_name        : rx_power
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP receiver power, units of 0.1uW"
+          #################################
+          - - field_name        : temperature
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP temperature, units of 1/256 degrees C"
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+  #################################
+  #################################
+  - peripheral_name        : qsfp
+    peripheral_description : "Monitor and Control registers for QSFP+ modules"
+
+    slave_ports:
+      - slave_name        : control
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Global Monitor and Control registers for QSFP+ modules"
+        fields:
+          #################################
+          - status:
+            - field_name        : interrupt
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "QSFP Interrupt flag"
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c transaction error"
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicated monitor FSM is idle"
+          #################################
+          - control:
+            - field_name        : monitor_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "Enable hardware monitoring"
+            - field_name        : prog_select
+              width             : 4
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Bitmask of QSFP modules to execute custom program on, A is LSB"
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previously uploaded program"
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+      ##################################################################
+      - slave_name        : qsfp
+        slave_type        : reg
+        number_of_slaves  : 4
+        slave_description : "Monitor and Control registers for QSFP+ modules & transciever lanes"
+        fields:
+          #################################
+          - control:
+            - field_name        : tx_disable
+              width             : 4
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Disable the QSFP transmitters"
+            - field_name        : rx_disable
+              width             : 4
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Disable the QSFP recievers"
+            - field_name        : reset
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Reset all QSFP back to default settings"
+            - field_name        : loopback
+              width             : 3
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Loopback control"
+
+          #################################
+          - status:
+            - field_name        : not_ready
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "QSFP Monitoring ready status"
+            - field_name        : present
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "QSFP Module present"
+            - field_name        : rx_locked
+              width             : 4
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "RX lane locked"
+
+          #################################
+          - - field_name        : voltage
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "QSFP supply voltage, units of 100uV"
+          #################################
+          - - field_name        : tx_bias
+              width             : 16
+              number_of_fields  : 4
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "QSFP transmitter laser bias, units of 2uA"
+          #################################
+          - - field_name        : rx_power
+              number_of_fields  : 4
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "QSFP receiver power, units of 0.1uW"
+          #################################
+          - - field_name        : temperature
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "QSFP temperature, units of 1/256 degrees C"
+
+  #################################
+  #################################
+  - peripheral_name        : mbo
+    peripheral_description : "Monitor and Control registers for the Midboard optics modules"
+
+    slave_ports:
+      - slave_name        : control
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Global Monitor and Control registers for the Midboard optics modules"
+        fields:
+          #################################
+          - status:
+            - field_name        : interrupt
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO Interrupt flag"
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c transaction error"
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : startup
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicates that startup was completed OK for all modules"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicated monitor FSM is idle"
+          #################################
+          - control:
+            - field_name        : monitor_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "Enable hardware monitoring"
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previously uploaded program"
+            - field_name        : startup_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute the startup program to reset to defaults"
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+      ##################################################################
+      - slave_name        : mbo
+        slave_type        : reg
+        number_of_slaves  : 3
+        slave_description : "Monitor and Control registers for the Midboard optics modules & transciever lanes"
+        fields:
+          #################################
+          - status:
+            - field_name        : interrupt
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO Internal Interrupt Status"
+            - field_name        : tx_not_ready
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x1
+              field_description : "MBO TX Monitoring ready status"
+            - field_name        : rx_not_ready
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x1
+              field_description : "MBO RX Monitoring ready status"
+            - field_name        : rx_locked
+              width             : 12
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "RX lane locked"
+
+          #################################
+          - control:
+            - field_name        : tx_disable
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Optical Transmitter Disable"
+            - field_name        : rx_disable
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Optical receiver Disable"
+            - field_name        : reset
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "MBO reset"
+            - field_name        : loopback
+              width             : 3
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Loopback control"
+
+          #################################
+          - - field_name        : tx_fault
+              width             : 12
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : CLR
+              field_description : "MBO transmitter fault"
+          #################################
+          - - field_name        : rx_fault
+              width             : 12
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : CLR
+              field_description : "MBO receiver fault"
+          #################################
+          - - field_name        : rx_los
+              width             : 12
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : CLR
+              field_description : "MBO receiver loss of signal"
+          #################################
+          - - field_name        : tx_cdr_unlocked
+              width             : 12
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO transmitter CDR unlocked"
+          #################################
+          - - field_name        : rx_cdr_unlocked
+              width             : 12
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO receiver CDR unlocked"
+          #################################
+          - - field_name        : temperature
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO temperature, units of 1/256 degrees C"
+          #################################
+          - - field_name        : tx_vcc
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO Transmitter supply voltage, units of 100uV"
+          #################################
+          - - field_name        : rx_vcc
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO Receiver supply voltage, units of 100uV"
+          #################################
+          - - field_name        : vcchi
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "MBO internal high volatge supply, units of 100uV"
+
+  #################################
+  #################################
+  - peripheral_name        : onewire_prom
+    peripheral_description : "Provide an Interface to the 1-wire PROM"
+
+    slave_ports:
+      - slave_name        : onewire_prom
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Provide an Interface to the 1-wire PROM"
+        fields:
+          #################################
+          - status:
+            - field_name        : rom_invalid
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "ROM code not detected"
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Operation reported error"
+            - field_name        : running
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Operation is running"
+          #################################
+          - control:
+            - field_name        : address
+              width             : 5
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "Memory address (all accesses are to 8 bytes of memory)"
+            - field_name        : write_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a write to the supplied adress"
+            - field_name        : read_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a read to the supplied adress"
+            - field_name        : reload_parameters
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Reload system parameters from the PROM (used after writing)"
+          #################################
+          - - field_name        : rom_low
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Unique 48bit ROM code, low 32bits"
+          #################################
+          - - field_name        : rom_high
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Unique 48bit ROM code, upper 16bits"
+
+          #################################
+          - - field_name        : data_read_low
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data read from memory, low word"
+          #################################
+          - - field_name        : data_read_high
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data read from memory, high word"
+          #################################
+          - - field_name        : data_write_low
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Data to be written to memory, low word"
+          #################################
+          - - field_name        : data_write_high
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Data to be written to memory, high word"
+
+  #################################
+  #################################
+  - peripheral_name        : humidity
+    peripheral_description : "Monitor and Control registers for the Humidity sensor"
+
+    slave_ports:
+      - slave_name        : humidity
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Monitor and Control registers for the Humidity sensor"
+        fields:
+          #################################
+          - status:
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c transaction error"
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicate monitor FSM is idle"
+          #################################
+          - control:
+            - field_name        : monitor_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "Enable hardware monitoring"
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previously uploaded program"
+          #################################
+          - - field_name        : humidity
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Humidity value, RH% = (125*val/65536)-6"
+          #################################
+          - - field_name        : temperature
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Temperature value, Temp = (175.72*val/65536)-46.85"
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+  #################################
+  #################################
+  - peripheral_name        : backplane_control
+    peripheral_description : "Monitor and Control registers for the backplane GPIO"
+
+    slave_ports:
+      - slave_name        : backplane_control
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Monitor and Control registers for the backplane GPIOr"
+        fields:
+          #################################
+          - status:
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c transaction error"
+            - field_name        : bus_busy
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c bus is busy"
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicate monitor FSM is idle"
+          #################################
+          - control:
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previously uploaded program"
+            - field_name        : update_leds
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Update the backplane led state"
+            - field_name        : red_led
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Enable the red led"
+            - field_name        : green_led
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Enable the green led"
+
+
+          #################################
+          - - field_name        : power_reset
+              width             : 12
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Power reset for each slot. Reverts a shutdown card to enabled"
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+  #################################
+  #################################
+  - peripheral_name        : ddr4
+    peripheral_description : "Monitor and Control registers for the DDR4 module"
+
+    slave_ports:
+      - slave_name        : ddr4
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Monitor and Control registers for the DDR4 module"
+        fields:
+          #################################
+          - status:
+            - field_name        : configured
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "DDR4 Configured"
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c transaction error"
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicated monitor FSM is idle"
+          #################################
+          - control:
+            - field_name        : reset
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              side_effect       : PW
+              field_description : "DDR4 reset"
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previously uploaded program"
+            - field_name        : monitor_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Enable hardware monitoring, disabled by default"
+          #################################
+          - - field_name        : temperature
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Temperature of the DDR4 module, conversion function derived from SPD data"
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+  #################################
+  #################################
+  - peripheral_name        : ethernet_mace
+    peripheral_description : "Ethernet M&C MAC support"
+
+    slave_ports:
+      - slave_name        : statistics_rx
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Ethernet RX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_rx_bytes
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX bytes, reset on read"
+          #################################
+          - - field_name        : total_rx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets, reset on read"
+          #################################
+          - - field_name        : total_rx_crc_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX CRC errors, reset on read"
+          #################################
+          - - field_name        : total_rx_vlan_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX VLAN tagged packets, reset on read"
+          #################################
+          - - field_name        : total_rx_pause_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX PAUSE packets, reset on read"
+          #################################
+          - - field_name        : total_rx_oversized_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets larger than MTU, reset on read"
+          #################################
+          - - field_name        : total_rx_runt_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets smaller than 64 bytes, reset on read"
+
+      - slave_name        : statistics_tx
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Ethernet Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_tx_bytes
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX bytes, reset on read"
+          #################################
+          - - field_name        : total_tx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets, reset on read"
+          #################################
+          - - field_name        : total_tx_oversized_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets larger than MTU, reset on read"
+          #################################
+          - - field_name        : total_tx_runt_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets smaller than 64 bytes, reset on read"
+
+  #################################
+  #################################
+  - peripheral_name        : ethernet_qsfp
+    peripheral_description : "Ethernet QSFP Statistics"
+
+    slave_ports:
+      - slave_name        : statistics_rx
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Ethernet RX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_rx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets, reset on read"
+          #################################
+          - - field_name        : total_rx_crc_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX CRC errors, reset on read"
+          #################################
+          - - field_name        : total_rx_bit_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX code errors, reset on read"
+
+      - slave_name        : statistics_tx
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Ethernet TX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_tx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets, reset on read"
+
+
+  #################################
+  #################################
+  - peripheral_name        : ethernet_quad_qsfp
+    peripheral_description : "Ethernet 4 channel QSFP Statistics"
+
+    slave_ports:
+      - slave_name        : statistics_rx
+        slave_type        : reg
+        number_of_slaves  : 4
+        slave_description : "Ethernet RX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_rx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets, reset on read"
+          #################################
+          - - field_name        : total_rx_crc_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX CRC errors, reset on read"
+          #################################
+          - - field_name        : total_rx_bit_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX code errors, reset on read"
+
+      - slave_name        : statistics_tx
+        slave_type        : reg
+        number_of_slaves  : 4
+        slave_description : "Ethernet TX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_tx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets, reset on read"
+
+
+  #################################
+  #################################
+  - peripheral_name        : ethernet_mbo
+    peripheral_description : "Ethernet MBO Statistics"
+
+    slave_ports:
+      - slave_name        : statistics_rx
+        slave_type        : reg
+        number_of_slaves  : 12
+        slave_description : "Ethernet RX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_rx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets, reset on read"
+          #################################
+          - - field_name        : total_rx_crc_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX CRC errors, reset on read"
+          #################################
+          - - field_name        : total_rx_bit_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX code errors, reset on read"
+
+      - slave_name        : statistics_tx
+        slave_type        : reg
+        number_of_slaves  : 12
+        slave_description : "Ethernet TX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_tx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets, reset on read"

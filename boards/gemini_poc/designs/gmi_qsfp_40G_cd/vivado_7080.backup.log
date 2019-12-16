@@ -1,0 +1,152 @@
+#-----------------------------------------------------------
+# Vivado v2016.4 (64-bit)
+# SW Build 1756540 on Mon Jan 23 19:11:19 MST 2017
+# IP Build 1755317 on Mon Jan 23 20:30:07 MST 2017
+# Start of session at: Wed Apr 26 13:32:10 2017
+# Process ID: 7080
+# Current directory: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd
+# Command line: vivado
+# Log file: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/vivado.log
+# Journal file: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/vivado.jou
+#-----------------------------------------------------------
+Sourcing tcl script '/home/hiemstra/.Xilinx/Vivado/init.tcl'
+360 Beta devices matching pattern found, 112 enabled.
+start_gui
+open_project /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.xpr
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_axi4_lite_user_if.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_axi4_lite_user_if.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_pkt_gen_mon.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_pkt_gen_mon.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_exdes.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_exdes.v:]
+Scanning sources...
+Finished scanning sources
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_axi4_lite_user_if.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_axi4_lite_user_if.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_pkt_gen_mon.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_pkt_gen_mon.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_exdes.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_exdes.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_axi4_lite_user_if.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_axi4_lite_user_if.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_pkt_gen_mon.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_pkt_gen_mon.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_c/l_ethernet_40G_qsfp_c_0_exdes.v:]
+WARNING: [filemgmt 56-99] Vivado Synthesis ignores library specification for Verilog or SystemVerilog files. [/home/hiemstra/svnlowcbf/LOWCBF/Firmware/boards/gemini/designs/gmi_qsfp_40G_cd/src/verilog/qsfp_d/l_ethernet_40G_qsfp_d_0_exdes.v:]
+INFO: [IP_Flow 19-234] Refreshing IP repositories
+INFO: [IP_Flow 19-1700] Loaded user IP repository '/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/ip_repo'.
+INFO: [IP_Flow 19-2313] Loaded Vivado IP repository '/home/software/Xilinx/Vivado/2016.4/data/ip'.
+open_project: Time (s): cpu = 00:00:23 ; elapsed = 00:00:17 . Memory (MB): peak = 6794.809 ; gain = 898.609 ; free physical = 9521 ; free virtual = 111798
+open_hw
+connect_hw_server -url NBRDD1-W8:3121
+INFO: [Labtools 27-2285] Connecting to hw_server url TCP:NBRDD1-W8:3121
+current_hw_target [get_hw_targets */xilinx_tcf/Xilinx/00001292c23c01]
+set_property PARAM.FREQUENCY 6000000 [get_hw_targets */xilinx_tcf/Xilinx/00001292c23c01]
+open_hw_target
+INFO: [Labtoolstcl 44-466] Opening hw_target NBRDD1-W8:3121/xilinx_tcf/Xilinx/00001292c23c01
+current_hw_device [lindex [get_hw_devices xcvu9p_0] 0]
+refresh_hw_device -update_hw_probes false [lindex [get_hw_devices xcvu9p_0] 0]
+INFO: [Labtools 27-2302] Device xcvu9p (JTAG device index = 0) is programmed with a design that has 1 JTAG AXI core(s).
+close_hw
+set_property -dict [list CONFIG.GT_DRP_CLK {100} CONFIG.ADD_GT_CNTRL_STS_PORTS {1} CONFIG.INCLUDE_SHARED_LOGIC {1}] [get_ips l_ethernet_40G_qsfp_c_0]
+INFO: [Device 21-403] Loading part xcvu9p-flga2577-2L-e-es1
+xit::create_sub_core: Time (s): cpu = 00:00:08 ; elapsed = 00:00:06 . Memory (MB): peak = 7041.574 ; gain = 71.543 ; free physical = 8336 ; free virtual = 111615
+generate_target all [get_files  /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.srcs/sources_1/ip/l_ethernet_40G_qsfp_c_0/l_ethernet_40G_qsfp_c_0.xci]
+INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'l_ethernet_40G_qsfp_c_0'...
+INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'l_ethernet_40G_qsfp_c_0'...
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'l_ethernet_40G_qsfp_c_0'...
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'l_ethernet_40G_qsfp_c_0'...
+generate_target: Time (s): cpu = 00:00:24 ; elapsed = 00:00:28 . Memory (MB): peak = 7137.426 ; gain = 63.781 ; free physical = 7991 ; free virtual = 111293
+catch { config_ip_cache -export [get_ips -all l_ethernet_40G_qsfp_c_0] }
+export_ip_user_files -of_objects [get_files /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.srcs/sources_1/ip/l_ethernet_40G_qsfp_c_0/l_ethernet_40G_qsfp_c_0.xci] -no_script -sync -force -quiet
+reset_run l_ethernet_40G_qsfp_c_0_synth_1
+launch_runs -jobs 6 l_ethernet_40G_qsfp_c_0_synth_1
+[Wed Apr 26 13:52:11 2017] Launched l_ethernet_40G_qsfp_c_0_synth_1...
+Run output will be captured here: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.runs/l_ethernet_40G_qsfp_c_0_synth_1/runme.log
+export_simulation -of_objects [get_files /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.srcs/sources_1/ip/l_ethernet_40G_qsfp_c_0/l_ethernet_40G_qsfp_c_0.xci] -directory /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.ip_user_files/sim_scripts -ip_user_files_dir /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.ip_user_files -ipstatic_source_dir /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/modelsim} {questa=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/questa} {ies=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/ies} {vcs=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/vcs} {riviera=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+open_example_project -force -dir /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/tmp_qsfp_c [get_ips  l_ethernet_40G_qsfp_c_0]
+INFO: [IP_Flow 19-1686] Generating 'Examples' target for IP 'l_ethernet_40G_qsfp_c_0'...
+open_example_project: Time (s): cpu = 00:00:04 ; elapsed = 00:00:44 . Memory (MB): peak = 7139.516 ; gain = 0.000 ; free physical = 3792 ; free virtual = 107264
+set_property -dict [list CONFIG.GT_DRP_CLK {100} CONFIG.ADD_GT_CNTRL_STS_PORTS {1}] [get_ips l_ethernet_40G_qsfp_d_0]
+generate_target all [get_files  /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.srcs/sources_1/ip/l_ethernet_40G_qsfp_d_0/l_ethernet_40G_qsfp_d_0.xci]
+INFO: [IP_Flow 19-1686] Generating 'Instantiation Template' target for IP 'l_ethernet_40G_qsfp_d_0'...
+INFO: [IP_Flow 19-1686] Generating 'Synthesis' target for IP 'l_ethernet_40G_qsfp_d_0'...
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+INFO: [IP_Flow 19-1686] Generating 'Simulation' target for IP 'l_ethernet_40G_qsfp_d_0'...
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_baser@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+WARNING: [IP_Flow 19-650] IP license key 'l_eth_basekr@2016.10' is enabled with a Design_Linking license.
+INFO: [IP_Flow 19-1686] Generating 'Change Log' target for IP 'l_ethernet_40G_qsfp_d_0'...
+generate_target: Time (s): cpu = 00:00:23 ; elapsed = 00:00:30 . Memory (MB): peak = 7139.516 ; gain = 0.000 ; free physical = 6185 ; free virtual = 109754
+catch { config_ip_cache -export [get_ips -all l_ethernet_40G_qsfp_d_0] }
+export_ip_user_files -of_objects [get_files /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.srcs/sources_1/ip/l_ethernet_40G_qsfp_d_0/l_ethernet_40G_qsfp_d_0.xci] -no_script -sync -force -quiet
+reset_run l_ethernet_40G_qsfp_d_0_synth_1
+launch_runs -jobs 6 l_ethernet_40G_qsfp_d_0_synth_1
+[Wed Apr 26 14:42:32 2017] Launched l_ethernet_40G_qsfp_d_0_synth_1...
+Run output will be captured here: /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.runs/l_ethernet_40G_qsfp_d_0_synth_1/runme.log
+export_simulation -of_objects [get_files /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.srcs/sources_1/ip/l_ethernet_40G_qsfp_d_0/l_ethernet_40G_qsfp_d_0.xci] -directory /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.ip_user_files/sim_scripts -ip_user_files_dir /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.ip_user_files -ipstatic_source_dir /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.ip_user_files/ipstatic -lib_map_path [list {modelsim=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/modelsim} {questa=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/questa} {ies=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/ies} {vcs=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/vcs} {riviera=/home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/gmi_qsfp_40G_cd_build_170426_090450/gmi_qsfp_40G_cd.cache/compile_simlib/riviera}] -use_ip_compiled_libs -force -quiet
+open_example_project -force -dir /home/hiemstra/svnlowcbf/LOWCBF/Firmware/build/gmi/vivado/tmp_qsfp_d [get_ips  l_ethernet_40G_qsfp_d_0]
+INFO: [IP_Flow 19-1686] Generating 'Examples' target for IP 'l_ethernet_40G_qsfp_d_0'...
+open_example_project: Time (s): cpu = 00:00:03 ; elapsed = 00:00:44 . Memory (MB): peak = 7139.516 ; gain = 0.000 ; free physical = 4508 ; free virtual = 107425
+exit
+INFO: [Common 17-206] Exiting Vivado at Wed Apr 26 14:51:09 2017...

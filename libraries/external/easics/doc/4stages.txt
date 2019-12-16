@@ -1,0 +1,4 @@
+4 stages, 2 taps:  (1 set)
+
+[4, 3]
+

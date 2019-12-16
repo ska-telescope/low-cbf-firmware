@@ -1,0 +1,11 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : fpga
+
+hdl_library_name  : kcu116_led
+fpga_name         : kcu116_led
+fpga_description  : "YAML Test"
+
+peripherals:
+  - peripheral_name        : kcu116_led/ctc_control
+

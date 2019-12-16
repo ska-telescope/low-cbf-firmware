@@ -1,0 +1,2 @@
+python $RADIOHDL/tools/radiohdl/base/vivado_config.py -t gmi2 -l gmi2_pincheck -r -v3
+

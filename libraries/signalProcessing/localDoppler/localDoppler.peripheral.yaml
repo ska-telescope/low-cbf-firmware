@@ -1,0 +1,53 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : localDoppler
+hdl_library_description: "Monitor and Control of local Doppler module"
+
+peripherals:
+  - peripheral_name        : localDoppler
+    peripheral_description : "Registers associated with local Doppler module"
+
+    slave_ports:
+      - slave_name        : StatCtrl
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Registers associated with local Doppler"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : bufferSelect
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Selects which set of buffers for count offset, start phase and phase step to use"
+          #################################
+          - - field_name        : packetCount
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of packets processed"
+          ################################# 
+          - - field_name        : countOffset
+              width             : 32
+              access_mode       : RW
+              number_of_fields  : 1536
+              field_description : "Packet count offset for each station and virtual channel for phase offset calculation. Address 0-383 = count offset for station ID 0, buffer 0, Address 384-767 = count offset for station ID 1, buffer 0, Address 768-1151 = count offset for station ID 0, buffer 1, Address 1152-1535 = count offset for station ID 1, buffer 1"
+          ################################# 
+          - - field_name        : startPhase
+              width             : 32
+              access_mode       : RW
+              number_of_fields  : 3072
+              field_description : "Initial phase for each station, polarisation, channel and buffer. 0-383 = (station ID0, Vpol, buffer 0), 384-767 = (station ID0, Hpol, buffer 0), 768-1151 = (station ID1, Vpol, buffer 0), 1152-1535 = (station ID1, Hpol, buffer 0), 1536-3071 = same as 0-1535, but for buffer 1 "
+          #################################
+          - - field_name        : phaseStep
+              width             : 32
+              access_mode       : RW
+              number_of_fields  : 3072
+              field_description : "Phase step, with data for station ID, polarisation and buffer defined as per startPhase"
+
+            
+        
+       
+              

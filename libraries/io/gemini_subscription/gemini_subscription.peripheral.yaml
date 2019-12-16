@@ -1,0 +1,89 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : gemini_subscription
+hdl_library_description: " Gemini Publish/Subscribe Service Registers "
+
+peripherals:
+  - peripheral_name        : gemini_subscription
+    peripheral_description : "Registers associated with Publish/Subscribe protocol block"
+
+    slave_ports:
+      - slave_name        : client
+        slave_type        : reg
+        number_of_slaves  : 4
+        slave_description : "Registers associated with Subscription client"
+        fields:
+          #################################
+          - - field_name        : destination_ip
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0xffffffff
+              field_description : "Destination IP Address"
+          #################################
+          - - field_name        : destination_mac_lower
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0xffffffff
+              field_description : "Destination MAC Lower Address"
+          #################################
+          - - field_name        : destination_mac_upper
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0xffff
+              field_description : "Destination MAC Upper Address"
+          #################################
+          - - field_name        : destination_port
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x7531
+              field_description : "Destination UDP port"
+          #################################
+          - - field_name        : event_mask
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Publish Event Mask"
+          #################################
+          - - field_name        : event
+              width             : 32
+              access_mode       : RO
+              reset_value           : 0x0
+              field_description : "Current Pending or last event"
+          #################################
+          - - field_name        : delivery_interval
+              width             : 14
+              access_mode       : RW
+              reset_value       : 0x7D0
+              field_description : "Delivery Interval in mS"
+          #################################
+          - control:
+            - field_name        : acknowledge
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0
+              side_effect       : PW
+              field_description : "Acknowledge pulse event for reliable delivery"
+
+          #################################
+          - status:
+            - field_name        : event_overflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0
+              field_description : "An event queue overflow conditon has occured. Reset on acknowledge"
+
+      #################################
+      - slave_name        : broadcast
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Control Register for broadcast client"
+        fields:
+          - control:
+            - field_name        : acknowledge
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0
+              side_effect       : PW
+              field_description : "Acknowledge pulse event for reliable delivery"

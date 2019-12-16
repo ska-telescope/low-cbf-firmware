@@ -1,0 +1,4 @@
+python $RADIOHDL/tools/radiohdl/base/vivado_config.py -t gmi -l gmi_test_sfp_2_5G_ibert -r -v3
+
+Note:
+copied from /home/hiemstra/xilinx/sfp_test_1G

@@ -1,0 +1,80 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : gemini_lru_test
+hdl_library_description: "Monitor & Control Registers for Gemini LRU"
+
+peripherals:
+  - peripheral_name        : system
+    peripheral_description : "General control registers for the Gemini LRU test firmware"
+
+    slave_ports:
+      - slave_name        : system
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "General control registers for the Gemini LRU test firmware"
+        fields:
+          #################################
+          - - field_name        : args_magic_number
+              width             : 32
+              access_mode       : SP
+              reset_value       : 0xF96a7001
+              field_description : "args magic number for address 0"
+          #################################
+          - - field_name        : args_map_build
+              width             : 32
+              access_mode       : SP
+              reset_value       : 0x0 # args will replace this value
+              field_description : "args map build date & hour"
+          #################################
+          - status:
+            - field_name        : clocks_locked
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "All clocks locked"
+          #################################
+          - control:
+            - field_name        : lru_shutdown
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Shutdown the LRU after a 0.5 second delay"
+          #################################
+          - heater:
+            - field_name        : enable
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Enable heater element blocks"
+          #################################
+          - - field_name        : build_date
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Build Date of firmware"
+          #################################
+          - time:
+            - field_name        : uptime
+              width             : 14
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Number of seconds since programming"
+            - field_name        : wrapped
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicates if uptime counter has wrapped"
+          #################################
+          - - field_name        : slot
+              width             : 4
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Slot number in subrack"
+          #################################
+          - - field_name        : backplane_id
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Unique serial number of the backplane"

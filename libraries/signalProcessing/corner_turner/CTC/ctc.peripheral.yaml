@@ -1,0 +1,274 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : ctc
+hdl_library_description: "Coarse Corner Turner Configuration"
+
+peripherals:
+
+
+  - peripheral_name        : config
+    peripheral_description : "CTC Configuration"
+
+    slave_ports:
+      - slave_name        : setup
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Basic CTC control functionality"
+        fields:
+          - - field_name        : full_reset
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Start or restart CTC after (re)configuring it."
+
+          - - field_name        : running
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Is the CTC running, i.e. are we between starting_packet_count and halt_packet_count?"
+              
+          - - field_name        : halt_packet_count
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "At which packet count shall the CTC stop? (0 means never)"
+              
+
+
+      - slave_name        : coarse_delay
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Set up coarse delay values for the CTC"
+        dual_clock        : true
+        fields:
+          - - field_name        : table_0
+              width             : 32
+              number_of_fields  : 1536
+              access_mode       : RW
+              field_description : "Coarse delay values - Table 0"
+
+          - - field_name        : table_1
+              width             : 32
+              number_of_fields  : 1536
+              access_mode       : RW
+              field_description : "Coarse delay values - Table 1"
+
+          - - field_name        : packet_count
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "The selected coarse delay table changes if the packet count >= this value. Leaving this at 0 will switch ASAP."
+
+          - - field_name        : table_select
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Defines which table should become active when the given packet_count is passed"
+
+          - - field_name        : active_table
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Which table is currently used by the CTC? Do not change contents of that table unless in reset."
+
+
+
+      - slave_name        : timing
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Set up timestamp and wallclock values for the CTC"
+        fields:
+          - - field_name        : starting_packet_count
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Before ctc_reset: configure very first packet count, later: configure packet count matching given wall clock values"
+
+          - - field_name        : starting_wall_time_seconds
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "When will the first packet output from the CTC? (wall time seconds)"
+          - - field_name        : starting_wall_time_nanos
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "When will the first packet output from the CTC? (wall time nano seconds)"
+          - - field_name        : output_cycles
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "How many clock cycles between output packets in output clock?"
+
+          - - field_name        : prime_wall_time_seconds
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "When will the first packet be expected on the input? (wall time seconds)"
+          - - field_name        : prime_wall_time_nanos
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "When will the first packet be expected on the input? (wall time nano seconds)"
+          - - field_name        : input_cycles
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "How many input cycles between input packets in input clock?"
+
+          - control:
+            - field_name        : use_new_config
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Toggle this bit from 0 to 1 to make the CTC use the timing parameters above after they have been set"
+
+            - field_name        : enable_timed_output
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "New value only applied on reset: use walltime to regulate output"
+
+            - field_name        : enable_timed_input
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "New value only applied on reset: use wall time to create dummy input packets to keep the CTC going, even if there is no real input"
+
+
+
+
+      - slave_name        : report
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Error and Debug Signals coming from the CTC"
+        fields:
+          - - field_name        : reset
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Reset all Errors to 0"
+
+          - error:
+            - field_name        : input_buffer_full
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The INPUT buffer is going into full state (if everything runs smoothly this should not happen). This causes packet loss"
+
+            - field_name        : input_buffer_overflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "INPUT_FIFO overflows because data has not been read out fast enough and we cannot send in more dummy headers to keep the CTC going. FAILURE!"
+
+            - field_name        : ctc_full
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The HBM buffer is going into full state (if everything runs smoothly this should not happen)"
+
+            - field_name        : overwrite
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data in the HBM Buffer has been overwritten without ever being read"
+
+            - field_name        : drop
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Input blocks did get dropped for being too late"
+
+            - field_name        : ctc_underflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Readout was triggered, but the data FIFO does not contain enough data to start output"
+
+            - field_name        : ctc_aligment_loss
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "ctc_underflow is so massive, that we miss a whole output packet."
+
+            - field_name        : dsp_overflow
+              width             : 4
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The phase_shift output calculations had to cut used bits - this will lead to invalid output data"
+
+          - debug:  
+            - field_name        : wa_fifo_overflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The wa_fifo in the block_tracker overflows: FAILURE! -- this should NEVER happen"
+
+            - field_name        : ra_fifo_overflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The ra_fifo in the block_tracker overflows: FAILURE! -- this should NEVER happen"
+
+            - field_name        : bv_fifo_overflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The bv_fifo in the block_tracker overflows: FAILURE! -- this should NEVER happen"
+
+            - field_name        : bv_fifo_underflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The bv_fifo in the block_tracker underflows: FAILURE! -- this should NEVER happen -- HBM ra_ack comes too fast"
+
+            - field_name        : delay_fifo_overflow
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The coarse_delay fifo in the output_buffer overflows: FAILURE! -- this should NEVER happen"
+
+            - field_name        : ctc_empty
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "The HBM buffer is going into empty state "
+
+            - field_name        : ctc_read_phase
+              width             : 2
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "In which phase is the READ part of the CTC?"
+
+            - field_name        : ctc_read_cursor
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicator for the channel/station line that READING is at."
+
+
+
+
+      - slave_name        : valid_blocks
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Count the number of valid input blocks read from the CTC"
+        dual_clock        : true
+        fields:
+          - - field_name        : count
+              width             : 32
+              number_of_fields  : 786
+              access_mode       : RO
+              field_description : "Number of valid input blocks for Channel*6 + Station"
+
+          - - field_name        : reset
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Cause the CTC to reset the table (takes 768 cycles)"
+
+
+

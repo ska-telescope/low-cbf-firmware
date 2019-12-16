@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="tb_LFAADecode_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="axi4_full_pkg" />
+            <top_module name="axi4_lite_pkg" />
+            <top_module name="axi4_stream_pkg" />
+            <top_module name="axi_bram_ctrl_funcs" />
+            <top_module name="capture128bit_reg_pkg" />
+            <top_module name="common_mem_pkg" />
+            <top_module name="common_pkg" />
+            <top_module name="glbl" />
+            <top_module name="interconnect_reg_pkg" />
+            <top_module name="lfaadecode_lfaadecode_reg_pkg" />
+            <top_module name="run2_tb_pkg" />
+            <top_module name="tb_LFAADecode" />
+            <top_module name="tech_memory_component_pkg" />
+            <top_module name="technology_pkg" />
+            <top_module name="technology_select_pkg" />
+            <top_module name="timingcontrol_timingcontrol_reg_pkg" />
+            <top_module name="vcomponents" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0fs"></ZoomStartTime>
+      <ZoomEndTime time="103814207651fs"></ZoomEndTime>
+      <Cursor1Time time="85989945000fs"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="289"></NameColumnWidth>
+      <ValueColumnWidth column_width="238"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="21" />
+   <wvobject fp_name="divider62" type="divider">
+      <obj_property name="label">LFAABuf1 ports</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+   </wvobject>
+   <wvobject type="group" fp_name="group63">
+      <obj_property name="label">Packets in</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_data">
+         <obj_property name="ElementShortName">i_data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">i_data[63:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_eof">
+         <obj_property name="ElementShortName">i_eof</obj_property>
+         <obj_property name="ObjectShortName">i_eof</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_sof">
+         <obj_property name="ElementShortName">i_sof</obj_property>
+         <obj_property name="ObjectShortName">i_sof</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_valid">
+         <obj_property name="ElementShortName">i_valid</obj_property>
+         <obj_property name="ObjectShortName">i_valid</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group67">
+      <obj_property name="label">Notifications</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/o_blockPort">
+         <obj_property name="ElementShortName">o_blockPort[20:0]</obj_property>
+         <obj_property name="ObjectShortName">o_blockPort[20:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/o_blockPortValid">
+         <obj_property name="ElementShortName">o_blockPortValid</obj_property>
+         <obj_property name="ObjectShortName">o_blockPortValid</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_blockPortRead">
+         <obj_property name="ElementShortName">i_blockPortRead</obj_property>
+         <obj_property name="ObjectShortName">i_blockPortRead</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group71">
+      <obj_property name="label">requests</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_block">
+         <obj_property name="ElementShortName">i_block[31:0][4:0]</obj_property>
+         <obj_property name="ObjectShortName">i_block[31:0][4:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_blockReq">
+         <obj_property name="ElementShortName">i_blockReq[31:0]</obj_property>
+         <obj_property name="ObjectShortName">i_blockReq[31:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/i_port">
+         <obj_property name="ElementShortName">i_port[31:0][4:0]</obj_property>
+         <obj_property name="ObjectShortName">i_port[31:0][4:0]</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="group" fp_name="group76">
+      <obj_property name="label">Packets out</obj_property>
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+      <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/o_data">
+         <obj_property name="ElementShortName">o_data[63:0]</obj_property>
+         <obj_property name="ObjectShortName">o_data[63:0]</obj_property>
+      </wvobject>
+      <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/o_outputMux">
+         <obj_property name="ElementShortName">o_outputMux[4:0]</obj_property>
+         <obj_property name="ObjectShortName">o_outputMux[4:0]</obj_property>
+      </wvobject>
+      <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/o_valid">
+         <obj_property name="ElementShortName">o_valid</obj_property>
+         <obj_property name="ObjectShortName">o_valid</obj_property>
+      </wvobject>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/blockUsed">
+      <obj_property name="ElementShortName">blockUsed[31:0]</obj_property>
+      <obj_property name="ObjectShortName">blockUsed[31:0]</obj_property>
+   </wvobject>
+   <wvobject type="other" fp_name="/tb_LFAADecode/ICi/LFAABuf1/output_fsm">
+      <obj_property name="ElementShortName">output_fsm</obj_property>
+      <obj_property name="ObjectShortName">output_fsm</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/bufRdAddr">
+      <obj_property name="ElementShortName">bufRdAddr[11:0]</obj_property>
+      <obj_property name="ObjectShortName">bufRdAddr[11:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/bufDout">
+      <obj_property name="ElementShortName">bufDout[65:0]</obj_property>
+      <obj_property name="ObjectShortName">bufDout[65:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/Tgeni/i_NotificationAddress">
+      <obj_property name="ElementShortName">i_NotificationAddress[15:0]</obj_property>
+      <obj_property name="ObjectShortName">i_NotificationAddress[15:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/Tgeni/i_NotificationValid">
+      <obj_property name="ElementShortName">i_NotificationValid</obj_property>
+      <obj_property name="ObjectShortName">i_NotificationValid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/Tgeni/i_NotificationBlock">
+      <obj_property name="ElementShortName">i_NotificationBlock[4:0]</obj_property>
+      <obj_property name="ObjectShortName">i_NotificationBlock[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/Tgeni/i_NotificationPort">
+      <obj_property name="ElementShortName">i_NotificationPort[4:0]</obj_property>
+      <obj_property name="ObjectShortName">i_NotificationPort[4:0]</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/fifoDin">
+      <obj_property name="ElementShortName">fifoDin[20:0]</obj_property>
+      <obj_property name="ObjectShortName">fifoDin[20:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/fifoWrEn">
+      <obj_property name="ElementShortName">fifoWrEn</obj_property>
+      <obj_property name="ObjectShortName">fifoWrEn</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/LFAABuf1/fcsData">
+      <obj_property name="ElementShortName">fcsData[63:0]</obj_property>
+      <obj_property name="ObjectShortName">fcsData[63:0]</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/validDel2">
+      <obj_property name="ElementShortName">validDel2</obj_property>
+      <obj_property name="ObjectShortName">validDel2</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/LFAABuf1/sofDel2">
+      <obj_property name="ElementShortName">sofDel2</obj_property>
+      <obj_property name="ObjectShortName">sofDel2</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/reg_rw">
+      <obj_property name="ElementShortName">reg_rw</obj_property>
+      <obj_property name="ObjectShortName">reg_rw</obj_property>
+   </wvobject>
+   <wvobject type="logic" fp_name="/tb_LFAADecode/ICi/CTCgeni/o_valid">
+      <obj_property name="ElementShortName">o_valid</obj_property>
+      <obj_property name="ObjectShortName">o_valid</obj_property>
+   </wvobject>
+   <wvobject type="array" fp_name="/tb_LFAADecode/ICi/CTCgeni/o_data">
+      <obj_property name="ElementShortName">o_data[63:0]</obj_property>
+      <obj_property name="ObjectShortName">o_data[63:0]</obj_property>
+   </wvobject>
+</wave_config>

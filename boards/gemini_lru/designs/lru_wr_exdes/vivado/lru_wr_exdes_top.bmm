@@ -1,0 +1,81 @@
+//* FILE : clbv2_wr_ref_top.bmm
+//  Define a BRAM map for the LM32 memory.
+//  Run ISE Translate -> "Floorplan Area/IO/Logic (PlanAhead)" once (without this BMM file
+//  attached to the ISE Project) to find out that there are 16 ramloops and each RAMB36E1
+//  Note: *THE RAMLOOP ORDER WITHIN A BUS_BLOCK IS VERY IMPORTANT!!!*
+//        Define ramloop 15 downto 0 and databits 31 downto 0 !!! Otherwise the memory
+//        content will be swapped and the program fails to execute. Aperently the ramloop
+//        number and bit definitions are not read by data2mem.
+//
+//
+// Address space LM32 memory
+// g_dpram_size = 90112/4 = 22528
+// This size is in 32 bit words => byte size = 4 * 22528 = 90112 bytes
+//
+// ATTENTION PARITY!
+// Although the memory is implemented in RAMB36E1 the address same MUST be defined as
+// RAMB32 (insetad of RAMB36) since we are NOT using parity! If the address space is
+// defined as RAMB36 then data2mem is expecting an extra nibble for each 32 bit instruction
+// in the ".elf" file and since this nibble is not provided, the ramblocks will be filled
+// such that a nibble shift is accumulating in the data.
+// Note that this can be examined using the command
+// "data2mem -bm clbv2_wr_ref_top_bd.bmm -bt clbv2_wr_ref_top_elf.bit -d > dump.txt"
+//
+// ATTENTION Xilinx Synthesis
+// XST implements the 22K * 32 bit as:
+//     22 blocks of 1K * 32 bits
+//
+//***************************************************************************************/
+
+ADDRESS_SPACE lm32_wrpc_memory COMBINED [0x00000000:0x0001FFFF]
+  ADDRESS_RANGE RAMB32
+     BUS_BLOCK
+     RAM_reg_3_bram_0
+     RAM_reg_2_bram_0
+     RAM_reg_1_bram_0
+     RAM_reg_0_bram_0
+    END_BUS_BLOCK; 
+     BUS_BLOCK
+     RAM_reg_3_bram_1
+     RAM_reg_2_bram_1
+     RAM_reg_1_bram_1
+     RAM_reg_0_bram_1 
+    END_BUS_BLOCK;      
+     BUS_BLOCK
+     RAM_reg_3_bram_2
+     RAM_reg_2_bram_2
+     RAM_reg_1_bram_2
+     RAM_reg_0_bram_2  
+    END_BUS_BLOCK;      
+     BUS_BLOCK
+     RAM_reg_3_bram_3
+     RAM_reg_2_bram_3
+     RAM_reg_1_bram_3
+     RAM_reg_0_bram_3 
+    END_BUS_BLOCK;      
+     BUS_BLOCK
+     RAM_reg_3_bram_4
+     RAM_reg_2_bram_4
+     RAM_reg_1_bram_4
+     RAM_reg_0_bram_4 
+    END_BUS_BLOCK;      
+     BUS_BLOCK
+     RAM_reg_3_bram_5
+     RAM_reg_2_bram_5
+     RAM_reg_1_bram_5
+     RAM_reg_0_bram_5    
+    END_BUS_BLOCK;      
+     BUS_BLOCK
+     RAM_reg_3_bram_6
+     RAM_reg_2_bram_6
+     RAM_reg_1_bram_6
+     RAM_reg_0_bram_6  
+    END_BUS_BLOCK;      
+     BUS_BLOCK
+     RAM_reg_3_bram_7
+     RAM_reg_2_bram_7
+     RAM_reg_1_bram_7
+     RAM_reg_0_bram_7  
+    END_BUS_BLOCK;
+  END_ADDRESS_RANGE;
+END_ADDRESS_SPACE;

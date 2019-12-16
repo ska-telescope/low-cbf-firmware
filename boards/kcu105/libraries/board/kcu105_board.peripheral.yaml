@@ -1,0 +1,234 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : kcu105_board
+hdl_library_description: "Monitor & Control Registers for KCU105 board"
+
+peripherals:
+  #################################
+  #################################
+  - peripheral_name        : sfp
+    peripheral_description : "Monitor and Control registers for SFP+ module"
+
+    slave_ports:
+      - slave_name        : sfp
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Monitor and Control registers for SFP+ module"
+        fields:
+          #################################
+          - status:
+            - field_name        : tx_disable
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "TX Disable Pin State"
+            - field_name        : rate_select
+              width             : 2
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Rate Select"
+            - field_name        : tx_fault
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Transmitter fault"
+            - field_name        : rx_los
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "RX power lost"
+            - field_name        : not_ready
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Monitoring ready status"
+            - field_name        : present
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP Module present"
+            - field_name        : error
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "i2c transaction error"
+            - field_name        : prog_finished
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Stored program finished"
+            - field_name        : idle
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indicated monitor FSM is idle"
+            - field_name        : rx_locked
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "RX lane locked"
+
+          #################################
+          - control:
+            - field_name        : monitor_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "Enable hardware monitoring"
+            - field_name        : tx_disable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Disable the SFP transmitter"
+            - field_name        : prog_execute
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Execute a previously uploaded program"
+          #################################
+          - - field_name        : voltage
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP supply voltage, units of 100uV"
+          #################################
+          - - field_name        : tx_bias
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP transmitter laser bias, units of 2uA"
+          #################################
+          - - field_name        : tx_power
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP transmitter power, units of 0.1uW"
+          #################################
+          - - field_name        : rx_power
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP receiver power, units of 0.1uW"
+          #################################
+          - - field_name        : temperature
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "SFP temperature, units of 1/256 degrees C"
+          #################################
+          - - field_name        : program
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Storage for a program to execute on the i2c data bus"
+          #################################
+          - - field_name        : results
+              number_of_fields  : 32
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Data products from the uploaded program"
+
+  #################################
+  #################################
+  - peripheral_name        : ethernet_mace
+    peripheral_description : "Ethernet M&C MAC support"
+
+    slave_ports:
+      - slave_name        : statistics_rx
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Ethernet RX Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_rx_bytes
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX bytes, reset on read"
+          #################################
+          - - field_name        : total_rx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets, reset on read"
+          #################################
+          - - field_name        : total_rx_crc_error
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX CRC errors, reset on read"
+          #################################
+          - - field_name        : total_rx_vlan_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX VLAN tagged packets, reset on read"
+          #################################
+          - - field_name        : total_rx_pause_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX PAUSE packets, reset on read"
+          #################################
+          - - field_name        : total_rx_oversized_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets larger than MTU, reset on read"
+          #################################
+          - - field_name        : total_rx_runt_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total RX packets smaller than 64 bytes, reset on read"
+
+      - slave_name        : statistics_tx
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Ethernet Statistics"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : total_tx_bytes
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX bytes, reset on read"
+          #################################
+          - - field_name        : total_tx_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets, reset on read"
+          #################################
+          - - field_name        : total_tx_oversized_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets larger than MTU, reset on read"
+          #################################
+          - - field_name        : total_tx_runt_packets
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              side_effect       : PR
+              field_description : "Total TX packets smaller than 64 bytes, reset on read"
+
+
+

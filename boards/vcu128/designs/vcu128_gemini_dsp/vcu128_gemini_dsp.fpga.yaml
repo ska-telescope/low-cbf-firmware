@@ -1,0 +1,31 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : fpga
+
+hdl_library_name  : vcu128_gemini_dsp
+fpga_name         : vcu128_gemini_dsp
+fpga_description  : "VCU128 Gemini with DSP"
+
+peripherals:
+  - peripheral_name        : vcu128_gemini_dsp/system
+  - peripheral_name        : LFAADecode/LFAADecode
+  - peripheral_name        : capture128bit/capture128bit
+  - peripheral_name        : timingControl/timingControl
+  - peripheral_name        : interconnect/interconnect
+  - peripheral_name        : captureFine/captureFine
+  - peripheral_name        : filterbanks/filterbanks
+  - peripheral_name        : dsp_top/dsp_top
+  - peripheral_name        : ctc/config
+  - peripheral_name        : gemini_lru_board/qsfp
+  - peripheral_name        : dhcp/dhcp
+  - peripheral_name        : gemini_subscription/gemini_subscription
+  - peripheral_name        : system_monitor/system_monitor
+  - peripheral_name        : gemini_lru_board/ethernet_mace
+  - peripheral_name        : gemini_lru_board/ethernet_qsfp
+    peripheral_group       : qsfp4
+  - peripheral_name        : gemini_lru_board/ethernet_qsfp
+    peripheral_group       : qsfp3
+  - peripheral_name        : gemini_lru_board/ethernet_quad_qsfp
+    peripheral_group       : qsfp2
+  - peripheral_name        : gemini_lru_board/ethernet_quad_qsfp
+    peripheral_group       : qsfp1

@@ -1,0 +1,23 @@
+﻿schema_name   : args
+schema_version: 1.0
+schema_type   : fpga
+
+hdl_library_name  : gemini_xh_lru_minimal
+fpga_name         : gemini_xh_lru_minimal
+fpga_description  : "General minimal file for Gemini XH LRU harwdare"
+
+peripherals:
+  - peripheral_name        : gemini_xh_lru_minimal/system
+  - peripheral_name        : gemini_xh_lru_board/pmbus
+  - peripheral_name        : gemini_xh_lru_board/sfp
+  - peripheral_name        : gemini_xh_lru_board/onewire_prom
+  - peripheral_name        : gemini_xh_lru_board/onewire_prom
+    peripheral_group       : backplane_prom
+  - peripheral_name        : gemini_xh_lru_board/humidity
+  - peripheral_name        : dhcp/dhcp
+  - peripheral_name        : gemini_subscription/gemini_subscription
+  - peripheral_name        : axi4_quadspi_prom/axi4_quadspi_prom
+  - peripheral_name        : system_monitor/system_monitor
+  - peripheral_name        : gemini_xh_lru_board/ethernet_mace
+  - peripheral_name        : gemini_xh_lru_board/backplane_control
+

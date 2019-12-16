@@ -1,0 +1,2 @@
+python3 $RADIOHDL/tools/radiohdl/base/vivado_config.py -t xh_lru_es -l gemini_xh_lru_minimal -r -v3
+

@@ -1,0 +1,91 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name        : timingControl
+hdl_library_description : "Control the Gemini board OXCO and track timing from a master"
+
+peripherals:
+
+  - peripheral_name        : timingControl
+    peripheral_description : "Generate internal unix time and control tracking of timing between different FPGAs and MACE"
+    slave_ports:
+    
+      - slave_name         : timing
+        slave_type         : reg
+        number_of_slaves   : 1
+        slave_description  : "Generate internal unix time and control tracking of timing between different FPGAs and MACE"
+        dual_clock         : true
+        fields:
+          ################################
+          - - field_name  : VC_step_size
+              width       : 16
+              access_mode : RW
+              reset_value : 0x10
+              field_description : "Time between updates of the OCXO voltage control, in units of 8.388608ms. Minimum possible value is 1, corresponding to about 119 updates per second. Use 119 for one update per second."
+          - - field_name  : OCXO_forget
+              width       : 4
+              access_mode : RW
+              reset_value : 0x0
+              field_description : "Forgetting factor for the frequency tracking loop. Each update offset_new of the offset is accumulated according to offset = offset_old * (1 - 2^(-VC_forget)) + offset_new * (2^(-VC_forget))."
+          - - field_name  : timing_forget
+              width       : 4
+              access_mode : RW
+              reset_value : 0x4
+              field_description : "Forgetting factor for the time offset tracking loop. Defined as per OCXO_forget."
+          - - field_name  : track_select
+              width       : 8
+              access_mode : RW
+              reset_value : 0x0
+              field_description : "Selects the master to track for timing. 0 = MACE, 1-8 = Z connect, 9-14 = X connect, 15-20 = Y connect."
+          - - field_name  : fixed_offset
+              width       : 24
+              access_mode : RW
+              reset_value : 0x10
+              field_description : "Expected offset between the time messages from the timing master and this module due to transmission latency in units of nanoseconds. Unsigned value, with a maximum of 2^24 - 1 = about 16 ms."
+          - - field_name  : MACE_time_seconds
+              width       : 32
+              access_mode : RW
+              reset_value : 0x0
+              field_description : "Allows MACE to set the UNIX time in seconds. Used as the timing master when track_select = 0."
+          - - field_name  : MACE_time_ns
+              width       : 32
+              access_mode : RW
+              reset_value : 0x0
+              field_description : "Allows MACE to set the fractional part of the current UNIX time. Units of nanoseconds. Value must be between 0 and 999999999. A rising edge on Bit(31) indicates that the current time should be shifted to match the values in MACE_time_seconds and MACE_time_ns, after subtracting off the value in fixed_offset. Bit(30) indicates that the value should be used for tracking only - i.e. adjust the local value towards this value with any large jumps."
+          - - field_name  : CUR_time_seconds
+              width       : 32
+              access_mode : RO
+              reset_value : 0x0
+              field_description : "Current local time in seconds."
+          - - field_name  : CUR_time_ns
+              width       : 32
+              access_mode : RO
+              reset_value : 0x0
+              field_description : "Current local time, fractional part, in units of nanoseconds. Valid range is 0 to 999999999."
+          - - field_name  : last_freq_offset
+              width       : 32
+              access_mode : RO
+              reset_value : 0x0
+              field_description : "Most recent frequency offset. Difference in units of 8ns between the expected and actual gap between consecutive timing packets from the timing master."
+          - - field_name  : filtered_freq_offset
+              width       : 32
+              access_mode : RO
+              reset_value : 0x0
+              field_description : "filtered frequency offset value, using the OCXO_forget forgetting factor."
+          - - field_name  : last_time_offset
+              width       : 32
+              access_mode : RO
+              reset_value : 0x0
+              field_description : "Most recent time offset. Difference between the most recent time from the master and the local time."
+          - - field_name  : filtered_time_offset
+              width       : 32
+              access_mode : RO
+              reset_value : 0x0
+              field_description : "Filtered version of last_time_offset, using the forgetting faction in timing_forget."
+ 
+
+            
+        
+       
+              

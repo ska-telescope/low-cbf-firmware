@@ -1,0 +1,7 @@
+create_ip -name xbip_dsp48_macro -vendor xilinx.com -library ip -version 3.0 -module_name DSP_AxB_plus_PCIN
+set_property -dict [list CONFIG.Component_Name {DSP_AxB_plus_PCIN} CONFIG.instruction1 {A*B+PCIN} CONFIG.pipeline_options {Expert} CONFIG.areg_4 {false} CONFIG.breg_4 {false} CONFIG.a_width {27} CONFIG.has_pcout {true} CONFIG.areg_3 {true} CONFIG.breg_3 {true} CONFIG.creg_3 {false} CONFIG.creg_4 {false} CONFIG.creg_5 {false} CONFIG.mreg_5 {true} CONFIG.preg_6 {true} CONFIG.d_width {18} CONFIG.a_binarywidth {0} CONFIG.b_width {18} CONFIG.b_binarywidth {0} CONFIG.concat_width {48} CONFIG.concat_binarywidth {0} CONFIG.c_binarywidth {0} CONFIG.pcin_binarywidth {0}] [get_ips DSP_AxB_plus_PCIN]
+create_ip_run [get_ips DSP_AxB_plus_PCIN]
+
+create_ip -name xbip_dsp48_macro -vendor xilinx.com -library ip -version 3.0 -module_name DSP_AxB
+set_property -dict [list CONFIG.Component_Name {DSP_AxB} CONFIG.instruction1 {A*B} CONFIG.pipeline_options {Expert} CONFIG.areg_4 {false} CONFIG.breg_4 {false} CONFIG.a_width {27} CONFIG.has_pcout {true} CONFIG.areg_3 {true} CONFIG.breg_3 {true} CONFIG.creg_3 {false} CONFIG.creg_4 {false} CONFIG.creg_5 {false} CONFIG.mreg_5 {true} CONFIG.preg_6 {true} CONFIG.d_width {18} CONFIG.a_binarywidth {0} CONFIG.b_width {18} CONFIG.b_binarywidth {0} CONFIG.concat_width {48} CONFIG.concat_binarywidth {0} CONFIG.c_binarywidth {0} CONFIG.pcin_binarywidth {0} CONFIG.p_full_width {45} CONFIG.p_width {45} CONFIG.p_binarywidth {0}] [get_ips DSP_AxB]
+create_ip_run [get_ips DSP_AxB]

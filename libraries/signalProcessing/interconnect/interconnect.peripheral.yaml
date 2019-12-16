@@ -1,0 +1,548 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : interconnect
+hdl_library_description: "Routing of internal packets to and from optics and signal processing chains"
+
+peripherals:
+  - peripheral_name        : interconnect
+    peripheral_description : "packet routing"
+    slave_ports:
+      - slave_name        : ICStatCtrl
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Registers associated with interconnect"
+        dual_clock        : true
+        fields:
+          #################################
+          - - field_name        : myAddr
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "XYZ address of this FPGA. X = bits(11:8), Y = bits(7:4), Z = bits(3:0)"
+          #################################
+          - - field_name        : dbgDataSel
+              width             : 5
+              access_mode       : RW
+              reset_value       : 0x12
+              field_description : "Interconnect input or output port to connect to the 25GE debug output. For input ports, MBOs on ports 0 to 17, LFAA input ports 18 and 19."
+          #################################
+          - - field_name        : dbgDataSelIsOutput
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "When 0, dbgDataSel refers to an input side port in the interconnect, when 1 it refers to an output port."
+          ################################
+          - - field_name        : dbgDestIP
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0xC0A80107
+              field_description : "Destination IP address for 25GE debug data output. Defaults to 192.168.1.7."
+          ################################
+          - - field_name        : dbgSrcMac1
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0x54535251
+              field_description : "First 4 bytes of the source MAC address for debug packets."              
+          ################################
+          - - field_name        : dbgSrcMac2
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0x5655
+              field_description : "Last 2 bytes of the source MAC address for debug packets."                
+          ################################
+          - - field_name        : dbgDestMac1
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0xD4D3D2D1
+              field_description : "First 4 bytes of the destination MAC address for debug packets."              
+          ################################
+          - - field_name        : dbgDestMac2
+              width             : 16
+              access_mode       : RW
+              reset_value       : 0xD6D5
+              field_description : "Last 2 bytes of the destination MAC address for debug packets."
+          #################################
+          - - field_name        : destAddr0
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x1
+              field_description : "XYZ destination address for Z connect GT0 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr1
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x2
+              field_description : "XYZ destination address for Z connect GT1 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr2
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x3
+              field_description : "XYZ destination address for Z connect GT2 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr3
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x4
+              field_description : "XYZ destination address for Z connect GT3 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr4
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x5
+              field_description : "XYZ destination address for Z connect GT4 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr5
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x6
+              field_description : "XYZ destination address for Z connect GT5 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr6
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x7
+              field_description : "XYZ destination address for Z connect GT6 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr7
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x10
+              field_description : "XYZ destination address for Y connect GT0 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr8
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x20
+              field_description : "XYZ destination address for Y connect GT1 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr9
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x30
+              field_description : "XYZ destination address for Y connect GT2 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr10
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x40
+              field_description : "XYZ destination address for Y connect GT3 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr11
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x50
+              field_description : "XYZ destination address for Y connect GT4 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr12
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x100
+              field_description : "XYZ destination address for X connect GT0 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr13
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x200
+              field_description : "XYZ destination address for X connect GT1 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr14
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x300
+              field_description : "XYZ destination address for X connect GT2 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr15
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x400
+              field_description : "XYZ destination address for X connect GT3 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : destAddr16
+              width             : 12
+              access_mode       : RW
+              reset_value       : 0x500
+              field_description : "XYZ destination address for X connect GT4 (X = bits(11:8), Y = bits(7:4), Z = bits(3:0))"
+          #################################
+          - - field_name        : IC_Buf_error_reset
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Reset the interconnect input side buffer module error counters"
+          #################################
+          - - field_name        : Z0_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Z connect input 0 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Z1_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Z connect input 1 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Z2_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Z connect input 2 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Z3_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Z connect input 3 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Z4_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Z connect input 4 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Z5_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Z connect input 5 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Z6_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Z connect input 6 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Y0_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Y connect input 0 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Y1_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Y connect input 1 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Y2_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Y connect input 2 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Y3_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Y connect input 3 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Y4_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Y connect input 4 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : X0_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "X connect input 0 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : X1_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "X connect input 1 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : X2_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "X connect input 2 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : X3_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "X connect input 3 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : X4_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "X connect input 4 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : LFAA0_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "LFAA input buffer 0 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : LFAA1_in_Buf_Errors
+              width             : 16
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "LFAA input buffer 0 errors. Reset with the IC_error_reset register. Each 4 bit field has a 3 bit counter that wraps and a high bit which goes high to indicate if an error has occurred since reset. (3:0) = Count of packet drops, (7:4) = bad FCSs, (11:8) = unroutable address, (15:12) = full fifo"
+          #################################
+          - - field_name        : Z0_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Z1_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Z2_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Z3_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Z4_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Z5_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Z6_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Y0_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Y1_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Y2_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Y3_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Y4_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : X0_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : X1_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : X2_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : X3_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : X4_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : Timing_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : LFAA0_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : LFAA1_good_count
+              width             : 32
+              access_mode       : CW
+              reset_value       : 0x0
+              field_description : "Count of good packets coming into the interconnect module"
+          #################################
+          - - field_name        : LFAA_drops
+              width             : 4
+              access_mode       : CS
+              reset_value       : 0x0
+              field_description : "Count of packets from the LFAA signal chain dropped due to lack of buffer space (4 bit saturating, reset on write)"
+          #################################
+          - - field_name        : LFAA_fifo_overflows
+              width             : 4
+              access_mode       : CS
+              reset_value       : 0x0
+              field_description : "Count of times the LFAA signal chain input fifo overflowed (4 bit saturating, reset on write)"
+          #################################
+          - - field_name        : IC_Mux_error_reset
+              width             : 1
+              access_mode       : RW
+              side_effect       : PW
+              reset_value       : 0x0
+              field_description : "Reset the interconnect output side mux module error counters"
+          #################################
+          - - field_name        : Z0_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Z1_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Z2_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Z3_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Z4_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Z5_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Z6_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Y0_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Y1_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Y2_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Y3_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : Y4_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : X0_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : X1_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : X2_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : X3_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : X4_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : timing_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : CTC_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(3:0) = Fifo filled (bit 3 = any error, bits(2:0) wrapping count), bits(7:4) = Bad ports (bits 7 = any error, bits(6:4) wrapping count)"
+          #################################
+          - - field_name        : DBG_omux_error
+              width             : 8
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "bits(6:0) = Packets dropped, bits(7) = Any packets dropped."
+              

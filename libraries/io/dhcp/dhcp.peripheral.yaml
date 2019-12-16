@@ -1,0 +1,61 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : dhcp
+hdl_library_description: "DHCP Client registers"
+
+peripherals:
+  - peripheral_name        : dhcp
+    peripheral_description : "Registers associated with DHCP client"
+
+    slave_ports:
+      - slave_name        : dhcp
+        slave_type        : reg
+        number_of_slaves  : 1
+        slave_description : "Registers associated with DHCP client"
+        fields:
+          #################################
+          - - field_name        : dhcp_server
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0xffffffff
+              field_description : "DHCP Server IP"
+          #################################
+          - - field_name        : local_ip
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Local IP Address"
+          #################################
+          - - field_name        : lease_time
+              width             : 32
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Current IP lease time"
+          #################################
+          - - field_name        : ip_override
+              width             : 32
+              access_mode       : RW
+              reset_value       : 0xc0A80101
+              field_description : "Override IP Address"
+          #################################
+          - - field_name        : ip_override_enable
+              width             : 1
+              access_mode       : RW
+              reset_value       : 0x0
+              field_description : "Enable IP override"
+          #################################
+          - status:
+            - field_name        : dhcp_configured
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indiciates DHCP client was sucessful"
+
+            - field_name        : ip_failover
+              width             : 1
+              access_mode       : RO
+              reset_value       : 0x0
+              field_description : "Indiciates DHCP client was unsucessful"
+

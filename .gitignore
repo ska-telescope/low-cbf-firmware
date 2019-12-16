@@ -1,0 +1,13 @@
+/build*
+*.lnk
+*.pyc
+
+transcript
+
+vivado\.jou
+
+vivado\.log
+
+Reports/
+
+docs/build

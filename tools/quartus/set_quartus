@@ -1,0 +1,85 @@
+#!/bin/bash
+###############################################################################
+#
+# Copyright (C) 2014
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
+
+# Purpose: Map command line argument to a tool version
+# Description:
+#   By using command line arguments like "unb1" or "unb2" to select the tool
+#   version it is easier to manage combinations of tool versions.
+
+# General tool and project settings
+# - use '. <script>.sh' to have the settings apply in this shell, otherwise they get lost when <script>.sh returns
+
+# Select target
+TOOLSET=${1:-}
+echo "Make Quartus settings for RadioHDL with :"
+echo "  - Tool setting: ${TOOLSET}"
+echo "  - Site setting: ${SITE-}"
+
+# Select tool version
+if [ "${SITE-}" = "USN" ]; then
+  # svn info produces French string that are not properly parsed by quartus_generic.sh
+  export LANG=C
+  export LC_MESSAGES=C
+
+  if [ "${TOOLSET}" = "unb1" ]; then
+    # check if locale en_US (en_US.iso88591 is present.  If not, it will throw error like:
+    # Warning: sopc_unb1_minimal.: /home/software/Altera/11.1sp2/quartus/adm/qenv.sh: line 87: setlocale: LC_CTYPE: cannot change locale (en_US): No such file or directory
+    locale -a | grep -q "en_US.iso88591"
+    if [ $? -ne 0 ] ; then
+      echo "Missing locale en_US.iso88591 required by some Quartus scripts"
+      echo "Install with:"
+      echo "> sudo locale-gen en_US"
+      exit 1
+    fi
+    
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 11.1sp2
+  elif [ "${TOOLSET}" = "unb2" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.0
+  elif [ "${TOOLSET}" = "unb2a" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.1
+  else
+    echo "error: unknown tool setting: ${TOOLSET} (choose 'unb1', 'unb2' or 'unb2a')"
+    exit 1
+  fi
+  # check that ipx file is correctly setup
+  ${RADIOHDL}/tools/quartus/check_ipx_content
+
+else # default site
+  if [ "${TOOLSET}" = "unb1" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 11.1
+  elif [ "${TOOLSET}" = "unb2" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.0
+  elif [ "${TOOLSET}" = "unb2a" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.1
+  else
+    echo "error: unknown tool setting: ${TOOLSET} (choose 'unb1', 'unb2' or 'unb2a')"
+    exit 1
+  fi
+  # check that ipx file is correctly setup
+  if [ "${TOOLSET}" != "unb1" ]; then
+    # skip check for unb1, because version name in installation path /home/software/Altera/11.1 does not match actual used version 11.1sp2
+    ${RADIOHDL}/tools/quartus/check_ipx_content
+  fi
+fi
+
+# Tool settings
+. ${RADIOHDL}/tools/quartus/quartus_generic.sh

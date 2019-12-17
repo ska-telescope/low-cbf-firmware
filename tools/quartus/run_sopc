@@ -1,0 +1,116 @@
+#!/bin/bash
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2010                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+#
+
+# Run this tool with at least the commandline arguments:
+#   run_sopc toolset design_name
+# example:
+#   run_sopc unb1 unb1_minimal
+#
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+
+# do NOT tolerate use of undefined variables
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+project=
+sopcfile=
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                if [ -n "${sopcfile}" ]; then
+                    unb_error $0 "Please specify only two non-option parameters:\na project name and, optionally, an SOPC filename"
+                fi
+                sopcfile=${arg}
+            else
+                project=${arg}
+            fi
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+# Form name of quartusdir and check if it indeed exists
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+unb_exec $0 msg=no test -d ${quartusdir}
+
+# the SOPC file is optional. If it is omitted choose the first
+# one we find. Let user know we do this
+if [ -z "${sopcfile}" ]; then
+    sopcfile=$(ls ${quartusdir}/*sopc 2>/dev/null | sed -n '1p')
+    if [ -z "${sopcfile}" ]; then
+        unb_error $0 "No SOPC files found in ${quartusdir}"
+    fi
+    sopcfile=`basename ${sopcfile}`
+    unb_info $0 "SELECTING DEFAULT SOPC FILE ${sopcfile}"
+fi
+unb_exec $0 msg=no test -f "${quartusdir}/${sopcfile}"
+
+# Great. Having asserted our preconditions, let's do it!
+# note: we want unb_exec to display a slightly different msg
+#       AND sopc_builder returns exitcode 4 on succesfull completion
+#           rather than the standard 0 ...
+cd ${quartusdir}
+txt="Generating SOPC system for project ${project}."
+unb_exec $0 msg="${txt}" expect=4 sopc_builder --generate=1 ${sopcfile}
+
+unb_info $0 "SOPC generated successfully."
+
+
+
+# Additionally build the UNBOS App here as well:
+unb_info $0 "Additionally building the UNBOS App: run_app ${toolset} ${project}"
+. ${RADIOHDL}/tools/quartus/run_app ${toolset} ${project}
+

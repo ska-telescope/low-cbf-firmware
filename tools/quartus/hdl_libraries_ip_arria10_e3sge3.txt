@@ -1,0 +1,19 @@
+# VHDL
+lpm = $MODEL_TECH_ALTERA_LIB/vhdl_libs/lpm
+sgate = $MODEL_TECH_ALTERA_LIB/vhdl_libs/sgate
+altera = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altera
+altera_mf = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altera_mf
+altera_lnsim = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altera_lnsim
+twentynm = $MODEL_TECH_ALTERA_LIB/vhdl_libs/twentynm
+twentynm_hip = $MODEL_TECH_ALTERA_LIB/vhdl_libs/twentynm_hip
+twentynm_hssi = $MODEL_TECH_ALTERA_LIB/vhdl_libs/twentynm_hssi
+
+# Verilog
+lpm_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/lpm_ver
+sgate_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/sgate_ver
+altera_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/altera_ver
+altera_mf_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/altera_mf_ver
+altera_lnsim_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/altera_lnsim_ver
+twentynm_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/twentynm_ver
+twentynm_hip_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/twentynm_hip_ver
+twentynm_hssi_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/twentynm_hssi_ver

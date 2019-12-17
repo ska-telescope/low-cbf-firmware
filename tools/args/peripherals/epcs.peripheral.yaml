@@ -1,0 +1,135 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : epcs
+hdl_library_description: " This is the description for the epcs package "
+
+peripherals:
+ 
+  # epcs_reg
+  - 
+    peripheral_name: epcs_reg
+
+    parameters:
+      - {name: "g_sim_flash_model", value: TRUE} 
+
+    slave_ports:
+      - 
+        # actual hdl name: epcs_reg
+        slave_prefix : EPCS
+        slave_name   : EPCS
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : addr
+            width         : 24
+            access_mode   : WO
+            address_offset: 0x0
+            field_description: " address to write to or read from "
+        
+          -
+            field_name    : rden
+            width         : 1
+            access_mode   : WO
+            address_offset: 0x1
+            field_description: " Read enable bit "
+        
+          -
+            field_name    : read_bit
+            width         : 1
+            access_mode   : WO
+            side_effect   : PW
+            address_offset: 0x2
+            field_description: " Read bit "
+
+          -
+            field_name    : write_bit
+            width         : 1
+            access_mode   : WO
+            side_effect   : PW
+            address_offset: 0x3
+            field_description: " Write bit "
+
+          -
+            field_name    : sector_erase
+            width         : 1
+            access_mode   : WO
+            address_offset: 0x4
+            field_description: " Sector erase bit "
+
+          -
+            field_name    : busy
+            width         : 1
+            access_mode   : RO
+            address_offset: 0x5
+            field_description: " busy "
+
+        slave_description:  " Read and write access to flash "
+
+      # actual hdl name: mms_dp_fifo_to_mm
+      - 
+        slave_prefix : EPCS
+        slave_name   : DPMM_CTRL
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : ctrl
+            width         : 32
+            access_mode   : RW
+            address_offset: 0x0
+            field_description: "  "
+      
+      -   
+        slave_prefix : EPCS
+        slave_name   : DPMM_DATA
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : data
+            width         : 32
+            access_mode   : RW
+            address_offset: 0x0
+            field_description: "  "
+
+      # actual hdl name: mms_dp_fifo_from_mm
+      - 
+        slave_prefix : EPCS
+        slave_name   : MMDP_CTRL
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : ctrl
+            width         : 32
+            access_mode   : RW
+            address_offset: 0x0
+            field_description: "  "
+      
+      -  
+        slave_prefix : EPCS
+        slave_name   : MMDP_DATA
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : data
+            width         : 32
+            access_mode   : RW
+            address_offset: 0x0
+            field_description: "  "
+    
+    peripheral_description: |
+        "wi  Bits     SE  R/W Name              Default  Description         |REG_EPCS|                      
+        =============================================================================
+        0   [23..0]      WO  addr              0x0      Address to write to/read from
+        1   [0]          WO  rden              0x0      Read enable
+        2   [0]      PW  WE  read              0x0      Read 
+        3   [0]      PW  WE  write             0x0      Write 
+        4   [0]          WO  sector_erase      0x0      Sector erase
+        5   [0]          RO  busy              0x0      Busy
+        ============================================================================="
+        

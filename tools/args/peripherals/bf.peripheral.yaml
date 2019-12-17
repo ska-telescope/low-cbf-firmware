@@ -1,0 +1,94 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : bf
+hdl_library_description: " This is the description for the bf package "
+
+peripherals:
+  - peripheral_name: bf_unit
+ 
+    parameters:
+      - { name: g_bf.in_weights_w            , value: 16 }
+      - { name: g_bf.nof_weights             , value: 256 }
+      - { name: g_bf.nof_signal_paths        , value: 64 }   
+      - { name: g_bf.nof_subbands            , value: 24 } 
+      - { name: g_bf.nof_input_streams       , value: 16 }
+      - { name: c_nof_signal_paths_per_stream, value: g_bf.nof_signal_paths / g_bf.nof_input_streams }
+
+    slave_ports:
+      - 
+        # ram_bf_weights
+        slave_prefix : BF 
+        slave_name   : WEIGHTS 
+        slave_postfix: RAM
+        number_of_slaves: g_bf.nof_weights
+        slave_type: RAM
+        fields:
+          - 
+            field_name    : bf_weights 
+            width         : g_bf.in_weights_w * c_nof_complex
+
+            number_of_fields: g_bf.nof_signal_paths
+            field_description: |
+                        "Contains the weights. 
+                        The real and the imaginary parts are concatenated: W_real in Lower part. W_imag in Higher part."
+        slave_discription: >
+                " "
+      
+      - 
+        # ram_ss_ss_wide
+        slave_prefix : BF 
+        slave_name   : SS_SS_WIDE
+        slave_postfix: RAM    
+        number_of_slaves: g_bf.nof_weights
+        slave_type: RAM
+        fields:
+          - 
+            field_name      : ss_ss_wide
+            width           : 32
+            number_of_fields: g_bf.nof_subbands * g_bf.nof_input_streams * c_nof_signal_paths_per_stream  # 16*4=64, nof_input_streams*nof_signal_paths_per_stream
+            field_description: |
+                "Contains the addresses to select from the stored subbands."
+        slave_discription: >
+            " "
+      
+      - 
+        # ram_st_sst_bf
+        slave_prefix : BF 
+        slave_name   : ST_SST
+        slave_postfix: RAM
+        number_of_slaves: g_bf.nof_weights
+        slave_type: RAM 
+        fields:
+          - 
+            field_name      : st_sst_bf
+            width           : 56
+            number_of_fields: 512
+            access_mode : RO   
+            field_description: |
+                "Contains the weights.
+                The real and the imaginary parts are concatenated: W_real in Lower part. W_imag in Higher part."
+        slave_discription: >
+      
+      - 
+        # reg_st_sst_bf
+        slave_prefix : BF 
+        slave_name   : ST_SST
+        slave_postfix: REG
+        number_of_slaves: 1
+        slave_type: REG
+        fields:
+          - 
+            field_name    : treshold
+            address_offset: 0x0
+            field_description  : |
+                "When the treshold register is set to 0 the statistics will be auto-correlations.
+                In case the treshold register is set to a non-zero value, it allows to create a sample & hold function
+                for the a-input of the multiplier. 
+                The a-input of the multiplier is updated every treshold clockcycle. Thereby cross statistics can be created."
+        slave_discription: >
+            " "
+    
+    peripheral_description: |
+        "This is the beamformer unit"

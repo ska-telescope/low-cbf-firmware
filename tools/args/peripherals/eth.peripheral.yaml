@@ -1,0 +1,66 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : eth
+hdl_library_description: " This is the description for the eth package "
+
+peripherals:
+  - 
+    peripheral_name: eth1g
+    
+    parameters:
+      - { name: c_eth_ram_nof_words,  value: 1024 }
+        #g_technology: c_tech_select_default
+        #g_ETH_PHY   : "LVDS" 
+
+    slave_ports:
+      - 
+        # actual hdl name: reg_tse
+        slave_prefix : ETH 
+        slave_name   : TSE  
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          - 
+            field_name      : status
+            access_mode     : RO
+            address_offset  : 0x0
+            number_of_fields: 1024
+            field_description: | 
+                " reg tse "
+        slave_description: ""
+      - 
+        # actual hdl name: reg
+        slave_prefix : ETH 
+        slave_name   : REG  
+        slave_postfix: REG
+        slave_type   : REG    
+        fields:
+          - 
+            field_name      : status
+            access_mode     : RO
+            address_offset  : 0x0
+            number_of_fields: 11
+            field_description: " reg registers "
+        slave_description: " "
+      - 
+        # actual hdl name: ram
+        slave_prefix : ETH 
+        slave_name   : RAM  
+        slave_postfix: RAM
+        slave_type   : RAM
+        fields:
+          - 
+            field_name      : ram
+            number_of_fields: c_eth_ram_nof_words
+            field_description: |
+                "Contains the Waveform data for the data-streams to be send"
+        slave_description: " "
+
+    peripheral_description: |
+        "
+        Connect the 1GbE TSE to the microprocessor and to streaming UDP ports. The
+        packets for the streaming channels are directed based on the UDP port
+        number and all other packets are transfered to the default control channel."
+    

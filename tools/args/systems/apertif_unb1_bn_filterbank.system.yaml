@@ -1,0 +1,202 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : system
+
+hdl_library_name: apertif_unb1_bn_filterbank
+
+system_name       : apertif_unb1_bn_filterbank
+system_description: |
+        "apertif_unb1_bn_filterbank for sopc"
+
+parameters:
+  - { name : nof_fringe_stop_units, value: 4 }
+  - { name : nof_streams,           value: 12 }
+
+peripherals:
+  - 
+    peripheral_name: rom_system_info
+    subsystem_name : ''
+    slave_port_names:
+        - rom_unb_system_info
+    parameters:
+      - { name: lock_base_address,  value: 0x1000 }
+
+  - 
+    peripheral_name: reg_system_info
+    subsystem_name : ''
+    slave_port_names:
+        - reg_unb_system_info
+    parameters:
+      - { name: lock_base_address, value: 0x0 }
+
+  - 
+    peripheral_name: ctrl_unb1_board
+    subsystem_name : ''
+    slave_port_names:
+        - pio_wdi
+  
+  - 
+    peripheral_name: unb1_board_wdi_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_wdi
+
+  - 
+    peripheral_name: eth1g
+    subsystem_name : ''
+    slave_port_names:
+        - avs_eth_0_mms_tse
+        - avs_eth_0_mms_reg
+        - avs_eth_0_mms_ram
+    
+  - 
+    peripheral_name: ppsh
+    subsystem_name : ''
+    slave_port_names:
+        - pio_pps
+
+  - 
+    peripheral_name: epcs_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_epcs
+        - reg_mmdp_ctrl
+        - reg_mmdp_data
+        - reg_dpmm_ctrl
+        - reg_dpmm_data
+    parameters:
+      - { name : g_sim_flash_model, value: FALSE }
+
+  - 
+    peripheral_name: remu_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_remu
+
+  - 
+    peripheral_name: unb1_board_sens_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_unb_sens
+    parameters:
+      - { name : g_sim,       value: FALSE }
+      - { name : g_clk_freq,  value: 125E6 }
+      - { name : g_temp_high, value: 85 }
+
+  # extra peripherals for apertif_unb1_bn_filterbank 
+  - 
+    peripheral_name: common_pulse_delay
+    subsystem_name : ''
+    slave_port_names:
+        - reg_common_pulse_delay
+    parameters:
+      - { name : ,       value:  }
+
+  - 
+    peripheral_name: bsn_source
+    subsystem_name : ''
+    slave_port_names:
+        - reg_bsn_source
+    parameters:
+      - { name : ,       value:  }    
+
+  -  
+    peripheral_name: bsn_scheduler_wg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_bsn_scheduler_wg
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: adc_quad 
+    subsystem_name : ''
+    slave_port_names:
+        - reg_adc_quad
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: wg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_wg  # arr: size = 4
+        - ram_wg  # arr: size = 4
+
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: mon
+    subsystem_name : ''
+    slave_port_names:
+        - reg_mon  # arr: size = 4
+        - ram_mon  # arr: size = 4
+
+    parameters:
+      - { name : ,       value:  }    
+
+  - peripheral_name: commander
+    subsystem_name : ''
+    slave_port_names:
+        - reg_commander  # arr: size = 2
+
+    parameters:
+      - { name : ,       value:  } 
+  
+  - peripheral_name: protocol
+    subsystem_name : ''
+    slave_port_names:
+        - ram_protocol  # arr: size = 2
+
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: result
+    subsystem_name : ''
+    slave_port_names:
+        - ram_result  # arr: size = 2
+
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: bsn_scheduler_sp_on
+    subsystem_name : ''
+    slave_port_names:
+        - reg_bsn_scheduler_sp_on
+
+    parameters:
+      - { name : ,       value:  }    
+
+  - peripheral_name: bsn_scheduler_sp_off
+    subsystem_name : ''
+    slave_port_names:
+        - reg_bsn_scheduler_sp_off
+
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: bf_unit
+    subsystem_name : ''
+    slave_port_names:
+        - ''
+        - ram_st_sst
+        - ram_ss_ss_wide
+        - ''
+
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: ss_reorder
+    subsystem_name : ''
+    slave_port_names:
+        - ram_ss_reorder_in
+        - ram_ss_reorder_out
+
+    parameters:
+      - { name : ,       value:  }
+
+  - peripheral_name: mesh_diag
+    subsystem_name : ''
+    slave_port_names:
+        - reg_bsn_scheduler_sp_on
+
+    parameters:
+      - { name : ,       value:  }

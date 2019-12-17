@@ -1,0 +1,59 @@
+#!/bin/bash
+###############################################################################
+#
+# Copyright (C) 2014
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
+
+# General tool and project settings
+# - run_modelsim lru
+
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/generic.sh
+
+export TOOLSET=$1
+
+TOOL_FILE="${RADIOHDL}/tools/hdltool_${TOOLSET}.cfg"
+
+if [ -f $TOOL_FILE ]; then
+  while read line
+  do
+    if [[ $line == *"tool_version_sim"* ]]; then
+      echo "2"
+      echo $line
+      IFS='=' read -ra lineinfo <<< "$line"
+      MODELSIM_VERSION=${lineinfo[1]}
+    fi
+  done <<< "$(cat $TOOL_FILE)"
+else
+  tool_error $0 "Unknown toolset - ${TOOLSET}"
+fi
+
+if [ -z "$MODEL_TECH_DIR" ]; then
+  export MODEL_TECH_DIR=${MODELSIM_PATH}/${MODELSIM_VERSION}/modeltech
+  export VSIM_DIR=$MODEL_TECH_DIR/linux_x86_64
+fi
+
+if [ -z "$2" ]; then
+  $VSIM_DIR/vsim -c -do ${2}
+else
+  # Start the Modelsim GUI
+  $VSIM_DIR/vsim -do ${RADIOHDL}/tools/modelsim/commands.do
+fi

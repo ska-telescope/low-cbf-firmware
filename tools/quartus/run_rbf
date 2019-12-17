@@ -1,0 +1,145 @@
+#!/bin/bash 
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2012                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+
+# Run this tool with at least the commandline arguments:
+#   run_rbf toolset design_name
+# example:
+#   run_rbf unb2 unb2_minimal
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+# display some info about ourselves
+myself="${UNB}/Firmware/software/build/$(basename $0)"
+
+project=
+rev=
+arg_unb2_factory=
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        --unb2_factory)           
+           arg_unb2_factory=1
+            ;;
+        --rev=*)           
+           rev=`echo ${arg} | sed 's/^--rev=//'`
+            ;;
+        rev=*)           
+           rev=`echo ${arg} | sed 's/^rev=//'`
+            ;;  
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        --*) # some other option we don't care about
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                unb_error $0 "You cannot pass more than one project name"
+            fi
+            project=${arg}
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+
+if [ -z "${rev}" ]; then
+  project_rev="${project}"
+  unb_info $0 "No project revision passed, defaulting to ${project_rev}"
+else
+  if [ -f "${PRJ}/Firmware/designs/${project}/build/synth/quartus/${rev}.qsf" ]; then
+    project_rev="${rev}"
+    unb_info $0 "Selecting project revision ${project_rev}"
+  else
+    unb_error $0 "Invalid project revision"
+  fi
+fi
+
+sof_file=${quartusdir}/${project_rev}.sof
+if [ ! -f "${sof_file}" ]; then
+	unb_error $0 "${project_rev}.sof not found in ${quartusdir}/"
+	exit 1
+fi
+
+echo "Bitstream_compression=on" > ${HOME}/.run_rbf_temp_options_file
+
+unb_info $0 "Converting ${quartusdir}/${project_rev}.sof to compressed Raw Binary File"
+
+if [ -z "${arg_unb2_factory}" ]; then
+  unb_exec $0 quartus_cpf -c --option=${HOME}/.run_rbf_temp_options_file ${quartusdir}/${project_rev}.sof ${quartusdir}/${project_rev}.rbf
+else
+  unb_info $0 "-> This is a factory image for Uniboard2: Convert .SOF -> .POF -> .HEXOUT -> .RBF"
+  # for more info see: $RADIOHDL/libraries/io/epcs/doc/README.txt
+  unb_exec $0 quartus_cpf -d EPCQL1024 -m ASx4 --option=${HOME}/.run_rbf_temp_options_file -c ${quartusdir}/${project_rev}.sof ${quartusdir}/${project_rev}.pof
+  unb_exec $0 quartus_cpf -c ${quartusdir}/${project_rev}.pof ${quartusdir}/${project_rev}.hexout
+  unb_exec $0 nios2-elf-objcopy -I ihex -O binary ${quartusdir}/${project_rev}.hexout ${quartusdir}/${project_rev}.rbf
+
+  unb_info $0 "Truncating RBF:"
+  echo "Size of .SOF is: "
+  du -h ${quartusdir}/${project_rev}.sof
+  echo "Truncating to 40M (FIXME find out if 40M is correct on different SOF files)"
+  unb_exec $0 truncate -s 40M ${quartusdir}/${project_rev}.rbf
+  echo "Deleting temp files"
+  unb_exec $0 rm -f ${quartusdir}/${project_rev}.pof
+  unb_exec $0 rm -f ${quartusdir}/${project_rev}.hexout
+fi
+
+
+if [ -n "${RADIOHDL_SVN_REVISION}" ]; then
+  svn_revision=`echo ${RADIOHDL_SVN_REVISION} |cut -d' ' -f2`  # ${RADIOHDL_SVN_REVISION} looks like: "Revision: 14634"
+  echo "copy file ${quartusdir}/${project_rev}.rbf to ${quartusdir}/${project_rev}-r${svn_revision}.rbf"
+  cp ${quartusdir}/${project_rev}.rbf ${quartusdir}/${project_rev}-r${svn_revision}.rbf
+fi
+
+
+unb_info $0 "Done"
+

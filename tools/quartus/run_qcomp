@@ -1,0 +1,197 @@
+#!/bin/bash
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2012                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+#
+
+# Run this tool with at least the commandline arguments:
+#   run_qcomp toolset design_name
+# example:
+#   run_qcomp unb2 unb2_minimal
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+# treat unset variables as an error - better fail loudly.
+# implication is that "$1" and "$2" etc cannot be used in tests
+#   as they may be quite unset, eg when the user did not enter 
+#   them on the commandline.
+#   now you get to parse the commandline and explicitly extract
+#   the info you want or fill in with defaults
+# bonus: extragratis failure if, for some reason, the ${UNB}
+#   directory is not set.
+set -u
+
+
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+project=
+rev=
+SEED=1
+CLK=
+os=
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        --32bit)           
+           os=32
+            ;;
+        --rev=*)           
+           rev=`echo ${arg} | sed 's/^--rev=//'`
+            ;;
+        rev=*)           
+           rev=`echo ${arg} | sed 's/^rev=//'`
+            ;;
+        --seed=*)           
+           SEED=`echo ${arg} | sed 's/^--seed=//'`
+            ;;
+        seed=*)           
+           SEED=`echo ${arg} | sed 's/^seed=//'`
+            ;;
+        --clk=*)           
+           CLK=`echo ${arg} | sed 's/^--clk=//'`
+            ;;
+        clk=*)           
+           CLK=`echo ${arg} | sed 's/^clk=//'`
+            ;;
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                unb_error $0 "You cannot pass more than one project names"
+            fi
+            project=${arg}
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+# check if the quartus project directory is there
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+unb_exec $0 msg=no test -d ${quartusdir}
+
+if [ -z "${rev}" ]; then
+  project_rev="${project}"
+  unb_info $0 "No project revision passed, defaulting to ${project_rev}"
+else
+  if [ -f "${quartusdir}/${rev}.qsf" ]; then
+    project_rev="${rev}"
+    unb_info $0 "Selecting project revision ${project_rev}"
+  else
+    unb_error $0 "Invalid project revision"
+  fi
+fi
+
+cd ${quartusdir}
+
+if [ -z "${os}" ]; then
+  unb_info $0 "Assuming 64-bit OS. Pass '--32bit' to use 32-bit"
+  mem_width='--64bit'
+else
+  unb_info $0 "Using 32-bit mode"
+  mem_width=
+fi
+
+#for i in $(seq $SEED); do echo $i; done
+
+for i in $(echo $SEED | sed "s/,/ /g")
+do
+    # Add the seed value to the QSF. We can simply append it because Quartus removes previous (duplicate) assignments.
+    unb_info $0 "Adding fitter seed value of ${i} to ${project_rev}.qsf"
+    echo -e "\nset_global_assignment -name SEED ${i}\n" >> ${quartusdir}/${project_rev}.qsf
+    
+    unb_info $0 "Performing full compile of project ${project_rev}"
+    quartus_sh $mem_width --flow compile ${project_rev} | grep -v Info
+    
+    if [ $? -eq 0 ]
+    then
+      # Successful compile.
+      # . Add SVN rev to SOF file name
+      if [ -n "${RADIOHDL_SVN_REVISION}" ]; then
+        svn_revision=`echo ${RADIOHDL_SVN_REVISION} |cut -d' ' -f2`  # ${RADIOHDL_SVN_REVISION} looks like: "Revision: 14634"
+        unb_info $0 "copy file ${quartusdir}/${project_rev}.sof to ${quartusdir}/${project_rev}-r${svn_revision}.sof"
+        cp ${quartusdir}/${project_rev}.sof ${quartusdir}/${project_rev}-r${svn_revision}.sof
+      fi
+      # . Check if user passed a clk
+      if [ -z "${CLK}" ]
+      then
+          :
+      else
+          fmax_str=`quartus_fmax.sh ${quartusdir}/${project_rev}.sta.rpt $CLK`
+          fmax=`echo $fmax_str | cut -f1 -d"." | sed 's/[^0-9]//g'` 
+          # . Report fMax 
+          unb_info $0 "fMax of ${CLK}: ${fmax} MHz"
+          # . Copy quartus output dir, add fMax portfix
+          cp -r ${quartusdir} ${quartusdir}_${fmax}MHz
+      fi
+      # Print critical warnings
+      unb_warning $0 "Listing Critical Warnings"
+      # Print pin location warnings, if any
+      cat *.fit.rpt | grep -H --color=auto 'No exact pin location' | grep -H --color=auto 'Critical Warning'
+      # . print corresponding info
+      grep -H --color=auto 'not assigned to an exact location' *.fit.rpt     
+      # Print remaining critical warnings, EXCEPT the always presetn TSE warning
+      cat *.rpt | grep -v 'mixed_port_feed_through_mode\" parameter of RAM atom' | grep -H --color=auto 'Critical Warning'
+      unb_info $0 "Full compile successful."
+    else
+      # Compile failed
+      # . Print the errors
+      cd ${quartusdir}
+      unb_warning $0 "Listing Critical Warnings"
+      # Print pin location warnings, if any
+      cat *.fit.rpt | grep -H --color=auto 'No exact pin location' | grep -H --color=auto 'Critical Warning'
+      # . print corresponding info
+      grep -H --color=auto 'not assigned to an exact location' *.fit.rpt     
+      # Print remaining critical warnings, EXCEPT the always presetn TSE warning
+      cat *.rpt | grep -v 'mixed_port_feed_through_mode\" parameter of RAM atom' | grep -H --color=auto 'Critical Warning'
+      unb_error_noexit $0 "Error(s) occured"
+      # Print error messages
+      cat *.rpt | grep -v 'Error detection' | grep -H --color=auto 'Error'
+      unb_error $0 "Full compile failed"  
+    fi
+
+done
+
+

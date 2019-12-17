@@ -1,0 +1,504 @@
+###############################################################################
+#
+# Purpose: Investigate slave port naming for ARGS
+#
+###############################################################################
+
+#
+# """Slave port naming
+#
+# The slave port name represents the base address of the slave on the MM
+# bus. Support two types of slave port naming:
+#
+# 1) arbitrary naming to support any slave port name on the MM bus
+# 2) structured naming to have a standardized uniform naming convention
+#
+# In both cases the slave port names on MM bus must be unique. The
+# structured naming uses '.' as separator to preserve hierarchy information
+# in the name. The format becomes:
+#
+#     Arbitrary  : slave_port_names
+#     Structured : subsystem_name.slave_prefix.slave_name.slave_postfix
+#
+# The structured naming uses 4 levels and to preserve this format all 4 levels
+# should have names that are != ''. Using '' is allowed, but then still the '.'
+# will be in the slave port name to preserve the levels.
+#
+# The name keys are defined in:
+#
+# - system.yaml
+#     slave_port_names : define list of arbitrary slave port names or use empty
+#                        string to use structured naming
+#     subsystem_name   : extra prefix in case of structured naming, to
+#                        clarify the usage, or to group peripherals or to 
+#                        distinguish ports in case there are multiple
+#                        instances of this peripheral
+#
+# - peripheral.yaml
+#     slave_prefix        : prefix to slave_name, typically the HDL library
+#                           name of the slave HDL code
+#     slave_name          : functional name of the slave
+#     slave_postfix       : postfix to slave_name, typically the slave_type,
+#                           so REG, RAM, FIFO, PIO (parallel input output 
+#                           = REG)
+#
+# """
+#
+# if slave_port_names[]!='':
+#     # Use arbitrary slave port name to identify the base address
+#     mmBusSlaveName = slave_port_name[]
+# else:
+#     # Use structured slave port name to identify the base address
+#     mmBusSlaveName = subsystem_name + '.' + slave_prefix + '.' + slave_name + '.' + slave_postfix
+# return mmBusSlaveName
+#
+
+###############################################################################
+#
+# Impact on ARGS YAML file format
+#
+###############################################################################
+
+###############################################################################
+# New format for the system.yaml file
+
+protocol_name:  args
+protocol_version : major.minor
+protocol_type : system
+
+library_name : string          # Name of the HDL library of the FPGA system,
+                               # typically same as system_name
+
+system_name : string           # Name of the FPGA system, typically the
+                               # filename without the .system.yaml extension
+system_description : string
+    
+
+parameters :
+    - {name : string, value : int | float | string}     # system parameter a
+    - {name : string, value : int | float | string}     # system parameter b          
+    # etc.
+    
+peripherals :
+    - peripheral_name : string     # reference to peripheral_name in peripheral.yaml
+      subsystem_name : string
+      slave_port_names : None     # or list of arbitrary slave port names, must
+                                  # match the order of the slave_ports list in
+                                  # the peripheral.yaml
+          - ''                          # use structured slave port name
+          - 'overrule-slave-port-name'  # use aribtrary slave port name
+          - ''                    # use structured slave port name
+      lock_base_address : int # = None
+      number_of_peripherals : int # = 1, >1 for array
+      parameters : # use default or overrule
+            <peripheral_parameter_a> : int | float | string
+            <peripheral_parameter_b> : int | float | string
+            
+    - peripheral_name : string     # reference to peripheral_name in peripheral.yaml
+      # etc.
+      
+    - peripheral_name : string     # reference to peripheral_name in peripheral.yaml
+      # etc.
+      
+    # etc.
+
+
+###############################################################################
+# New format for the peripheral.yaml file
+
+protocol_name:  args
+protocol_version : major.minor
+protocol_type : peripheral | system
+
+library_name : string       # Name of the HDL library, typically the filename
+                            # without the .peripheral.yaml extension
+library_description : string
+
+peripherals :
+    - peripheral_name : string
+      parameters :
+          - {name : string, value : int | float | string}   # peripheral parameter a
+          - {name : string, value : int | float | string}   # peripheral parameter b          
+          # etc.
+      slave_ports :
+          - slave_prefix : string
+            slave_name : string
+            slave_postfix : string
+            number_of_slaves : int # = 1, >1 for array
+            slave_type : string # REG | RAM | FIFO
+            dual_clock : boolean
+            fields :                                       REG RAM FIFO
+                - field_name : string                              
+                  width : int # = 32                               
+                  bit_offset : int # = 0                       0   0
+                  access_mode : string # = read/write               
+                  side_effect : string # = None                n   n
+                  address_offset : int # relative to base      n   n
+                  number_of_fields : int # = 1, >1 for array   n
+                  reset_value : int | float | string               n
+                  software_value : int | float | string            n
+                  radix : string                                
+                  field_description : string                            
+                - field_name : string
+                # etc.
+            slave_description : string
+          - slave_prefix : string
+            slave_name : string
+            slave_postfix : string
+            # etc.
+          
+      peripheral_description : string
+
+    - peripheral_name : string
+      # etc.
+      
+    # etc.
+
+
+
+###############################################################################
+#
+# Old ARGS YAML file format
+#
+###############################################################################
+
+###############################################################################
+# Old format for the system.yaml file:
+---
+<system_name> :
+    parameters :
+        <system_parameter_a> : int | float | string
+        <system_parameter_b> : int | float | string
+        # etc.
+    peripherals :
+        <peripheral_instance_name_a> :
+            <number_of_peripherals> : int # = 1, >1 for array
+            peripheral_name : string
+            lock_base_address : int # = None
+            parameters : # use default or overrule
+                <peripheral_parameter_a> : int | float | string
+                <peripheral_parameter_b> : int | float | string
+        <peripheral_instance_name_b> :
+        # etc.
+    system_description : string
+
+    
+###############################################################################
+# Old format for the peripheral.yaml file:
+---
+<peripheral_name_a> :
+    parameters :
+        <peripheral_parameter_a> : int | float | string
+        <peripheral_parameter_b> : int | float | string
+        # etc.
+    slave_ports :
+        <slave_port_name_a> :
+            <number_of_slaves> : int # = 1, >1 for array
+            slave_type : string # REG | RAM | FIFO
+            fields :
+                <field_name_a> :
+                    width : int # = 32
+                    bit_offset : int # = 0
+                    access_mode : string # = read/write
+                    side_effect : string # = None
+                    address_offset : int # relative to base
+                    address_length : int # = 1, >1 for array
+                    reset_value : int | float | string
+                    software_value : int | float | string
+                    radix : string
+                    field_description : string
+                <field_name_b> :
+                # etc.
+            slave_description : string
+        <slave_port_name_b> :
+        # etc.
+    peripheral_description : string
+---
+# a file can contain multiple peripheral definitions separated by ---
+<peripheral_name_b> :
+# etc
+
+
+
+###############################################################################
+# EXAMPLES based on Apertif FPGA designs
+#
+
+###############################################################################
+#
+# regmap apertif_unb1_bn_filterbank
+#
+# . kooistra@lcu-rta:~$ more /localhome/kooistra/reginfo/regmap.4
+#
+#   AVS_ETH_0_MMS_RAM 7b000 4096 AVS_ETH_0_MMS_REG 30c0 64 AVS_ETH_0_MMS_TSE 7a000 4096 PIO_DEBUG_WAVE 32a0 16
+#   PIO_PPS 3368 8 PIO_WDI 32b0 16 RAM_ADU_I2C_PROTOCOL_AB 8000 32768 RAM_ADU_I2C_PROTOCOL_CD 60000 32768
+#   RAM_ADU_I2C_RESULT_AB 4000 16384 RAM_ADU_I2C_RESULT_CD 68000 16384 RAM_ADUH_MON_0 3400 1024
+#   RAM_ADUH_MON_1 7c800 1024 RAM_ADUH_MON_2 7cc00 1024 RAM_ADUH_MON_3 400 1024 RAM_DIAG_BG_PFB 74000 8192
+#   RAM_DIAG_BG_SS 72000 8192 RAM_DIAG_DATA_BUFFER 10000 65536 RAM_DIAG_WG_0 2000 4096 RAM_DIAG_WG_1 76000 4096
+#   RAM_DIAG_WG_2 77000 4096 RAM_DIAG_WG_3 78000 4096 RAM_FIL_COEFS 40000 131072 RAM_SS_REORDER_IN 7c000 2048
+#   RAM_SS_REORDER_OUT 79000 4096 RAM_SS_SS_WIDE 70000 8192 RAM_ST_SST 6c000 16384 REG_ADC_QUAD 3200 32
+#   REG_ADU_I2C_COMMANDER_AB 100 256 REG_ADU_I2C_COMMANDER_CD 200 256 REG_ADUH_MON_0 3300 16 REG_ADUH_MON_1 3310 16
+#   REG_ADUH_MON_2 3320 16 REG_ADUH_MON_3 3330 16 REG_BSN_SCHEDULER_SP_OFF 3360 8 REG_BSN_SCHEDULER_SP_ON 3358 8
+#   REG_BSN_SCHEDULER_WG 3350 8 REG_BSN_SOURCE 3340 16 REG_COMMON_PULSE_DELAY 3370 8 REG_DIAG_BG_PFB 3260 32
+#   REG_DIAG_BG_SS 3240 32 REG_DIAG_DATA_BUFFER 80 128 REG_DIAG_WG_0 32c0 16 REG_DIAG_WG_1 32d0 16
+#   REG_DIAG_WG_2 32e0 16 REG_DIAG_WG_3 32f0 16 REG_DIAGNOSTICS_BACK 3100 256 REG_DIAGNOSTICS_MESH 300 256
+#   REG_DP_SHIFTRAM 3280 32 REG_TR_NONBONDED_BACK 3080 64 REG_TR_NONBONDED_MESH 3040 64 REG_UNB_SENS 3220 32
+#   REG_WDI 3000 8
+#
+###############################################################################
+
+# manual style name            # structured style keys                                               # structured style name
+slave_port_name                slave_prefix  slave_name      slave_postfix  subsystem_name           slave_port_name (4 levels)         slave_port_name (2 levels)
+
+AVS_ETH_0_MMS_RAM         -->  ETH           -, DATA         RAM            -, MINIMAL      -->      MINIMAL.ETH.DATA.RAM               MINIMAL.ETH_DATA_RAM           
+AVS_ETH_0_MMS_REG         -->  ETH           -, CONTROL      REG            -, MINIMAL      -->      MINIMAL.ETH.CONTROL.REG            MINIMAL.ETH_CONTROL_REG        
+AVS_ETH_0_MMS_TSE         -->  ETH           TSE             RAM            -, MINIMAL      -->      MINIMAL.ETH.TSE.RAM                MINIMAL.ETH_TSE_RAM            
+                                                                                                                                                                       
+PIO_DEBUG_WAVE            -->  QSYS          DEBUG_WAVE      PIO            -, MINIMAL      -->      MINIMAL.QSYS.DEBUG_WAVE.PIO        MINIMAL.QSYS_DEBUG_WAVE_PIO    
+PIO_PPS                   -->  QSYS          PPS             PIO            -, MINIMAL      -->      MINIMAL.QSYS.PPS.PIO               MINIMAL.QSYS_PPS_PIO           
+PIO_WDI                   -->  QSYS          WDI             PIO            -, MINIMAL      -->      MINIMAL.QSYS.WDI.PIO               MINIMAL.QSYS_WDI_PIO           
+REG_WDI                   -->  UNB1_BOARD    WDI             REG            -, MINIMAL      -->      MINIMAL.UNB1_BOARD.WDI.REG         MINIMAL.UNB1_BOARD_WDI_REG     
+REG_UNB_SENS              -->  UNB1_BOARD    UNB_SENS        REG            -, MINIMAL      -->      MINIMAL.UNB1_BOARD.UNB_SENS.REG    MINIMAL.UNB1_BOARD_UNB_SENS_REG
+                                                                                                                                                                       
+REG_COMMON_PULSE_DELAY    -->  COMMON        PULSE_DELAY     REG            -, PPS          -->      PPS.COMMON.PULSE_DELAY.REG         PPS.COMMON_PULSE_DELAY_REG     
+                                                                                                                                                                       
+REG_ADU_I2C_COMMANDER_AB  -->  I2C           COMMANDER       REG            AB, ADU_AB      -->      ADU_AB.I2C.COMMANDER.REG           ADU_AB.I2C_COMMANDER_REG       
+RAM_ADU_I2C_PROTOCOL_AB   -->  I2C           PROTOCOL        RAM            AB, ADU_AB      -->      ADU_AB.I2C.PROTOCOL.RAM            ADU_AB.I2C_PROTOCOL_RAM        
+RAM_ADU_I2C_RESULT_AB     -->  I2C           RESULT          RAM            AB, ADU_AB      -->      ADU_AB.I2C.RESULT.RAM              ADU_AB.I2C_RESULT_RAM          
+                                                                                                                                                                       
+REG_ADU_I2C_COMMANDER_CD  -->  I2C           COMMANDER       REG            CD, ADU_CD      -->      ADU_CD.I2C.COMMANDER.REG           ADU_CD.I2C_COMMANDER_REG       
+RAM_ADU_I2C_PROTOCOL_CD   -->  I2C           PROTOCOL        RAM            CD, ADU_CD      -->      ADU_CD.I2C.PROTOCOL.RAM            ADU_CD.I2C_PROTOCOL_RAM        
+RAM_ADU_I2C_RESULT_CD     -->  I2C           RESULT          RAM            CD, ADU_CD      -->      ADU_CD.I2C.RESULT.RAM              ADU_CD.I2C_RESULT_RAM          
+                                                                                                                                                                       
+REG_ADC_QUAD              -->  ADUH          ADC_QUAD        REG            -, ADC_ABCD     -->      ADC_ABCD.ADUH.ADC_QUAD.REG         ADC_ABCD.ADUH_ADC_QUAD_REG     -
+                                                                                                                                                                       
+# 0,1,2,3 = A,B,C,D                                                                                                                                                    
+REG_ADUH_MON_0            -->  ADUH          MON             REG            0, ADC_0        -->      INPUT_0.ADUH.MON.REG               INPUT_0.ADUH_MON_REG           
+RAM_ADUH_MON_0            -->  ADUH          MON             RAM            0, ADC_0        -->      INPUT_0.ADUH.MON.RAM               INPUT_0.ADUH_MON_RAM           
+REG_ADUH_MON_3            -->  ADUH          MON             REG            1, ADC_1        -->      INPUT_1.ADUH.MON.REG               INPUT_1.ADUH_MON_REG           
+RAM_ADUH_MON_3            -->  ADUH          MON             RAM            1, ADC_1        -->      INPUT_1.ADUH.MON.RAM               INPUT_1.ADUH_MON_RAM           
+REG_ADUH_MON_3            -->  ADUH          MON             REG            2, ADC_2        -->      INPUT_2.ADUH.MON.REG               INPUT_2.ADUH_MON_REG           
+RAM_ADUH_MON_3            -->  ADUH          MON             RAM            2, ADC_2        -->      INPUT_2.ADUH.MON.RAM               INPUT_2.ADUH_MON_RAM           
+REG_ADUH_MON_3            -->  ADUH          MON             REG            3, ADC_3        -->      INPUT_3.ADUH.MON.REG               INPUT_3.ADUH_MON_REG           
+RAM_ADUH_MON_3            -->  ADUH          MON             RAM            3, ADC_3        -->      INPUT_3.ADUH.MON.RAM               INPUT_3.ADUH_MON_RAM           
+                                                                                                                                                                       
+# 0,1,2,3 = A,B,C,D                                                                                                                                                    
+REG_DIAG_WG_0             -->  DIAG          WG              REG            0, ADC_0        -->      INPUT_0.DIAG.WG.REG                INPUT_0.DIAG_WG_REG            
+RAM_DIAG_WG_0             -->  DIAG          WG              RAM            0, ADC_0        -->      INPUT_0.DIAG.WG.RAM                INPUT_0.DIAG_WG_RAM            
+REG_DIAG_WG_1             -->  DIAG          WG              REG            1, ADC_1        -->      INPUT_1.DIAG.WG.REG                INPUT_1.DIAG_WG_REG            
+RAM_DIAG_WG_1             -->  DIAG          WG              RAM            1, ADC_1        -->      INPUT_1.DIAG.WG.RAM                INPUT_1.DIAG_WG_RAM            
+REG_DIAG_WG_2             -->  DIAG          WG              REG            2, ADC_2        -->      INPUT_2.DIAG.WG.REG                INPUT_2.DIAG_WG_REG            
+RAM_DIAG_WG_2             -->  DIAG          WG              RAM            2, ADC_2        -->      INPUT_2.DIAG.WG.RAM                INPUT_2.DIAG_WG_RAM            
+REG_DIAG_WG_3             -->  DIAG          WG              REG            3, ADC_3        -->      INPUT_3.DIAG.WG.REG                INPUT_3.DIAG_WG_REG            
+RAM_DIAG_WG_3             -->  DIAG          WG              RAM            3, ADC_3        -->      INPUT_3.DIAG.WG.RAM                INPUT_3.DIAG_WG_RAM            
+                                                                                                                                                                       
+REG_DP_SHIFTRAM           -->  DP            SHIFTRAM        REG            -, INPUT        -->      INPUT.DP.SHIFTRAM.REG              INPUT.DP_SHIFTRAM_REG          
+                                                                                                                                                                       
+REG_BSN_SOURCE            -->  DP            BSN_SOURCE      REG            -, PPS          -->      PPS.DP.BSN_SOURCE.REG              PPS.DP_BSN_SOURCE_REG          
+                                                                                                                                                                       
+REG_BSN_SCHEDULER_WG      -->  DP            BSN_SCHEDULER   REG            WG              -->      WG.DP.BSN_SCHEDULER.REG            WG.DP_BSN_SCHEDULER_REG        
+REG_BSN_SCHEDULER_SP_OFF  -->  DP            BSN_SCHEDULER   REG            SP_OFF          -->      SP_OFF.DP.BSN_SCHEDULER.REG        SP_OFF.DP_BSN_SCHEDULER_REG    
+REG_BSN_SCHEDULER_SP_ON   -->  DP            BSN_SCHEDULER   REG            SP_ON           -->      SP_ON.DP.BSN_SCHEDULER.REG         SP_ON.DP_BSN_SCHEDULER_REG        
+                                                                                                                                                                       
+RAM_FIL_COEFS             -->  FIL           COEFS           RAM            -, SUBBAND      -->      SUBBAND.FIL.COEFS.RAM              SUBBAND.FIL_COEFS_RAM          
+                                                                                                                                                                       
+RAM_ST_SST                -->  ST            SST             RAM            -, SUBBAND      -->      SUBBAND.ST.SST.RAM                 SUBBAND.ST_SST_RAM             
+                                                                                                                                                                       
+RAM_SS_REORDER_IN         -->  SS            REORDER         RAM            IN, RSUB_IN     -->      RSUB_IN.SS.REORDER.RAM             RSUB_IN.SS_REORDER_RAM         
+RAM_SS_REORDER_OUT        -->  SS            REORDER         RAM            OUT, RSUB_OUT   -->      RSUB_OUT.SS.REORDER.RAM            RSUB_OUT.SS_REORDER_RAM        
+RAM_SS_SS_WIDE            -->  SS            WIDE            RAM            -, RSUB         -->      RSUB.SS.WIDE.RAM                   RSUB.SS_WIDE_RAM               
+                                                                                                                                                                       
+REG_DIAG_BG_PFB           -->  DIAG          BG              REG            PFB             -->      PFB.DIAG.BG.REG                    PFB.DIAG_BG_REG                
+RAM_DIAG_BG_PFB           -->  DIAG          BG              RAM            PFB             -->      PFB.DIAG.BG.RAM                    PFB.DIAG_BG_RAM                
+REG_DIAG_BG_SS            -->  DIAG          BG              REG            SS              -->      RSUB.DIAG.BG.REG                   RSUB.DIAG_BG_REG               
+RAM_DIAG_BG_SS            -->  DIAG          BG              RAM            SS              -->      RSUB.DIAG.BG.RAM                   RSUB.DIAG_BG_RAM               
+                                                                                                                                                                       
+REG_DIAG_DATA_BUFFER      -->  DIAG          DATA_BUFFER     REG            -, RSUB_OUT     -->      RSUB_OUT.DIAG.DATA_BUFFER.REG      RSUB_OUT.DIAG_DATA_BUFFER_REG  
+RAM_DIAG_DATA_BUFFER      -->  DIAG          DATA_BUFFER     RAM            -, RSUB_OUT     -->      RSUB_OUT.DIAG.DATA_BUFFER.RAM      RSUB_OUT.DIAG_DATA_BUFFER_RAM  
+                                                                                                                                                                       
+REG_DIAGNOSTICS_BACK      -->  DIAG          DIAGNOSTICS     REG            BACK            -->      BACK.DIAG.DIAGNOSTICS.REG          BACK.DIAG_DIAGNOSTICS_REG      
+REG_DIAGNOSTICS_MESH      -->  DIAG          DIAGNOSTICS     REG            MESH            -->      MESH.DIAG.DIAGNOSTICS.REG          MESH.DIAG_DIAGNOSTICS_REG      
+                                                                                                                                                                       
+REG_TR_NONBONDED_BACK     -->  TR_NONBONDED  -, CONTROL      REG            BACK            -->      BACK.TR_NONBONDED.CONTROL.REG      BACK.TR_NONBONDED_CONTROL_REG  
+REG_TR_NONBONDED_MESH     -->  TR_NONBONDED  -, CONTROL      REG            MESH            -->      MESH.TR_NONBONDED.CONTROL.REG      MESH.TR_NONBONDED_CONTROL_REG  
+
+
+
+###############################################################################
+#
+# regmap apertif_unb1_fn_beamformer_trans
+#
+# . kooistra@lcu-rta:~$ more /localhome/kooistra/reginfo/regmap.0
+#
+#   AVS_ETH_0_MMS_RAM d2000 4096 AVS_ETH_0_MMS_REG 5c0 64 AVS_ETH_0_MMS_TSE 2000 4096 PIO_DEBUG_WAVE 790 16
+#   PIO_PPS 7d0 8 PIO_WDI 7a0 16 RAM_BF_WEIGHTS 40000 262144 RAM_DIAG_BG 8000 32768
+#   RAM_DIAG_DATA_BUFFER_OUTPUT d3000 4096 RAM_DIAG_DATA_BUFFER_TERMINAL 10000 65536 RAM_DP_RAM_FROM_MM 200 256
+#   RAM_SS_SS_WIDE 80000 262144 RAM_SS_SS_WIDE_TRANSP c8000 32768 RAM_ST_SST 4000 16384 REG_BSN_MONITOR 540 64
+#   REG_BSN_MONITOR_OUTPUT 300 256 REG_DIAG_BG 680 32 REG_DIAG_BG_OUTPUT 760 32
+#   REG_DIAG_DATA_BUFFER_OUTPUT 480 128 REG_DIAG_DATA_BUFFER_TERMINAL 80 128 REG_DIAGNOSTICS_MESH 100 256
+#   REG_DP_OFFLOAD_TX 7c8 8 REG_DP_OFFLOAD_TX_HDR_DAT 400 128 REG_DP_PKT_MERGE 6e0 32 REG_DP_RAM_FROM_MM 6a0 32
+#   REG_DP_SPLIT 6c0 32 REG_DP_SWITCH 7e0 8 REG_DP_SYNC_CHECKER 7b0 16 REG_DP_XONOFF_OUTPUT 7d8 8
+#   REG_IO_DDR 600 64 REG_MDIO_0 700 32 REG_MDIO_1 720 32 REG_MDIO_2 740 32 REG_ST_SST 580 64
+#   REG_TR_10GBE c0000 32768 REG_TR_NONBONDED_MESH 500 64 REG_TR_XAUI d0000 8192 REG_UNB_SENS 660 32
+#   REG_WDI 3000 8
+#
+###############################################################################
+
+# manual style name                 # structured style keys                                               # structured style name
+slave_port_name                     slave_prefix  slave_name      slave_postfix  subsystem_name           slave_port_name
+                               
+AVS_ETH_0_MMS_RAM              -->  ETH           -, DATA         RAM            -, MINIMAL      -->      MINIMAL.ETH.DATA.RAM
+AVS_ETH_0_MMS_REG              -->  ETH           -, CONTROL      REG            -, MINIMAL      -->      MINIMAL.ETH.CONTROL.REG
+AVS_ETH_0_MMS_TSE              -->  ETH           TSE             RAM            -, MINIMAL      -->      MINIMAL.ETH.TSE.RAM
+                                                                                
+PIO_DEBUG_WAVE                 -->  QSYS          DEBUG_WAVE      PIO            -, MINIMAL      -->      MINIMAL.QSYS.DEBUG_WAVE.PIO
+PIO_PPS                        -->  QSYS          PPS             PIO            -, MINIMAL      -->      MINIMAL.QSYS.PPS.PIO
+PIO_WDI                        -->  QSYS          WDI             PIO            -, MINIMAL      -->      MINIMAL.QSYS.WDI.PIO
+REG_WDI                        -->  UNB1_BOARD    WDI             REG            -, MINIMAL      -->      MINIMAL.UNB1_BOARD.WDI.REG
+REG_UNB_SENS                   -->  UNB1_BOARD    UNB_SENS        REG            -, MINIMAL      -->      MINIMAL.UNB1_BOARD.UNB_SENS.REG
+                                                                                
+REG_DIAG_BG                    -->  DIAG          BG              REG            -               -->  
+RAM_DIAG_BG                    -->  DIAG          BG              RAM            -               -->  
+REG_DIAG_BG_OUTPUT             -->  DIAG          BG              REG            OUTPUT          -->  
+REG_DIAG_DATA_BUFFER_OUTPUT    -->  DIAG          DATA_BUFFER     REG            OUTPUT          -->  
+RAM_DIAG_DATA_BUFFER_OUTPUT    -->  DIAG          DATA_BUFFER     RAM            OUTPUT          -->  
+REG_DIAG_DATA_BUFFER_TERMINAL  -->  DIAG          DATA_BUFFER     REG            TERMINAL        -->  
+RAM_DIAG_DATA_BUFFER_TERMINAL  -->  DIAG          DATA_BUFFER     RAM            TERMINAL        -->  
+                                                                                
+REG_DP_RAM_FROM_MM             -->  DP            RAM_FROM_MM     RAM            -               -->  
+RAM_DP_RAM_FROM_MM             -->  DP            RAM_FROM_MM     RAM            -               -->  
+                                                                                
+RAM_SS_SS_WIDE                 -->  SS            WIDE            RAM            -               -->  
+RAM_SS_SS_WIDE_TRANSP          -->  SS            WIDE            RAM            TRANSP          -->  
+                                                                                
+RAM_BF_WEIGHTS                 -->  BF            WEIGHTS         RAM            -               -->  
+                                                                                
+REG_ST_SST                     -->  ST            SST             REG            BEAMLETS        -->  
+RAM_ST_SST                     -->  ST            SST             RAM            BEAMLETS        -->  
+                                                                                
+REG_BSN_MONITOR                -->  DP            BSN_MONITOR     REG            -               -->  
+REG_BSN_MONITOR_OUTPUT         -->  DP            BSN_MONITOR     REG            OUTPUT          -->  
+                                                                                
+REG_DP_PKT_MERGE               -->  DP            PKT_MERGE       REG            -               -->  
+                                                                                
+REG_DP_SPLIT                   -->  DP            SPLIT           REG            -               -->  
+                                                                                
+REG_DP_SWITCH                  -->  DP            SWITCH          REG            -               -->  
+                                                                                
+REG_DP_SYNC_CHECKER            -->  DP            SYNC_CHECKER    REG            -               -->  
+                                                                                
+REG_IO_DDR                     -->  IO_DDR        -               REG            -               -->  
+                                                                                
+REG_DP_XONOFF_OUTPUT           -->  DP            XONOFF          REG            OUTPUT          -->  
+                                                                                
+REG_DP_OFFLOAD_TX              -->  DP            OFFLOAD_TX      REG            -               -->  
+REG_DP_OFFLOAD_TX_HDR_DAT      -->  DP            OFFLOAD_TX      REG            HDR_DAT         -->  
+                                                                                
+REG_TR_NONBONDED_MESH          -->  TR_NONBONDED  -               REG            MESH            -->  
+REG_DIAGNOSTICS_MESH           -->  DIAG          DIAGNOSTICS     REG            MESH            -->  
+                                                                                
+REG_TR_XAUI                    -->  TR_XAUI       -               REG            -               -->  
+                                                                                
+REG_MDIO_0                     -->  MDIO          -               REG            0               -->  
+REG_MDIO_1                     -->  MDIO          -               REG            1               -->  
+REG_MDIO_2                     -->  MDIO          -               REG            2               -->  
+                                                                                
+REG_TR_10GBE                   -->  TR_10GBE      -               REG            -               -->  
+
+
+###############################################################################
+#
+# regmap apertif_unb1_correlator_full
+#
+# . kooistra@ccu-corr:~$ more /localhome/kooistra/reginfo/regmap.0
+#
+#   AVS_ETH_0_MMS_RAM 12000 4096 AVS_ETH_0_MMS_REG 3040 64 AVS_ETH_0_MMS_TSE 2000 4096 PIO_DEBUG_WAVE 3010 16
+#   PIO_PPS 3698 8 PIO_WDI 3660 16 RAM_DIAG_BG_INPUT e000 8192 RAM_DIAG_BG_INPUT_INTERNAL 3080 128
+#   RAM_DIAG_BG_MESH a000 8192 RAM_DIAG_BG_PROC 10000 8192 RAM_DIAG_DATA_BUFFER_INPUT_POST 100000 524288
+#   RAM_DIAG_DATA_BUFFER_INPUT_PRE 80000 524288 RAM_DIAG_DATA_BUFFER_MESH 3100 256
+#   RAM_DIAG_DATA_BUFFER_PROC c000 8192 RAM_FIL_COEFS 3800 2048 RAM_ST_SST 4000 16384
+#   REG_BSN_MONITOR_INPUT 400 512 REG_BSN_MONITOR_MESH 3200 512 REG_BSN_MONITOR_PROC 600 512
+#   REG_DIAG_BG_INPUT 35c0 32 REG_DIAG_BG_INPUT_INTERNAL 3640 32 REG_DIAG_BG_MESH 35e0 32
+#   REG_DIAG_BG_PROC 3600 32 REG_DIAG_DATA_BUFFER_INPUT_POST 36b0 8 REG_DIAG_DATA_BUFFER_INPUT_PRE 3690 8
+#   REG_DIAG_DATA_BUFFER_MESH 36a0 8 REG_DIAG_DATA_BUFFER_PROC 36a8 8 REG_DIAGNOSTICS 3400 256
+#   REG_DP_BSN_ALIGN_INPUT 3670 16 REG_DP_BSN_ALIGN_MESH 3620 32 REG_DP_FIFO_FILL 80 128
+#   REG_DP_OFFLOAD_RX_HDR_DAT 200 512 REG_DP_OFFLOAD_TX_HDR_DAT 100 256 REG_DP_SYNC_CHECKER 3680 16
+#   REG_DP_XONOFF_OUTPUT 36b8 8 REG_DPMM_CTRL 3720 8 REG_DPMM_DATA 3728 8 REG_EPCS 3700 32 REG_MDIO_0 3580 32
+#   REG_MDIO_1 3540 32 REG_MDIO_2 3560 32 REG_MMDP_CTRL 3730 8 REG_MMDP_DATA 3738 8 REG_REMU 3740 32
+#   REG_TR_10GBE 40000 131072 REG_TR_NONBONDED_MESH 3500 64 REG_TR_XAUI 8000 8192 REG_UNB_SENS 35a0 32
+#   REG_WDI 3000 8
+#
+###############################################################################
+
+# manual style name                   # structured style keys                                               # structured style name
+slave_port_name                       slave_prefix  slave_name      slave_postfix  subsystem_name           slave_port_name
+                                 
+AVS_ETH_0_MMS_RAM                -->  ETH           -, DATA         RAM            -, MINIMAL      -->      MINIMAL.ETH.DATA.RAM
+AVS_ETH_0_MMS_REG                -->  ETH           -, CONTROL      REG            -, MINIMAL      -->      MINIMAL.ETH.CONTROL.REG
+AVS_ETH_0_MMS_TSE                -->  ETH           TSE             RAM            -, MINIMAL      -->      MINIMAL.ETH.TSE.RAM
+                                                                                  
+PIO_DEBUG_WAVE                   -->  QSYS          DEBUG_WAVE      PIO            -, MINIMAL      -->      MINIMAL.QSYS.DEBUG_WAVE.PIO
+PIO_PPS                          -->  QSYS          PPS             PIO            -, MINIMAL      -->      MINIMAL.QSYS.PPS.PIO
+PIO_WDI                          -->  QSYS          WDI             PIO            -, MINIMAL      -->      MINIMAL.QSYS.WDI.PIO
+REG_WDI                          -->  UNB1_BOARD    WDI             REG            -, MINIMAL      -->      MINIMAL.UNB1_BOARD.WDI.REG
+REG_UNB_SENS                     -->  UNB1_BOARD    UNB_SENS        REG            -, MINIMAL      -->      MINIMAL.UNB1_BOARD.UNB_SENS.REG
+                                                                                  
+REG_EPCS                         -->  IO_EPCS       -, CONTROL      REG            -, FLASH        -->      FLASH.EPCS.CONTROL.REG
+REG_REMU                         -->  IO_REMU       -, CONTROL      REG            -, FLASH        -->      FLASH.REMU.CONTROL.REG
+                                                                                  
+REG_DIAG_BG_INPUT                -->  DIAG          BG              REG            INPUT           -->      INPUT.DIAG.BG.REG
+RAM_DIAG_BG_INPUT                -->  DIAG          BG              RAM            INPUT           -->      INPUT.DIAG.BG.RAM
+REG_DIAG_BG_INPUT_INTERNAL       -->  DIAG          BG              REG            INPUT_INTERNAL  -->      INPUT_INTERNAL.DIAG.BG.REG
+RAM_DIAG_BG_INPUT_INTERNAL       -->  DIAG          BG              RAM            INPUT_INTERNAL  -->      INPUT_INTERNAL.DIAG.BG.RAM
+REG_DIAG_BG_MESH                 -->  DIAG          BG              REG            MESH            -->      MESH.DIAG.BG.REG
+RAM_DIAG_BG_MESH                 -->  DIAG          BG              RAM            MESH            -->      MESH.DIAG.BG.RAM
+REG_DIAG_BG_PROC                 -->  DIAG          BG              REG            PROC            -->      PROC.DIAG.BG.REG
+RAM_DIAG_BG_PROC                 -->  DIAG          BG              RAM            PROC            -->      PROC.DIAG.BG.RAM
+                                                                                  
+REG_DIAG_DATA_BUFFER_INPUT_POST  -->  DIAG          DATA_BUFFER     REG            INPUT_POST      -->      INPUT_POST.DIAG.DATA_BUFFER.REG 
+RAM_DIAG_DATA_BUFFER_INPUT_POST  -->  DIAG          DATA_BUFFER     RAM            INPUT_POST      -->      INPUT_POST.DIAG.DATA_BUFFER.RAM
+REG_DIAG_DATA_BUFFER_INPUT_PRE   -->  DIAG          DATA_BUFFER     REG            INPUT_PRE       -->      INPUT_PRE.DIAG.DATA_BUFFER.REG
+RAM_DIAG_DATA_BUFFER_INPUT_PRE   -->  DIAG          DATA_BUFFER     RAM            INPUT_PRE       -->      INPUT_PRE.DIAG.DATA_BUFFER.RAM
+REG_DIAG_DATA_BUFFER_MESH        -->  DIAG          DATA_BUFFER     REG            MESH            -->      MESH.DIAG.DATA_BUFFER.REG
+RAM_DIAG_DATA_BUFFER_MESH        -->  DIAG          DATA_BUFFER     RAM            MESH            -->      MESH.DIAG.DATA_BUFFER.RAM
+REG_DIAG_DATA_BUFFER_PROC        -->  DIAG          DATA_BUFFER     REG            PROC            -->      PROC.DIAG.DATA_BUFFER.REG
+RAM_DIAG_DATA_BUFFER_PROC        -->  DIAG          DATA_BUFFER     RAM            PROC            -->      PROC.DIAG.DATA_BUFFER.RAM
+                                                                                  
+RAM_FIL_COEFS                    -->  FIL           COEFS           RAM            -, CHANNEL      -->      CHANNEL.FIL.COEFS.RAM
+                                                                                  
+RAM_ST_SST                       -->  ST            SST             RAM            -, CHANNEL      -->      CHANNEL.ST.SST.RAM
+                                                                                  
+REG_BSN_MONITOR_INPUT            -->  DP            BSN_MONITOR     REG            INPUT           -->      INPUT.DP.BSN_MONITOR.REG
+REG_BSN_MONITOR_MESH             -->  DP            BSN_MONITOR     REG            MESH            -->      MESH.DP.BSN_MONITOR.REG
+REG_BSN_MONITOR_PROC             -->  DP            BSN_MONITOR     REG            PROC            -->      PROC.DP.BSN_MONITOR.REG
+                                                                                  
+                                                                                  
+REG_DIAGNOSTICS                  -->  DIAG          DIAGNOSTICS     REG            -, MESH         -->      MESH.DIAG.DIAGNOSTICS.REG 
+                                                                                  
+REG_DP_BSN_ALIGN_INPUT           -->  DP            BSN_ALIGN       REG            INPUT           -->      INPUT.DP.BSN_ALIGN.REG
+REG_DP_BSN_ALIGN_MESH            -->  DP            BSN_ALIGN       REG            MESH            -->      MESH.DP.BSN_ALIGN.REG
+                                                                                                              
+REG_DP_FIFO_FILL                 -->  DP            FIFO_FILL       REG            -               -->      DP.FIFO_FILL.REG
+                                                                                                              
+REG_DP_SYNC_CHECKER              -->  DP            SYNC_CHECKER    REG            -               -->      DP.SYNC_CHECKER.REG
+                                                                                                              
+REG_DP_XONOFF_OUTPUT             -->  DP            XONOFF          REG            OUTPUT          -->      OUTPUT.DP.XONOFF.REG
+                                                                                                              
+REG_DP_OFFLOAD_RX_HDR_DAT        -->  DP            OFFLOAD_RX      REG            HDR_DAT         -->      HDR_DAT.DP.OFFLOAD_RX.REG
+REG_DP_OFFLOAD_TX_HDR_DAT        -->  DP            OFFLOAD_TX      REG            HDR_DAT         -->      HDR_DAT.DPOFFLOAD_TX.REG
+                                                                                  
+REG_DPMM_CTRL                    -->  DP            FIFO_TO_MM      REG            EPCS_CTRL       -->      EPCS_CTRL.DP.FIFO_TO_MM.REG
+REG_DPMM_DATA                    -->  DP            FIFO_TO_MM      REG            EPCS_DATA       -->      EPCS_DATA.DP.FIFO_TO_MM.REG
+                                                                                                                  
+REG_MMDP_CTRL                    -->  DP            FIFO_FROM_MM    REG            EPCS_CTRL       -->      EPCS_CTRL.DP.FIFO_FROM_MM.REG
+REG_MMDP_DATA                    -->  DP            FIFO_FROM_MM    REG            EPCS_DATA       -->      EPCS_DATA.DP.FIFO_FROM_MM.REG
+                                                                                                                  
+REG_MDIO_0                       -->  MDIO          -, CONTROL      REG            0, INPUT_0      -->      INPUT_0.MDIO.CONTROL.REG
+REG_MDIO_1                       -->  MDIO          -, CONTROL      REG            1, INPUT_1      -->      INPUT_1.MDIO.CONTROL.REG
+REG_MDIO_2                       -->  MDIO          -, CONTROL      REG            2, INPUT_2      -->      INPUT_2.MDIO.CONTROL.REG
+                                                                                                                  
+REG_TR_10GBE                     -->  TR_10GBE      -, CONTROL      REG            -               -->      INPUT.TR_10GBE.CONTROL.REG
+REG_TR_XAUI                      -->  TR_XAUI       -, CONTROL      REG            -               -->      INPUT.TR_XAUI.CONTROL.REG
+                                                                                                                  
+REG_TR_NONBONDED_MESH            -->  TR_NONBONDED  -, CONTROL      REG            MESH            -->      MESH.TR_NONBONDED.CONTROL.REG
+

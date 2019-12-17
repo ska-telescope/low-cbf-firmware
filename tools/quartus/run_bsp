@@ -1,0 +1,158 @@
+#!/bin/bash
+#
+#
+# Run this tool with at least the commandline arguments:
+#   run_bsp toolset design_name
+# example:
+#   run_bsp unb2 unb2_minimal
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+
+# This script creates the ucosii_net_zipfs Board Support Package (BSP).
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+force=
+project=
+skip_make=
+
+# BSP HAL settings default to 
+# a reduced functionality BSP
+# (but much less code+data footprint)
+# use "--bloat" to compile a 
+# fullfledged BSP
+# NOTE: you'll never get C++ or
+#       (clean) exit support
+hal_lightweight_driver=true
+hal_enable_small_libc=1
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        --force)
+            force=${arg}
+            shift
+            ;;
+        --no-make)
+            skip_make=${arg}
+            shift
+            ;;
+
+		--nolib)
+            shift
+            ;;
+
+		--bloat)
+			shift
+			hal_lightweight_driver=false
+			hal_enable_small_libc=0
+			;;	
+
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            shift
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                break
+                #unb_error $0 "You cannot pass more than one project names"
+            fi
+            project=${arg}
+            shift
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+# now we can generate paths
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+builddir="${quartusdir}/software"
+bspdir="${builddir}/bsp"
+
+# assert the quartusdir exists
+unb_exec $0 msg=no test -d ${quartusdir}
+
+# If we have a makefile see if no-one changed the sopcinfo 
+# (since if they did we must re-generate files).
+# Otherwise we must generate the BSP package
+
+# if "--force" given we build from scratch
+if [ -n "${force}" ]; then
+    \rm -rf ${bspdir}
+fi
+
+if [ -d "${bspdir}" -a -f "${bspdir}/Makefile" ]; then
+    #Check if sopcinfo file is newer that current BSP
+    # Note: HV/DS  We do this in this clumsy way since
+    #       "make -C ${bspdir} -n" and checking the exitcode
+    #       does not work on Windows. Winders cannot discriminate
+    #       between "time-of-last-access" and "time-of-last-modification"
+    #       whereas under Linux this works like a charm.
+    #       The result was that under Windows "make -n" would 
+    #       always indicate that the target needed to be rebuilt.
+    #       Maybe there is another reason - fact is that "make"
+    #       didn't work on windows. This does.
+    sopcfile=$(ls ${quartusdir}/*sopcinfo 2>/dev/null | sed -n '1p')
+    if [ -z "${sopcfile}" ]; then
+        unb_error $0 "No sopc(info) file?!!"
+    fi
+    if [ ${sopcfile} -nt ${bspdir}/settings.bsp ]; then        
+        unb_info $0 "Someone has been tinkering with .sopcinfo"
+        unb_info $0 "Regenerating the BSP files"
+        unb_exec $0 msg=no nios2-bsp-generate-files \
+                                     --bsp-dir ${bspdir} \
+                                     --settings ${bspdir}/settings.bsp
+    fi
+else
+    # we must generate the BSP files
+    unb_info $0 "Generating BSP files for ${project}"
+    unb_exec $0 msg=no nios2-bsp hal ${bspdir} ${quartusdir} $*
+fi
+
+# check if we've already updated the BSP settings to our likings
+if [ -f ${bspdir}/public.mk ]; then
+	updated_settings=`sed -n '/^ALT_CPPFLAGS *+= *-DALT_USE_DIRECT_DRIVERS/p' ${bspdir}/public.mk`
+	if [ -z "${updated_settings}" ]; then
+		# nope, not updated yet - set the settings we would like the bsp to have
+		unb_exec $0 nios2-bsp-update-settings --settings ${bspdir}/settings.bsp \
+					--set hal.enable_lightweight_device_driver_api ${hal_lightweight_driver} \
+					--set hal.enable_c_plus_plus 0 \
+					--set hal.enable_clean_exit 0 \
+					--set hal.enable_exit 0 \
+					--set hal.enable_small_c_library ${hal_enable_small_libc}
+		unb_exec $0 msg=no nios2-bsp-generate-files \
+					--bsp-dir ${bspdir} \
+					--settings ${bspdir}/settings.bsp
+		# to prevent the make to complain about settings.bsp newer than Makefile ...
+		touch ${bspdir}/Makefile
+	fi
+fi
+
+if [ -z "${skip_make}" ]; then
+    unb_exec $0 msg=no make -C ${bspdir}
+fi

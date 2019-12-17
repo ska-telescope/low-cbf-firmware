@@ -1,0 +1,276 @@
+#!/bin/bash 
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2010                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+#
+#
+# This script calls the unb_create_bsp script,
+#    generates the HAL and
+#    compiles all files included in the [app].src file.
+#    default [app] == [project] but can override via
+#    "app=<appname>" commandline option
+#
+
+# Run this tool with at least the commandline arguments:
+#   run_app toolset design_name
+# example:
+#   run_app unb2 unb2_minimal
+#
+
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+
+# First, check to see if $SOPC_KIT_NIOS2 environmental variable is set.
+# This variable is required for the command line tools to execute correctly.
+if [ -z "${SOPC_KIT_NIOS2}" ]; then
+    unb_error $0 "SOPC_KIT_NIOS2 environment variable is not set!!"
+fi
+
+project=
+app="unb_osy"
+skip_make=
+nolib=
+hexname=
+userflags="-DCOMPILE_FOR_SOPC"
+
+echo "PATH=${PATH}"
+echo "SOPC_KIT_NIOS2=${SOPC_KIT_NIOS2}"
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        --no-make)
+            skip_make="skip_make"
+            ;;
+        --nolib)
+            nolib="nolib"
+            ;;
+        --hexname=*)
+            # if app not already set, set it now
+            if [ -n "${hexname}" ]; then
+                unb_error $0 "Do not pass more than one hex file name!"
+            fi
+            hexname=`echo ${arg} | sed 's/^--hexname=//'`
+            ;;
+
+        --*) # some other option we don't care about
+            ;;
+     
+        app=*)
+            # if app not already set, set it now
+            if [ -n "${app}" ]; then
+                unb_error $0 "Do not pass more than one app name!"
+            fi
+            app=`echo ${arg} | sed 's/^app=//'`
+            ;;
+        use=qsys)
+            userflags="-DCOMPILE_FOR_QSYS"
+            ;;
+        use=gen2)
+            userflags="-DCOMPILE_FOR_GEN2_UNB2"
+            ;;
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                unb_error $0 "You cannot pass more than one project name"
+            fi
+            project=${arg}
+            ;;
+    esac
+done
+
+unb_info $0 "app=${app}"
+unb_info $0 "Adding compiler option: ${userflags}"
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+# if no app given, default to [project] and inform user
+if [ -z "${app}" ]; then
+    app=${project}
+    unb_info $0 "SELECTING DEFAULT APP '${app}'"
+fi
+
+# Generate the paths we need
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+builddir="${quartusdir}/software"
+bspdstdir="${builddir}/bsp"
+unbsrcdir="${RADIOHDL}/software/unb_osy/modules"
+unbdstdir="${builddir}/unb_lib"
+appsrcdir="${RADIOHDL}/software/unb_osy"
+appdstdir="${builddir}/${app}"
+
+# Is the application available?
+unb_exec $0 msg=no test -d ${appsrcdir}
+
+# Make sure BSP is up-to-date.
+unb_exec $0 msg="Calling run_bsp ${toolset} $*" run_bsp ${toolset} $*
+
+if [ -z "${nolib}" ]; then
+
+  # For now, we always generate the unb_common library. 
+  if [ -f "${unbdstdir}/public.mk" ]; then
+      # assume the lib was already configured
+      # reload all the sourcefiles to make sure the lib
+      # contains all code available at this moment.
+      # do this by first removing all sources and
+      # then re-adding them
+      unb_exec $0 msg=no nios2-lib-update-makefile --lib-dir ${unbdstdir} --no-src
+      unb_exec $0 msg=no nios2-lib-update-makefile --lib-dir ${unbdstdir} \
+                                                   --add-src-dir ${unbsrcdir}
+  else
+      unb_info $0 "Configuring unb_common library"
+      # because of b0rkage in the nios2-lib-generate-makefile program
+      #  where it concerns the public include directory we set this
+      #  path correct in two steps.
+      # If you specify a public include dir (so it will be exported
+      #  to an app's makefile) in the -generate-makefile command
+      #  the library source directory will be prepended unconditionally.
+      # However, if you later, via the -update-makefile specify an 
+      #  include dir it will be interpreted as-is, without automagic
+      #  prepending of any paths whatsoever
+      unb_exec $0 msg=no nios2-lib-generate-makefile --lib-name unb_lib \
+                                              --bsp-dir ${bspdstdir} \
+                                              --lib-dir ${unbdstdir} \
+                                              --src-dir ${unbsrcdir}
+      unb_exec $0 msg=no nios2-lib-update-makefile --lib-dir ${unbdstdir} \
+                                        --add-public-inc-dir ${unbsrcdir}
+  fi
+  
+  
+  # If there is already an app makefile, let's reload the appsourcedir
+  # so it will pick up new sourcefiles added to ${appsrcdir} since
+  # the last invocation
+  if [ -d "${appdstdir}" -a -f "${appdstdir}/Makefile" ]; then
+      # makefile exists, remove sources and re-add them
+      unb_exec $0 msg=no nios2-app-update-makefile --app-dir ${appdstdir} --no-src
+      unb_exec $0 msg=no nios2-app-update-makefile --app-dir ${appdstdir} \
+                                                   --add-src-dir ${appsrcdir}
+  else
+      # must generate the app makefile from scratch
+      unb_info $0 "Configuring application ${app}"
+      unb_exec $0 msg=no nios2-app-generate-makefile \
+                   --elf-name ${app}.elf \
+                   --bsp-dir ${bspdstdir} \
+                   --app-dir ${appdstdir} \
+                   --use-lib-dir ${unbdstdir} \
+                   --src-dir ${appsrcdir} \
+                   --set QUARTUS_PROJECT_DIR ${quartusdir} \
+                   --set OBJDUMP_INCLUDE_SOURCE 1
+      unb_exec $0 msg=no nios2-app-update-makefile \
+                   --app-dir ${appdstdir} \
+                   --add-inc-dir ${appsrcdir} \
+                   --set-user-flags ${userflags}
+  fi
+
+#If we just want to build an app and don't want to include all the software modules
+#just include common_types.h and build the app:
+else
+  unb_info $0 "Configuring application ${app} - UNB library not included."
+  unb_exec $0 msg=no nios2-app-generate-makefile \
+               --elf-name ${app}.elf \
+               --bsp-dir ${bspdstdir} \
+               --app-dir ${appdstdir} \
+               --src-dir ${appsrcdir} \ 
+               --set QUARTUS_PROJECT_DIR ${quartusdir} \
+               --set OBJDUMP_INCLUDE_SOURCE 1
+  unb_exec $0 msg=no nios2-app-update-makefile \
+               --app-dir ${appdstdir} \
+               --add-inc-dir ${unbsrcdir}/common \
+               --set-user-flags ${userflags}
+fi
+
+if [ -z "${skip_make}" ]; then
+    unb_exec $0 msg=no make -C ${appdstdir}
+fi
+
+
+#Create HEX from ELF
+if [ -z "${hexname}" ]; then
+	hexname=onchip_memory2_0.hex
+fi
+
+# figure out the onchip memory's base + end address
+system_h=${bspdstdir}/system.h
+if [ ! -f "${system_h}" ]; then
+	unb_error $0 "system.h file not found in BSP [${bspdstdir}]"
+	unb_error $0 "#############################################"
+	unb_error $0 "    UNABLE TO RUN elf2hex"
+	exit 1
+fi
+
+onchip_base=`sed -n '/^[ ]*#define[ ]*ONCHIP_MEMORY2_0_BASE/{ s/^[ ]*#define[ ]*ONCHIP_MEMORY2_0_BASE[ ]*//; p}' ${system_h}`
+onchip_span=`sed -n '/^[ ]*#define[ ]*ONCHIP_MEMORY2_0_SPAN/{ s/^[ ]*#define[ ]*ONCHIP_MEMORY2_0_SPAN[ ]*//; p}' ${system_h}`
+
+if [ -z "${onchip_base}" -o -z "${onchip_span}" ]; then
+	unb_error $0 "ONCHIP_MEMORY2_0_[BASE|SPAN] not found "
+	unb_error $0 "    in BSP [${bspdstdir}]"
+	unb_error $0 "#############################################"
+	unb_error $0 "    UNABLE TO RUN elf2hex"
+	exit 1
+fi
+
+# we must compute the end address and give it to elf2hex in hex
+# the *NIX commanline calculators 
+onchip_base_dec=`printf "%d" ${onchip_base}`
+onchip_span_dec=`printf "%d" ${onchip_span}`
+onchip_end_dec=`expr ${onchip_base_dec} + ${onchip_span_dec} - 1`
+onchip_end_hex=`printf "0x%x" ${onchip_end_dec}`
+onchip_base=`printf "0x%x" ${onchip_base}`
+
+#Use user provided hex file name
+unb_exec $0 msg="Creating HEX from ELF: ${hexname} [${onchip_base} -> ${onchip_end_hex}]" \
+	elf2hex --input=${appdstdir}/${app}.elf \
+		--output=${quartusdir}/${hexname} \
+		--base=${onchip_base} --end=${onchip_end_hex} --width=32 \
+		--create-lanes=0 
+
+unb_exec $0 msg="Calling run_reg ${toolset} $*" run_reg ${toolset} $*
+
+unb_info $0 "Done"

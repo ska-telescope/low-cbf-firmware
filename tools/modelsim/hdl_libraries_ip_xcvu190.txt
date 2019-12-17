@@ -1,0 +1,6 @@
+secureip = $MODEL_TECH_XILINX_LIB/secureip
+xpm = $MODEL_TECH_XILINX_LIB/xpm
+unisim = $MODEL_TECH_XILINX_LIB/unisim
+unimacro = $MODEL_TECH_XILINX_LIB/unimacro
+unifast = $MODEL_TECH_XILINX_LIB/unifast
+

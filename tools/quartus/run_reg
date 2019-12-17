@@ -1,0 +1,137 @@
+#!/bin/bash 
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2012                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+
+# Run this tool with at least the commandline arguments:
+#   run_reg toolset design_name
+# example:
+#   run_reg unb2 unb2_minimal
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1  ($0 is untouched)
+
+# display some info about ourselves
+myself="${UNB}/Firmware/software/build/$(basename $0)"
+
+project=
+rev=
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        --rev=*)           
+           rev=`echo ${arg} | sed 's/^--rev=//'`
+            ;;
+        rev=*)           
+           rev=`echo ${arg} | sed 's/^rev=//'`
+            ;;  
+        --*) # some other option we don't care about
+            ;;     
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                unb_error $0 "You cannot pass more than one project name"
+            fi
+            project=${arg}
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+builddir="${quartusdir}/software"
+bspdstdir="${builddir}/bsp"
+
+if [ -z "${rev}" ]; then
+  project_rev="${project}"
+  unb_info $0 "No project revision passed, defaulting to ${project_rev}"
+else
+  if [ -f "${quartusdir}/${rev}.qsf" ]; then
+    project_rev="${rev}"
+    unb_info $0 "Selecting project revision ${project_rev}"
+  else
+    unb_error $0 "Invalid project revision"
+  fi
+fi
+
+system_h=${bspdstdir}/system.h
+if [ ! -f "${system_h}" ]; then
+	unb_error $0 "system.h file not found in [${bspdstdir}]"
+	exit 1
+fi
+
+unb_info $0 "Extracting peripherals from ${bspdstdir}/system.h:"
+
+# Extract lines with 'BASE' or 'SPAN', remove ALT* stuff etc., remove '0x' prefix, remove '#define' and peripheral name preceding '_SPAN', remove '_BASE', finally replace newlines with spaces.
+egrep "BASE|SPAN" ${system_h} | egrep -v 'ALT|TIMER|SYSTEM_INFO|ONCHIP_MEMORY2_0|JTAG_UART' | sed -e "s/\0x//g" | sed 's/^#define //' | sed 's/^.*_SPAN //' | sed -e "s/\_BASE//g" | sed ':a;N;$!ba;s/\n/ /g' > ${quartusdir}/${project_rev}.reg
+
+cat ${quartusdir}/${project_rev}.reg
+
+# Add a null character to the end of the file.
+printf '\0' >> ${quartusdir}/${project_rev}.reg
+
+# sed: extract first number on the line (returned by wc) = size
+size=`wc -c ${quartusdir}/${project_rev}.reg | sed 's/\([0-9]*\).*/\1/'`
+
+# See if byte size happens to be on word boundary, if not pad with more null characters
+while [ $(( $size % 4 )) -ne 0 ] 
+do
+  printf '\0' >> ${quartusdir}/${project_rev}.reg
+  size=`wc -c ${quartusdir}/${project_rev}.reg | sed 's/\([0-9]*\).*/\1/'`
+done
+
+unb_info $0 "Created ${quartusdir}/${project_rev}.reg"
+unb_info $0 "Size of ${project_rev}.reg: ${size} bytes"
+
+unb_exec $0 msg="Calling run_mif to convert ${project_rev}.reg to ${project_rev}.mif" run_mif ${toolset} $*
+
+unb_info $0 "Done"
+

@@ -1,0 +1,5 @@
+#!/bin/bash 
+
+echo "Choose 'run_all_sopc' or 'run_all_qsys'"
+exit 1
+

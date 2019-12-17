@@ -1,0 +1,115 @@
+#!/bin/bash
+###############################################################################
+#
+# Copyright (C) 2014
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
+
+# Purpose: Map command line argument to a tool version
+# Description:
+#   By using command line arguments like "unb1" or "unb2" to select the tool
+#   version it is easier to manage combinations of tool versions.
+
+# General tool and project settings
+# - use '. <script>.sh' to have the settings apply in this shell, otherwise they get lost when <script>.sh returns
+
+# Select target
+export TOOLSET=${1:-}
+echo "Make Modelsim and library simulation settings for RadioHDL with :"
+echo "  - Tool setting: ${TOOLSET}"
+echo "  - Site setting: ${SITE-}"
+
+# Select tool version
+if [ "${SITE-}" = "USN" ]; then
+  if [ "${TOOLSET}" = "unb1" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 11.1sp2
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 6.6d
+  elif [ "${TOOLSET}" = "unb2" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.0
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+  elif [ "${TOOLSET}" = "unb2a" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.1
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+  else
+    echo "error: unknown tool setting: ${TOOLSET} (choose 'unb1', 'unb2' or 'unb2a')"
+    exit 1
+  fi # "${TOOLSET}" 
+else  # default site
+  if [ "${TOOLSET}" = "unb1" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 11.1
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 6.6c
+  elif [ "${TOOLSET}" = "unb2" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.0
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "unb2a" ]; then
+    . ${RADIOHDL}/tools/quartus/quartus_version.sh 15.1
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "vcu108" ]; then
+    . ${RADIOHDL}/tools/vivado/vivado_version.sh 2016.4
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "gmi" ]; then
+    #. ${RADIOHDL}/tools/vivado/vivado_version.sh 2016.4
+    . ${RADIOHDL}/tools/vivado/vivado_version.sh 2017.2
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "lru" ]; then
+    . ${RADIOHDL}/tools/vivado/vivado_version.sh 2017.4
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    #export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "lru_es" ]; then
+    . ${RADIOHDL}/tools/vivado/vivado_version.sh 2017.4
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    #export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "xh_lru_es" ]; then
+    . ${RADIOHDL}/tools/vivado/vivado_version.sh 2019.1
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    #export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "kc705" ]; then
+    . ${RADIOHDL}/tools/vivado/vivado_version.sh 2018.2
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+    # Next line may be needed, but comment it if it yields ld.so errors
+    #export LD_PRELOAD=/home/software/freetype2/usr/lib/libfreetype.so
+  elif [ "${TOOLSET}" = "kcu105" ]; then
+    . ${RADIOHDL}/tools/vivado/vivado_version_csiro.sh 2017.2
+    . ${RADIOHDL}/tools/modelsim/modelsim_version.sh 10.4
+  else
+    echo "error: unknown tool setting: ${TOOLSET} (choose 'unb1', 'unb2', 'unb2a', 'gmi', 'lru', 'kcu105', 'xh_lru_es')"
+    exit 1
+  fi
+fi
+
+
+
+# Remarks:
+# - No need for MODELSIM_TCL environment variable and modelsim.tcl, because these are not preferred and instead call commands.do via -do argument.
+# - No need for MODELSIM environment variable to point to a specific modelsim.ini file, because RADIOHDL can use the default modelsim.ini
+# - For RADIOHDL the modelsim project files are created by a Python script.
+# - The paths to the IEEE libraries are defined by the MODELTECH environment variable that gets defined by Modelsim itself when it starts
+# - The paths to the FPGA technology libraries are defined in the [library] section in the modelsim project files using MODEL_TECH_ALTERA_LIB
+#   environment variable that gets defined in quartus_version.sh. Similar paths to generic libraries are defined using their absolute path.
+# - Default modelsim.ini settings can be overruled by project specific settings in the [vsim] section in the modelsim project files.

@@ -1,0 +1,258 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : diag
+hdl_library_description: " This is the description for the bf package "
+
+peripherals:
+  - 
+    peripheral_name:  diag_block_gen
+
+    parameters:
+      - { name: g_nof_streams, value: 1 }
+      - { name: g_buf_dat_w  , value: 32 }
+      - { name: g_buf_addr_w , value: 7 }
+
+    slave_ports:
+      - 
+        # actual hdl name: reg_diag_bg 
+        slave_prefix : DIAG 
+        slave_name   : BG  
+        slave_postfix: REG
+        slave_type : REG
+        fields:
+          - 
+            field_name    : Enable
+            width         : 2
+            address_offset: 0x0
+            field_description: |
+                "Bit 0: enable the block generator Bit 1: enable the blok generator on PPS"
+          - 
+            field_name    :     Samples_per_packet
+            width         : 16
+            address_offset: 0x1
+            reset_value   : 256
+            field_description: |
+                "This REG specifies the number samples in a packet"
+          - 
+            field_name    :     Blocks_per_sync
+            width         : 16
+            address_offset: 0x2
+            reset_value   : 781250
+            field_description: |
+                "This REG specifies the number of packets in a sync period"
+          - 
+            field_name    :     Gapsize
+            width         : 16
+            address_offset: 0x3
+            reset_value   : 80
+            field_description: |
+                "This REG specifies the gap in number of clock cycles between two consecutive packets"
+          - 
+            field_name    :     Mem_low_address
+            width         : 8
+            address_offset: 0x4
+            field_description: |
+                "This REG specifies the starting address for reading from the waveform memory"
+          - 
+            field_name    :     Mem_high_address
+            width         : 8
+            address_offset: 0x5
+            field_description: |
+                "This REG specifies the last address to be read when from the waveform memory"
+          - 
+            field_name    :     BSN_init_low
+            address_offset: 0x6
+            field_description: |
+                "This REG specifies the lower(LSB) 32 bits [31:0] of the initialization BSN"
+          - 
+            field_name    :     BSN_init_high
+            address_offset: 0x7
+            field_description: |
+                "This REG specifies the higher(MSB) 32 bits [63:32] of the initialization BSN"
+      - 
+        # actual hdl name: ram_diag_bg
+        slave_prefix : DIAG 
+        slave_name   : BG  
+        slave_postfix: RAM
+        number_of_slaves: g_nof_streams
+        slave_type      : RAM
+        fields:
+          - 
+            field_name: diag_bg
+            width: g_buf_dat_w
+            number_of_fields: 2**g_buf_addr_w
+            field_description  : |
+                "Contains the Waveform data for the data-streams to be send"
+    peripheral_description: |
+        "Block generator"
+  - 
+    peripheral_name: diag_data_buffer
+
+    parameters:
+      -  { name: g_nof_streams , value: 1 }
+      -  { name: g_data_w      , value: 32 }
+      -  { name: g_buf_nof_data, value: 1024 }
+    
+    slave_ports:
+      - 
+        # actual hdl name: reg_diag_data_buffer
+        slave_prefix : DIAG 
+        slave_name   : DATA_BUFFER  
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          - 
+            field_name    : Sync_cnt
+            access_mode   : RO
+            address_offset: 0x0
+            field_description: |
+                "Sync_cnt contains the nof times the buffer (ST) has received a sync pulse since the last MM read
+                (cleared when the last data word from the buffer is read)"
+          - 
+            field_name    : Word_cnt
+            access_mode   : RO
+            address_offset: 0x1
+            field_description: |
+                "Word_cnt indicates the number of word currently (ST) written in the buffer. Cleared on (ST) re-write of buffer."
+          - 
+            field_name    : Valid_cnt_arm_ena
+            address_offset: 0x2
+            field_description: |
+                "Valid_cnt contains the number of valid cycles since the last sync pulse. Cleared on every sync pulse.
+                Arm_enable: Write to this REG to arm the system.
+                After the system is armed the next syn pulse will trigger the acquisition of data."
+          - 
+            field_name    : Reg_sync_delay
+            address_offset: 0x3
+            field_description: |
+                "Reg_sync_delay contains the number of valid cycles to delay/wait after an armed-syncpulse,
+                before the data is written to the databuffer."
+          - 
+            field_name    : Version
+            access_mode   : RO
+            address_offset: 0x7
+            field_description: |
+                "Version contains the version number of the databuffer peripheral."
+        slave_description: ""
+      - 
+        # actual hdl name: ram_diag_data_buffer
+        slave_prefix : DIAG 
+        slave_name   : DATA_BUFFER  
+        slave_postfix: RAM    
+        number_of_slaves: g_nof_streams
+        slave_type      : RAM
+        fields:
+          - 
+            field_name    : ram
+            width         : g_data_w
+            number_of_fields: g_buf_nof_data
+            field_description: |
+                "Contains the data that is being captured."
+        slave_description: ""
+
+    peripheral_description: |
+        "Peripheral diag_data_buffer
+        
+        Memory map RAM_DIAG_DATA_BUFFER
+        
+        If there is only one instance then the RAM name is RAM_DIAG_DATA_BUFFER, else it
+        gets an instanceName as post fix so RAM_DIAG_DATA_BUFFER_<instanceName|.
+        
+        The diag_data_buffer can store multiple streams in parallel. For example
+        1024 data words for 16 streams the memory map becomes:      16
+        
+        
+        streamNr = 0:
+        +------------------------------------------------------------+
+        |   byte 3   |   byte 2   |   byte 1   |   byte 0   |   wi   |
+        |------------------------------------------------------------|
+        |                   data_0[31:0]                    |  0     |
+        |                   data_1[31:0]                    |  1     |
+        |                   ...                             |  ..    |
+        |                data_1023[31:0]                    |  1023  |
+        +------------------------------------------------------------+
+        
+        
+        streamNr = 1:                                                                    
+        +------------------------------------------------------------+
+        |   byte 3   |   byte 2   |   byte 1   |   byte 0   |   wi   |
+        |------------------------------------------------------------|
+        |                   data_0[31:0]                    |  1024  |
+        |                   data_1[31:0]                    |  1025  |
+        |                   ...                             |  ..    |
+        |                data_1023[31:0]                    |  2047  |
+        +------------------------------------------------------------+
+        
+        
+        streamNr = 15:                                                                   
+        +------------------------------------------------------------+
+        |   byte 3   |   byte 2   |   byte 1   |   byte 0   |   wi   |
+        |------------------------------------------------------------|
+        |                   data_0[31:0]                    |  15360 |
+        |                   data_1[31:0]                    |  15361 |
+        |                   ...                             |  ..    |
+        |                data_1023[31:0]                    |  16383 |
+        +------------------------------------------------------------+
+        
+        
+        Remarks:
+        - The data buffer stores valid data samples until it is full.
+        - The data buffer fills again after an external sync pulse or after the
+            last data word was read via the MM bus, dependend on whether the generic
+            g_use_in_sync is TRUE or FALSE in diag_data_buffer.vhd.
+        - The actual data width depends on the generic g_data_w in
+            diag_data_buffer.vhd. The value of unused MSBits is undefined.
+        
+        
+        Memory map REG_DIAG_DATA_BUFFER (one for each stream like the RAM above)
+        
+        +----------------------------------------------------------------------------+
+        |   byte 3   |   byte 2   |   byte 1   |   byte 0   |  wi                    |
+        |----------------------------------------------------------------------------|
+        |                  sync_cnt[31:0]                   | 0 RO (Version 0 and 1) |
+        |                  word_cnt[31:0]                   | 1 RO (Version 0 and 1) |
+        |        R = valid_cnt[31:0] W = arm_enable         | 2 RW (Version 1 only)  |
+        |               reg_sync_delay[31:0]                | 3 RW (Version 1 only)  | 
+        |                     RESERVED                      | 4    (Version 1 only)  |
+        |                     RESERVED                      | 5    (Version 1 only)  |
+        |                     RESERVED                      | 6    (Version 1 only)  |
+        |                  version[31:0]                    | 7 RO (Version 1 only)  |
+        +----------------------------------------------------------------------------+
+        
+        
+        There are 3 access_modes of operation of the data_buffer.
+        Version 0 supports access_Mode 1 and access_Mode 2
+        Version 1 supports access_Mode 1, access_Mode 2 and access_Mode 3
+        
+        (1) NON-SYNC access_MODE: g_use_in_sync = FALSE
+        In this access_mode the first g_nof_data valid data input words are stored in the
+        data buffer. A new set of data will be stored when the last word is read
+        from the buffer via the MM interface.
+        
+        (2) SYNC-access_MODE: g_use_in_sync = TRUE and reg_sync_delay = 0
+        On every received sync pulse a number of g_nof_data valid words are written
+        to the databuffer. Data will be overwritten on every new sync pulse. It is
+        up to the user to read out the data in time in between two sync pulses
+        
+        (3) ARM-access_MODE: g_use_in_sync = TRUE and reg_sync_delay | 0
+        First the reg_sync_delay should be written with a desired delay value. Then
+        the arm REG must be written. After being armed the databuffer will wait
+        for the first sync pulse to arrive. When it has arrived it will wait for
+        reg_sync_delay valid cycles before g_nof_data valid words are written to the
+        databuffer. The data can then be read out through the MM interface. New data
+        will only be written if the databuffer is being armed again.
+        
+        - Sync_cnt contains the nof times the buffer (ST) has received a sync pulse
+            since the last MM read (cleared when the last data word from the buffer is
+            read);
+        - Word_cnt indicates the number of word currently (ST) written in the buffer.
+            Cleared on (ST) re-write of buffer.
+        - valid_cnt contains the number of valid cycles since the last sync pulse.
+            Cleared on every sync pulse.
+        - arm_enable. Write to this REG to arm the system. After the system is
+            armed the next syn pulse will truigger the acquisition of data.
+        - reg_sync_delay contains the number of valid cycles to delay/wait after an armed-syncpulse,
+            before the data is written to the databuffer.
+        - version contains the version number of the databuffer peripheral."

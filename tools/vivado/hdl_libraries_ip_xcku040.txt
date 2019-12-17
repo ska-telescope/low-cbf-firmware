@@ -1,0 +1,2 @@
+secureip = $MODEL_TECH_XILINX_LIB/vivado/2017.2/secureip
+unisim = $MODEL_TECH_XILINX_LIB/vivado/2017.2/unisim

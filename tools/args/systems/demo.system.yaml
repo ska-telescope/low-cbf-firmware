@@ -1,0 +1,145 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : system
+
+hdl_library_name: demo
+
+system_name       : demo
+system_description: |
+        "DEMO system for testing mm tools
+        Now with extra line ??"
+
+# board_select: unb1: later
+# bus_select : qsys: later
+
+# system parameters
+parameters:
+  - { name : nof_fringe_stop_units, value: 4 }
+  - { name : nof_streams,           value: 12 }
+
+peripherals:
+  - peripheral_name: rom_system_info
+    subsystem_name : ''
+    slave_port_names:
+        - rom_system_info
+    parameters:
+      - { name: lock_base_address, value: 0x1000 }    
+    
+  - peripheral_name: reg_system_info
+    subsystem_name : ''
+    slave_port_names:
+        - reg_system_info
+    parameters:
+      - { name: lock_base_address, value: 0x0 }    
+
+  - peripheral_name: fringe_stop_unit
+    subsystem_name : ''
+    number_of_peripherals: nof_fringe_stop_units
+    slave_port_names:
+        - ram_fringe_stop_step
+        - fringe_stop_offset
+    
+  - peripheral_name: diag_block_gen
+    subsystem_name : input
+    slave_port_names:
+        - reg_diag_bg_input
+        - ram_diag_bg_input
+    parameters:
+      - { name : g_nof_streams, value: nof_streams }
+      - { name : g_buf_addr_w,  value: 7 }
+
+  - peripheral_name: diag_block_gen
+    subsystem_name : output
+    slave_port_names:
+        - reg_diag_bg_output
+        - ram_diag_bg_output
+    parameters:
+      - { name : g_nof_streams, value: 2 }
+
+  - peripheral_name: diag_block_gen
+    subsystem_name : mesh
+    slave_port_names:
+        - reg_diag_bg_mesh
+        - ram_diag_bg_mesh
+    parameters:
+      - { name : g_nof_streams, value: 8 }
+      - { name : g_buf_addr_w,  value: 8 }
+
+  - peripheral_name: diag_block_gen
+    subsystem_name : proc
+    slave_port_names:
+        - reg_diag_bg_proc
+        - ram_diag_bg_proc
+    parameters:
+      - { name : g_nof_streams, value: nof_streams }
+      - { name : g_buf_addr_w,  value: 7 }
+
+  - peripheral_name: bf_unit
+    subsystem_name : ''
+    slave_port_names:
+        - ram_bf_weights
+        - ram_ss_ss_wide
+        - ram_st_sst_bf
+        - reg_st_sst_bf
+    parameters:
+      - { name : g_bf.in_weights_w,      value: 3 }
+      - { name : g_bf.nof_weights,       value: 128 }
+      - { name : g_bf.nof_signal_paths,  value: 32 }
+      - { name : g_bf.nof_subbands,      value: 12 }
+      - { name : g_bf.nof_input_streams, value: 8 }
+
+  - peripheral_name: diag_data_buffer 
+    subsystem_name : input_pre
+    slave_port_names:
+        - reg_diag_data_buffer_input_pre
+        - ram_diag_data_buffer_input_pre
+    parameters:    
+      - { name : g_nof_streams, value: nof_streams }
+      - { name : g_data_w, value: 16 }
+      - { name : g_buf_nof_data, value: 8192 }
+
+  - peripheral_name: diag_data_buffer
+    subsystem_name : input_post
+    slave_port_names:
+        - reg_diag_data_buffer_input_post
+        - ram_diag_data_buffer_input_post
+    parameters:
+      - { name : g_nof_streams, value: nof_streams }
+      - { name : g_data_w, value: 16 }
+      - { name : g_buf_nof_data, value: 8192 }
+
+  - peripheral_name: diag_data_buffer
+    subsystem_name : mesh
+    slave_port_names:
+        - reg_diag_data_buffer_mesh
+        - ram_diag_data_buffer_mesh
+    parameters:
+      - { name : g_nof_streams, value: 8 }
+      - { name : g_data_w, value: 16 }
+      - { name : g_buf_nof_data, value: 8 }
+
+  - peripheral_name: diag_data_buffer
+    subsystem_name : proc
+    slave_port_names:
+        - reg_diag_data_buffer_proc
+        - ram_diag_data_buffer_proc
+    parameters:
+      - { name : g_nof_streams, value: nof_streams }
+      - { name : g_data_w, value: 16 }
+      - { name : g_buf_nof_data, value: 128 }
+
+  - peripheral_name: dp_bsn_align
+    subsystem_name : input
+    slave_port_names:
+        - reg_dp_bsn_align_input
+    parameters:
+      - { name : g_nof_input, value: 3 }
+
+  - peripheral_name: dp_fifo_fill
+    subsystem_name : ''
+    slave_port_names:
+        - reg_dp_fifo_fill
+    parameters:
+      - { name : g_nof_streams, value: 3 }
+        
+

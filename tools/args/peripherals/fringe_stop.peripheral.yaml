@@ -1,0 +1,121 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : fringe_stop
+hdl_library_description: " This is the description for the finge_stop library "
+
+peripherals:
+  - 
+    peripheral_name: fringe_stop_unit
+
+    parameters:
+      - { name: g_nof_channels,  value: 256 }
+      - { name: g_fs_offset_w ,  value: 10 }
+      - { name: g_fs_step_w   ,  value: 17 }
+    
+    slave_ports:
+      - 
+        # actual hdl name: ram_fringe_stop_step
+        slave_prefix : FRINGE_STOP 
+        slave_name   : STEP  
+        slave_postfix: RAM
+        slave_type   : RAM
+        fields:
+          - 
+            field_name  : fringe_stop_step
+            width: g_fs_step_w
+            number_of_fields: g_nof_channels
+            field_description: |
+                "Contains the step size for all nof_channels channels."
+        slave_discription: " "
+
+      - 
+        # actual hdl name: fringe_stop_offset
+        slave_prefix : FRINGE_STOP 
+        slave_name   : OFFSET  
+        slave_postfix: RAM
+        slave_type   : RAM
+        fields:
+          - 
+            field_name:  fringe_stop_offset
+            width: g_fs_offset_w
+            number_of_fields: g_nof_channels
+            field_description: |
+                "Contains the offset for all nof_channels channels."
+        slave_discription: " "
+
+    peripheral_description: |
+        "The fringe stopping peripheral is based on piecewise linear coefficients. The coefficients are indicated as offset and step.
+        The offset and step are used to calculate an index that is used to select a certain phase from a look-up table. The look-up
+        table contains a series of complex values that are based on a sinewave. The length of the look-up table is determined by the
+        width of the offset RAM (offset_w). If offset_w = 10 then the length of the look-up table is 2^offset_w=1024. In that case
+        the look-up table contains 1024 complex values that make one sine-wave period.
+        
+        The index is determined as follows:
+        
+            index(t) = (offset + step*t) MOD 2^offset_w
+        
+        Where t ranges from 0 to Tmax-1. Tmax is the number of samples that fit in the control interval (the sync interval).
+        The fringe stop peripheral is capable to process 1 or more channels in series (nof_channels).
+        
+        Accumulation Register
+        The accumulation register that maintains the accumulated step value is flushed by the sync pulse in the system.
+        The accumulation register in the Apertif case is 31 bit wide. For the additon of the offset and the accumulated step the
+        10 (offset_w) highest bit of the accumulated value are used --> offset(9:0) + step_accumulated(30:21).
+        
+        RAMs
+        The fringe stop interface is facilitated by two RAMs:
+        
+            -RAM_FRINGE_STOP_OFFSET
+            -RAM_FRINGE_STOP_STEP
+        
+        Both RAMs are implemented as dual-page RAMs.The page swap is triggered by the sync-pulse. The VHDL is always accessing
+        the page that is NOT accessible for the software and vice-versa. This means that the values that are written to the RAMs
+        will only be actually used in the following sync-interval:
+        
+        
+        A|         _             T0              _             T1              _            T2 
+        A| sync __| |___________________________| |___________________________| |________________________
+        A|        |    VHDL uses data T0        |    VHDL uses data T1        |    VHDL uses data T2 
+        A|        |    Software writes data T1  |    Software writes data T2  |    Software writes data T3
+        A|        |                             |                             | 
+        A|    page_swap                     page_swap                     page_swap 
+        
+        
+        The software should be sure to write the next set of data before the sync_interval expires. Keeping track of the
+        synchronization with the sync-pulse can be done, using one of the BSN Monitors in the system. In the Apertif system
+        the BSN Monitor at the input of the beamformer can be used.
+        
+        The number_of_fields of both RAMs is determined by the number of unique channels that ought to be processed.
+        
+        RAM_FRINGE_STOP_OFFSET
+        This RAM contains the offset values for all channels, ranging from Channel 0 to Channel Max-1. The width of the RAM is
+        defined by the offset_w.
+        
+        +-----------------------------------------+
+        | RAM_address     | RAM_content           | 
+        |-----------------------------------------|
+        |   0x0           | Offset_Channel_0      |
+        |   0x1           | Offset_Channel_1      |
+        |   0x2           | Offset_Channel_2      |
+        |   0x3           | Offset_Channel_3      |
+        |   ..            |       ..              |
+        |   ..            | Offset_Channel_Max-1  |
+        +-----------------------------------------+
+        
+        RAM_FRINGE_STOP_STEP
+        This RAM contains the step size values for all channels, ranging from Channel 0 to Channel Max-1. The width of the RAM is
+        specified by the step_w.
+        
+        +-----------------------------------------+
+        | RAM_address     | RAM_content           | 
+        |-----------------------------------------|
+        |   0x0           | Step_Channel_0        |
+        |   0x1           | Step_Channel_1        |
+        |   0x2           | Step_Channel_2        |
+        |   0x3           | Step_Channel_3        |
+        |   ..            |       ..              |
+        |   ..            | Step_Channel_Max-1    |
+        +-----------------------------------------+"
+        

@@ -1,0 +1,175 @@
+#!/bin/bash
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2010                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+#
+# Run this tool with at least the commandline arguments:
+#   run_term toolset node_num
+# example:
+#   run_term unb1 0
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ...  ($0 is untouched)
+
+cable=
+node=
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        --cable=*)           
+           cable=`echo ${arg} | sed 's/^cable=//'`
+        ;;
+    esac
+done
+
+if [ $1 ]
+then
+  node=$1
+else
+  unb_error $0 "Enter a node number [0..7] as argument"
+fi
+
+
+
+
+
+
+#Convert user passed node to actual FPGA JTAG ID
+#===============================================
+
+# ..First detect if we're using single board or multi board (rack) notation
+charcount=
+digits=
+
+# Count digits
+charcount=`echo ${node} | wc -c`
+# Assign to $digits only the first time, compare to $digits the rest of the iterations
+if [ -z "${digits}" ]; then
+  digits=${charcount}
+  if [ "${digits}" = 2 -o "${digits}" = 3 ]; then
+    # Do nothing
+    : 
+  else
+    unb_error $0 "Invalid node ID. Use [0..7] (single board) or [0..3][0..7] (multi board)"
+  fi  
+else
+  # Check if the rest of the passed nodes have the same notation    
+  if [ "${charcount}" != "${digits}" ]; then
+    unb_error $0 "Inconsistent node IDs. Use either [0..7] (single board) or [0..3][0..7] (multi board)"
+  fi
+fi  
+
+
+# Now we have a proper list of nodes. Convert it to a FPGA JTAG ID.
+fpga=
+if [ "${digits}" = 2 ]; then
+  # don't accept node id>7
+  if [ ${node} -gt 7 ]; then
+    unb_error $0 "Node ID exceeds single UniBoard range [0..7]. If desired, use a multi-board node ID [0..3][0..7]"
+  fi
+  # Append node number plus 1 to fpga list
+  fpga="$(expr ${node} + 1)"
+fi
+
+
+
+# In the UniRack, the JTAG board IDs for board 0 (JTAG ID 1..8) and board 1 (JTAG ID 9..16) are swapped.
+# This makes it use counter loops and such, so we'll just use an associative array to map 
+# the multi-board IDs to actual FPGA JTAG ID.
+match=
+if [ "${digits}" = 3 ]; then
+  declare -A node_jtag=(\
+    ["00"]="9"\
+    ["01"]="10"\
+    ["02"]="11"\
+    ["03"]="12"\
+    ["04"]="13"\
+    ["05"]="14"\
+    ["06"]="15"\
+    ["07"]="16"\
+    ["10"]="1"\
+    ["11"]="2"\
+    ["12"]="3"\
+    ["13"]="4"\
+    ["14"]="5"\
+    ["15"]="6"\
+    ["16"]="7"\
+    ["17"]="8"\
+    ["20"]="17"\
+    ["21"]="18"\
+    ["22"]="19"\
+    ["23"]="20"\
+    ["24"]="21"\
+    ["25"]="22"\
+    ["26"]="23"\
+    ["27"]="24"\
+    ["30"]="25"\
+    ["31"]="26"\
+    ["32"]="27"\
+    ["33"]="28"\
+    ["34"]="29"\
+    ["35"]="30"\
+    ["36"]="31"\
+    ["37"]="32"\
+  )
+  # uncomment the following line to print the associative array (node ID - jtag ID)
+  # for node in "${!node_jtag[@]}"; do echo "$node - ${node_jtag["$node"]}"; done
+
+  match=0
+  # Loop through our array
+  for ar_node in "${!node_jtag[@]}"; do
+    # Look for matching node ID
+    if [ ${ar_node} = ${node} ]; then
+      # Found a match! Append corresponding JTAG ID to our FPGA list.
+      fpga="${node_jtag["$node"]}"
+      match=1
+    fi
+  done    
+  # Match should be 1, otherwise user passed non-existent node ID.
+  if [ "${match}" = 0 ]; then
+    unb_error $0 "Invalid node ID. Node IDs should be passed as [0..3][0..7]"
+  fi
+
+fi
+
+if [ -z "${cable}" ]; then
+  if [ -n "${UNB_DEFAULT_CABLE+x}" ]; then
+    unb_info $0 "Opening NIOS II terminal on cable UNB_DEFAULT_CABLE"
+    unb_exec $0  nios2-terminal --device $fpga --cable=${UNB_DEFAULT_CABLE}     
+  else
+    unb_info $0 "Opening NIOS II terminal on default cable 1"
+    unb_exec $0  nios2-terminal --device $fpga --cable=1
+  fi
+else
+  unb_info $0 "Opening NIOS II terminal with argument ${cable}"
+  unb_exec $0  nios2-terminal --device $fpga ${cable}
+fi
+
+

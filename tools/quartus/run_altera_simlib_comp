@@ -1,0 +1,134 @@
+#!/bin/bash
+###############################################################################
+#
+# Copyright (C) 2014
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
+
+# Purpose: Compile the Altera simulation libraries
+# Description:
+#   This script is equivalent to manually running the Quartus GUI tools/Launch simulation library compiler.
+#   However it is needed to use this script, because then the Altera libraries can be compiled with the 'vlib -type directory' option.
+#   Default 'vlib' compiles all components into a single binary but to be able to use 'mk all' it is necessary that each component
+#   is compiled into a seperate binary.
+#   Therefore this script uses 'sed' to replace 'vlib' by 'vlib -type directory' in the created Modelsim .do file and then
+#   it then runs the .do file. This needs to be done for all families (arria10) and all HDL (vhdl and verilog).
+#   Another advantage of using this script is that it can be kept in SVN and that it avoids having to explain how to do it manually
+#   via the GUI.
+# Usage:
+#   Assume $MODEL_TECH_ALTERA_LIB=/home/software/modelsim_altera_libs/14.1
+#
+#   First run the script in some user directory that where $RADIOHDL is known. Use the output directory that will fit the
+#   $MODEL_TECH_ALTERA_LIB that is defined in quartus_version.sh in set_quartus.
+#   The FPGA device family library needs to be compiled separately. To compile the vhdl and verilog for the arria10 library for the
+#   unb2 tool settings defined in set_quartus and set_modelsim do:
+#
+#   > run_altera_simlib_comp unb2 14.1 stratixiv
+#   > run_altera_simlib_comp unb2 14.1 arria10
+#
+#   Then use 'sudo' to move the directory to the protected central project directory that is set by $MODEL_TECH_ALTERA_LIB.
+#
+#   > sudo mv 14.1 /home/software/modelsim_altera_libs
+#   
+
+# 1) General tool and project settings
+# - use '. <script>.sh' to have the settings apply in this shell, otherwise they get lost when <script>.sh returns
+
+# Tool settings for selected target "", "unb1", or "unb2" (where "" defaults to "unb1")
+TOOLSET=${1:-}
+if [ "${TOOLSET}" = "" ]; then
+  unb_error $0 "Please specify all arguments\nUsage: $0 <toolset> <compilation output directory> <FPGA device family>"
+fi
+
+# Select output directory for the library compilation results
+OUTPUT_DIR=${2:-}
+if [ "${OUTPUT_DIR}" = "" ]; then
+  unb_error $0 "Please specify all arguments\nUsage: $0 <toolset> <compilation output directory> <FPGA device family>"
+fi
+
+# Select FPGA device family for the library compilation
+FAMILY=${3:-}
+if [ "${FAMILY}" = "" ]; then
+  unb_error $0 "Please specify all arguments\nUsage: $0 <toolset> <compilation output directory> <FPGA device family>"
+fi
+
+echo ""
+echo "Create Altera libraries for simulation with the following settings:"
+echo "    - Toolset target    : ${TOOLSET}"
+echo "    - Output directory  : ${OUTPUT_DIR}"
+echo "    - FPGA device family: ${FAMILY}"
+echo ""
+
+# Tool settings for selected target
+. ${RADIOHDL}/tools/quartus/set_quartus ${TOOLSET}
+. ${RADIOHDL}/tools/modelsim/set_modelsim ${TOOLSET}
+
+
+# 2) Create Modelsim .do file for compiling the Altera simulation libraries
+# . verilog
+quartus_sh --simlib_comp -family ${FAMILY} \
+                         -tool modelsim \
+                         -tool_path $VSIM_DIR \
+                         -language verilog \
+                         -directory ${OUTPUT_DIR} \
+                         -log ${FAMILY}_verilog.log \
+                         -cmd_file ${FAMILY}_verilog.do \
+                         -gen_only \
+                         -suppress_messages
+# . vhdl
+quartus_sh --simlib_comp -family ${FAMILY} \
+                         -tool modelsim \
+                         -tool_path $VSIM_DIR \
+                         -language vhdl \
+                         -directory ${OUTPUT_DIR} \
+                         -log ${FAMILY}_vhdl.log \
+                         -cmd_file ${FAMILY}_vhdl.do \
+                         -gen_only \
+                         -suppress_messages
+                         
+# Go to the output directory
+cd ${OUTPUT_DIR}
+
+# Keep the log files
+mv ../${FAMILY}_verilog.log .
+mv ../${FAMILY}_vhdl.log .
+
+
+# 3) Now use sed to replace 'vlib' by 'vlib -type directory'
+
+# Usage: sed -i 's/original/new/g' file.txt
+# Explanation:
+#    sed = Stream EDitor
+#    -i = in-place (i.e. save back to the original file)
+#
+#    The command string:
+#        s = the substitute command
+#        original = a regular expression describing the word to replace (or just the word itself)
+#        new = the text to replace it with
+#        g = global (i.e. replace all and not just the first occurrence)
+#
+#    file.txt = the file name 
+
+if [ "${TOOLSET}" != "unb1" ]; then
+  sed -i 's/vlib/vlib -type directory/g' ${FAMILY}_verilog.do
+  sed -i 's/vlib/vlib -type directory/g' ${FAMILY}_vhdl.do
+fi
+
+# 4) Compile the Altera libraries with Modelsim
+$VSIM_DIR/vsim -c -do ${FAMILY}_verilog.do
+$VSIM_DIR/vsim -c -do ${FAMILY}_vhdl.do

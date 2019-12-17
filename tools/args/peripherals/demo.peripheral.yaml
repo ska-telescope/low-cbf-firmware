@@ -1,0 +1,123 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : demo
+hdl_library_description: " Gemini Publish/Subscribe Service Registers "
+
+peripherals: 
+  - peripheral_name        : periph1
+    peripheral_description : "Registers associated with Publish/Subscribe protocol block"
+
+    slave_ports:
+      - slave_name        : client
+        slave_type        : FIFO
+        fields: 
+          - - field_name  : data
+              width       : 32
+              number_of_fields : 1000
+              access_mode   : WO
+              
+      - slave_name        : test
+        slave_type        : RAM
+        fields: 
+          - - field_name  : weight
+              width       : 32
+              user_width  : 64
+              access_mode : RW
+              number_of_fields : 2000             
+              
+      - slave_name        : client
+        slave_type        : reg
+        number_of_slaves  : 4
+        slave_description : "Registers associated with Subscription client"
+        fields: 
+          #################################
+          - - field_name        : destination_ip 
+              width             : 32
+              access_mode       : RW
+              default           : 0xffffffff
+              field_description : "Destination IP Address"            
+          #################################
+          - - field_name        : destination_mac_lower 
+              width             : 32
+              access_mode       : RW
+              default           : 0xffffffff
+              field_description : "Destination MAC Lower Address"
+          #################################
+          - - field_name        : destination_mac_upper
+              width             : 16
+              access_mode       : RW
+              default           : 0xffff
+              field_description : "Destination MAC Upper Address"
+          #################################
+          - - field_name        : destination_port
+              width             : 16
+              access_mode       : RW
+              default           : 0x7531
+              field_description : "Destination UDP port"
+          #################################
+          - - field_name        : event_mask 
+              width             : 32
+              access_mode       : RW
+              default           : 0x0
+              field_description : "Publish Event Mask"
+          #################################
+          - - field_name        : event 
+              width             : 32
+              access_mode       : RO
+              default           : 0x0
+              field_description : "Current Pending or last event"
+          #################################
+          - - field_name        : delivery_interval 
+              width             : 14
+              access_mode       : RW
+              default           : 0x7D0
+              number_of_fields  : 3
+              field_description : "Delivery Interval in mS"
+          #################################
+          - control:
+            - field_name        : acknowledge
+              width             : 1
+              access_mode       : RW
+              default           : 1
+              #address_offset    : 16
+              side_effect       : PW
+              number_of_fields  : 4
+              bit_offset        : 3 
+              field_description : "Acknowledge pulse event for reliable delivery"
+              
+          #################################
+          - status:
+            - field_name        : event_overflow
+              width             : 1
+              access_mode       : RO
+              default           : 1        
+              field_description : "An event queue overflow conditon has occured. Reset on acknowledge"
+
+      #################################
+      - slave_name        : broadcast
+        slave_type        : reg
+        number_of_slaves  : 3
+        slave_description : "Control Register for broadcast client"
+        fields: 
+          - control:
+            - field_name        : acknowledge
+              width             : 1
+              access_mode       : RW
+              default           : 0
+              side_effect       : PW
+              field_description : "Acknowledge pulse event for reliable delivery"
+          # - - field_name        : ram1
+              # access_mode       : RW
+              # number_of_fields  : 50
+              # width             : 12
+          # - - field_name        : ram2
+              # number_of_fields  : 100
+          # - - field_name        : ram3
+              # number_of_fields  : 50
+          # - - field_name        : ram4
+              # number_of_fields  : 100
+          # - - field_name        : ram5
+              # number_of_fields  : 500
+              

@@ -1,0 +1,69 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : dp
+hdl_library_description: " This is the description for the dp package "
+
+peripherals:
+  - 
+    peripheral_name: dp_bsn_align
+
+    parameters:
+        - { name: g_nof_input, value : 2 }
+
+    slave_ports:
+      - 
+        # actual hdl name: reg_dp_bsn_align
+        slave_prefix : DP 
+        slave_name   : BSN_ALIGN  
+        slave_postfix: REG
+        number_of_slaves: g_nof_input
+        slave_type      : REG
+        fields:
+          - 
+            field_name       : Enable
+            width            : 1
+            address_offset   : 0x0
+            field_description: |
+                "Input enable register for input 0. If set to 0 the input is discarded from alignment.
+                    If set to 1 the corresopnding input is taken into account."
+        slave_discription: " "
+            
+    peripheral_description: "This is the BSN aligner"
+  
+  - 
+    peripheral_name: dp_fifo_fill
+    parameters:
+        - { name : g_nof_streams, value: 3 }
+
+    slave_ports:
+      - 
+        # actual hdl name: reg_dp_fifo_fill
+        slave_prefix : DP 
+        slave_name   : FIFO_FILL  
+        slave_postfix: REG
+        number_of_slaves: g_nof_streams
+        slave_type      : REG
+        fields:
+          - 
+            field_name       : fifo_used_words
+            access_mode      : RO
+            address_offset   : 0x0
+            field_description: "Register reflects the currently used nof words on the fifo."
+          - 
+            field_name       : fifo_status
+            width            : 2
+            access_mode      : RO
+            address_offset   : 0x1
+            field_description: "Bit 0: fifo_read_empty Bit 1: fifo_wr_full."
+          - 
+            field_name       : max_fifo_used_words
+            access_mode      : RO
+            address_offset   : 0x2
+            field_description: |
+                "Register contains the maximum number of words that have been in the fifo.
+                    Will be cleared after it has been read."
+        slave_discription: ""
+                
+    peripheral_description: "This is the MM slave version of the dp_fifo_fill component."

@@ -1,0 +1,150 @@
+#!/bin/bash
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2010                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+
+# Run this tool with the commandline arguments:
+#   run_qsys toolset design_name
+# example:
+#   run_qsys unb2 unb2_minimal
+#
+
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+# do NOT tolerate use of undefined variables
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+project=
+qsysfile=
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                if [ -n "${qsysfile}" ]; then
+                    unb_error $0 "Please specify only two non-option parameters:\na project name and, optionally, an QSYS filename"
+                fi
+                qsysfile=${arg}
+            else
+                project=${arg}
+            fi
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+# Form name of quartusdir and check if it indeed exists
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+unb_exec $0 msg=no test -d ${quartusdir}
+
+# the QSYS file is optional. If it is omitted choose the first
+# one we find. Let user know we do this
+if [ -z "${qsysfile}" ]; then
+    qsysfile=$(ls ${quartusdir}/*qsys 2>/dev/null | sed -n '1p')
+    if [ -z "${qsysfile}" ]; then
+        unb_error $0 "No QSYS files found in ${quartusdir}"
+    fi
+    qsysfile=`basename ${qsysfile}`
+    qsysfilebase=`basename ${qsysfile} .qsys`
+    unb_info $0 "SELECTING DEFAULT QSYS FILE ${qsysfile} (${qsysfilebase})"
+fi
+unb_exec $0 msg=no test -f "${quartusdir}/${qsysfile}"
+
+# Great. Having asserted our preconditions, let's do it!
+# note: we want unb_exec to display a slightly different msg
+#       AND ip-generate returns exitcode 4 on succesfull completion
+#           rather than the standard 0 ...
+cd ${quartusdir}
+txt="Generating QSYS system for project ${project}."
+
+unb_info $0 "generate files for simulation"
+unb_exec $0 msg="${txt}" expect=0 ip-generate --project-directory=${quartusdir}/ \
+            --output-directory=${quartusdir}/${qsysfilebase}/simulation/ \
+            --file-set=SIM_VHDL \
+            --report-file=sopcinfo:${quartusdir}/${qsysfilebase}.sopcinfo \
+            --report-file=html:${quartusdir}/${qsysfilebase}.html \
+            --report-file=csv:${quartusdir}/${qsysfilebase}.csv \
+            --report-file=spd:${quartusdir}/${qsysfilebase}.spd \
+            --component-file=${quartusdir}/${qsysfile}
+
+unb_info $0 "create modelsim project"
+unb_exec $0 msg="${txt}" expect=0 sim-script-gen --spd=${quartusdir}/${qsysfilebase}.spd \
+               --output-directory=${quartusdir}/${qsysfilebase}/simulation/
+
+
+unb_info $0 "generate .bsf"
+unb_exec $0 msg="${txt}" expect=0 ip-generate --project-directory=${quartusdir}/ \
+            --output-directory=${quartusdir}/${qsysfilebase}/ \
+            --report-file=bsf:${quartusdir}/${qsysfilebase}.bsf \
+            --component-file=${quartusdir}/${qsysfile}
+
+
+unb_info $0 "generate HDL files for synthesis"
+unb_exec $0 msg="${txt}" expect=0 ip-generate --project-directory=${quartusdir}/ \
+            --output-directory=${quartusdir}/${qsysfilebase}/synthesis/ \
+            --file-set=QUARTUS_SYNTH \
+            --report-file=sopcinfo:${quartusdir}/${qsysfilebase}.sopcinfo \
+            --report-file=html:${quartusdir}/${qsysfilebase}.html \
+            --report-file=qip:${quartusdir}/${qsysfilebase}/synthesis/${qsysfilebase}.qip \
+            --component-file=${quartusdir}/${qsysfile}
+
+unb_info $0 "QSYS generated successfully."
+
+
+
+
+# Additionally build the UNBOS App here as well:
+use_arg="use=qsys"
+if [ "${toolset}" = "unb2" -o "${toolset}" = "unb2a" ]; then
+  use_arg="use=gen2"
+fi
+unb_info $0 "Additionally building the UNBOS App: run_app ${toolset} ${project} ${use_arg}"
+. ${RADIOHDL}/tools/quartus/run_app ${toolset} ${project} ${use_arg}
+

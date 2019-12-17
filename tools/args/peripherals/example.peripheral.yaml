@@ -1,0 +1,76 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : peripheral
+
+hdl_library_name       : example
+hdl_library_description: "Example of an ARGS peripheral library. Comments in-line with key-value pairs should be replaced with actual values "
+
+peripherals: 
+  - peripheral_name        : periph1 # name used in register module and documentation 
+    peripheral_description : "periph1 is the 1st peripheral in the example peripheral library"
+
+    slave_ports:
+      - slave_name        : 
+        slave_type        : REG # or REG_IP when firmware generation not desired 
+        slave_protocol    : # optional, use intended for slave type REG_IP ONLY
+        number_of_slaves  : # optional, default: 1
+        slave_description : # Custom string for documentation, contained in quotation marks 
+        fields:   
+          ################################# Fully specified field with all key options
+          - - field_name        : # custom string, limit length where possible
+              width             : # optional, default: 32
+              bit_offset        : # optional, default: 0 or next available 
+              address_offset    : # optional, default: 0 or next available #check this  
+              access_mode       : # optional, default: RW
+              side_effect       : # optional, default: None, eg. PR eg2. PR,PW  
+              number_of_fields  : # optional, default: 1 
+              reset_value       : # optional, default 0
+              simulation_value  : # optional, default: reset_value
+              radix             : # optional, default: signed 
+              field_description : # custom string, include as much detail as possible for documentation purposes
+          ################################# Field with recommended minimum key options 
+          - <field_group_name>  : 
+            - field_name        : 
+              width             : 
+              access_mode       : 
+              field_description : 
+            - field_name        : 
+              width             : 
+              access_mode       : 
+              field_description :
+
+      #################################
+      - slave_name        : # custom string
+        slave_type        : RAM
+        number_of_slaves  : # optional, default: 1
+        slave_description : # custom string in quotation marks 
+        fields            : 
+          ################################# RAM is described by only one field 
+          - - field_name        : data # field name not important 
+              width             : # optional, resulting BRAM will always have data width of 32
+              user_width        : # optional, default: 32
+              access_mode       : # optional, default: RW 
+              number_of_fields  : # data depth, user set value gets rounded up to power of 2 from 1k up to 256k 
+              reset_value       : # can be specified by integer, equation or absolute path to .coe file 
+              simulation_value  : # optional, default: reset_value
+              radix             : # optional, default: signed
+              field_description : # custom string
+
+      #################################
+      - slave_name        : # custom string
+        slave_type        : FIFO
+        number_of_slaves  : # optional, default: 1
+        slave_description : # custom string in quotation marks 
+        fields            : 
+          ################################# FIFO is described by only one field 
+          - - field_name        : data # field name not important 
+              width             : # optional, resulting FIFO will always have data width of 32
+              access_mode       : # mandatory, RO or WO
+              number_of_fields  : # data depth, user set value gets rounded up to power of 2 from 512 up to 128k 
+              reset_value       : # can be specified by integer, equation or absolute path to .coe file 
+              simulation_value  : # optional, default: reset_value
+              radix             : # optional, default: signed
+              field_description : # custom string
+    
+        
+        

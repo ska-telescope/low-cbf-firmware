@@ -1,0 +1,119 @@
+#!/bin/bash
+# --------------------------------------------------------------------------
+# Copyright (C) 2016                                                  
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+# --------------------------------------------------------------------------
+
+# Purpose:
+# . Synthesize a list of designs
+# Description:
+# . TODO: Create cronjob; run every friday evening. SVN update this script in
+#         the cronjob before executing!
+# . This script will exit to the shell immediately on any errors during
+#   run_qcomp. 
+# . Raw Binary Files (RBF) will be generated from each design as a final step.
+
+# Usage:
+# . ./run_regtest_synth
+
+###############################################################################
+# Redirect all output of the commands below to this log file
+###############################################################################
+logfile=$$.log
+exec > $logfile 2>&1
+
+###############################################################################
+# Add search paths for executeables to $PATH
+###############################################################################
+export PATH=${PATH}:\
+${RADIOHDL}/tools/quartus
+
+###############################################################################
+# Source generic.sh for functions such as unb_info
+###############################################################################
+. ${HOME}/SVN/RadioHDL/trunk/tools/quartus/generic.sh
+
+###############################################################################
+# We're assuming the local 'SVN' dir is up to date. Copy it to a timestamped
+# dirname and work with that.
+###############################################################################
+SVN_DIR=${HOME}/SVN_$(date -d "today" +"%Y%m%d")
+unb_info $0 "Copying local SVN dir to ${SVN_DIR}"
+unb_exec $0 cp -r ${SVN}/ ${SVN_DIR}
+export SVN=${SVN_DIR}
+
+###############################################################################
+# Disable exit on unb_error (used in unb_exec)
+###############################################################################
+NO_EXIT=True
+
+###############################################################################
+# Setup RadioHDL environment for UniBoard2 and new UniBoard1 applications
+###############################################################################
+unb_info $0 "Setting up RadioHDL"
+unb_exec $0 . ${SVN}/RadioHDL/trunk/tools/setup_radiohdl.sh
+
+###############################################################################
+# Generate all IP 
+###############################################################################
+unb_info $0 "Generating all IP"
+unb_exec $0 cd ${SVN}/RadioHDL/trunk/libraries/technology/ip_stratixiv
+#unb_exec $0 sh generate-all-ip.sh
+
+###############################################################################
+# Run quartus_config.py
+###############################################################################
+unb_info $0 "Creating Quartus project build directories"
+unb_exec $0 python ${SVN}/RadioHDL/trunk/tools/oneclick/base/quartus_config.py
+
+###############################################################################
+# Build our most important designs
+# . KISS: just put the full commands here; no need for hard to maintain
+#         lookup-tables here.
+###############################################################################
+unb_info $0 "Building designs"
+# unb1_minimal_qsys
+#unb_exec $0 run_sopc  unb1 unb1_minimal_sopc
+#unb_exec $0 run_qsys  unb1 unb1_minimal_qsys
+#unb_exec $0 run_qcomp unb1 unb1_minimal_qsys
+#unb_exec $0 run_rbf unb1 unb1_minimal_qsys
+# apertif_unb1_bn_filterbank
+unb_exec $0 run_sopc  unb1 apertif_unb1_bn_filterbank
+unb_exec $0 run_qcomp unb1 apertif_unb1_bn_filterbank
+unb_exec $0 run_rbf   unb1 apertif_unb1_bn_filterbank
+
+###############################################################################
+# At this point, errors may or may not have occured.  Perform checks here.
+###############################################################################
+# Check if all RBF files have been generated
+NOF_RBF_REQ=1
+FOUND_RBF=$(find ${RADIOHDL}/build/ -name *.rbf | grep "\-r")
+NOF_RBF=$(echo ${FOUND_RBF} | grep -c "rbf")
+RESULT=FAILED
+if (( NOF_RBF == NOF_RBF_REQ )); then
+  RESULT=PASSED
+fi
+
+# Send an email with the result
+RECIPIENTS=schuur@astron.nl,schuur@astron.nl
+MESSAGE="\
+${NOF_RBF_REQ} RBF files required\n\
+${NOF_RBF} RBF files generated:\n\
+${FOUND_RBF}\n"
+SUBJECT="[REGTEST] Synthesis Result: ${RESULT}"
+printf "${MESSAGE}" | mail -s "${SUBJECT}" ${RECIPIENTS}

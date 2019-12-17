@@ -1,0 +1,182 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : unb1_board
+hdl_library_description: " This is the description for the unb1_board package "
+
+peripherals:
+  -  
+    peripheral_name: rom_system_info
+    slave_ports:
+      - 
+        # rom_system_info
+        slave_prefix : WORK 
+        slave_name   : ROM_SYSTEM_INFO  
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : field_rom_info
+            access_mode   : RO
+            address_offset: 0x0
+            number_of_fields: 1024
+            field_description: |
+                "address place for rom_system_info"
+        slave_description: " rom_info  "
+        
+    peripheral_description: |
+        " settings for rom_system_info register "
+  - 
+    peripheral_name: reg_system_info
+    slave_ports:
+      -
+        # reg_system_info
+        slave_prefix : WORK
+        slave_name   : REG_SYSTEM_INFO  
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : field_reg_info
+            access_mode   : RO
+            address_offset: 0x0
+            number_of_fields: 31
+            field_description: |
+                "address place for reg_system_info"
+        slave_description: " reg_info "
+        
+    peripheral_description: |
+        " settings for reg_system_info register "
+
+  # peripheral, unb1_board_wdi_reg
+  - 
+    peripheral_name: ctrl_unb1_board
+
+    slave_ports:
+      - 
+        # actual hdl name: unb1_board_wdi_reg
+        slave_prefix : UNB1_BOARD
+        slave_name   : PIO_WDI
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name      : nios_reset
+            access_mode     : WO
+            address_offset  : 0x0
+            number_of_fields: 4
+            field_description: " Reset done by nios "
+         
+        slave_description:  "Reset register, for nios "
+    
+    peripheral_description: " "
+  
+  # peripheral, unb1_board_wdi_reg
+  - 
+    peripheral_name: unb1_board_wdi_reg
+
+    slave_ports:
+      - 
+        # actual hdl name: unb1_board_wdi_reg
+        slave_prefix : UNB1_BOARD
+        slave_name   : WDI
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : reset_word
+            access_mode   : WO
+            address_offset: 0x0
+            field_description: " Only the value 0xB007FAC7 'Boot factory' will result in a reset "
+         
+        slave_description:  "Reset register, if the right value is provided the factory image will be reloaded "
+    
+    peripheral_description: " "
+  
+  # periheral, unb1_board_sens
+  - 
+    peripheral_name: unb1_board_sens_reg
+
+    parameters:
+      - { name: g_sim,       value: FALSE }
+      - { name: g_clk_freq,  value: c_unb1_board_mm_clk_freq_125M }
+      - { name: g_temp_high, value: 85 }
+
+    slave_ports:
+      - 
+        # actual hdl name: reg_unb1_sens
+        slave_prefix : UNB1_BOARD
+        slave_name   : SENS
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : sens_data
+            width         : 8
+            access_mode   : RO
+            address_offset: 0x0
+            number_of_fields: 4
+            field_description: | 
+                " data array with sens data 
+                0x0 = fpga temperature in degrees (two's complement) 
+                0x1 = eth_temp temperature in degrees (two's complement)
+                0x2 = hot_swap_v_sens
+                0x3 = hot_swap_v_source"
+        
+          -
+            field_name    : sens_err
+            width         : 1
+            access_mode   : RO
+            address_offset: 0x4
+            radix         : unsigned 
+            field_description: ""
+        
+          -
+            field_name    : temp_high
+            width         : 7
+            address_offset: 0x5
+            reset_value   : g_temp_high
+            software_value: g_temp_high
+            field_description: ""
+
+        slave_description:  " "
+    
+    peripheral_description: |
+        "
+        +-----------------------------------------------------------------------------+
+        |31   (byte3)   24|23   (byte2)   16|15   (byte1)    8|7    (byte0)    0|  wi |
+        |-----------------------------------------------------------------------|-----|
+        |                xxx                     fpga_temp   = sens_data[0][7:0]|  0  |
+        |-----------------------------------------------------------------------|-----|
+        |                xxx                     eth_temp    = sens_data[1][7:0]|  1  |
+        |-----------------------------------------------------------------------|-----|
+        |                xxx               hot_swap_v_sense  = sens_data[2][7:0]|  2  |
+        |-----------------------------------------------------------------------|-----|
+        |                xxx               hot_swap_v_source = sens_data[3][7:0]|  3  |
+        |-----------------------------------------------------------------------|-----|
+        |                xxx                                         sens_err[0]|  4  |
+        |-----------------------------------------------------------------------|-----|
+        |                xxx                                      temp_high[6:0]|  5  |
+        +-----------------------------------------------------------------------------+
+        * The fpga_temp and eth_temp are in degrees (two's complement)
+        * The hot swap voltages depend on:
+            . From i2c_dev_ltc4260_pkg:
+                LTC4260_V_UNIT_SENSE        = 0.0003  --   0.3 mV over Rs for current sense
+                LTC4260_V_UNIT_SOURCE       = 0.4     -- 400   mV supply voltage (e.g +48 V)
+                LTC4260_V_UNIT_ADIN         = 0.01    --  10   mV ADC
+     
+            . From UniBoard unb_sensors.h:
+                SENS_HOT_SWAP_R_SENSE       = 0.005   -- R sense on UniBoard is 5 mOhm (~= 10 mOhm // 10 mOhm)
+                SENS_HOT_SWAP_I_UNIT_SENSE  = LTC4260_V_UNIT_SENSE / SENS_HOT_SWAP_R_SENSE
+                SENS_HOT_SWAP_V_UNIT_SOURCE = LTC4260_V_UNIT_SOURCE
+     
+        ==> 
+            Via all FN and BN:
+            0 = FPGA temperature                 = TInt8(fpga_temp)
+            Only via BN3:
+            1 = UniBoard ETH PHY temperature     = TInt8(eth_temp)
+            2 = UniBoard hot swap supply current = hot_swap_v_sense * SENS_HOT_SWAP_I_UNIT_SENSE
+            3 = UniBoard hot swap supply voltage = hot_swap_v_source * SENS_HOT_SWAP_V_UNIT_SOURCE
+            4 = I2C error status for BN3 sensors access only, 0 = ok"
+    

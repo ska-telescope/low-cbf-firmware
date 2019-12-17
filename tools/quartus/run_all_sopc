@@ -1,0 +1,92 @@
+#!/bin/bash 
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2010                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+
+
+# Run this tool with at least the commandline arguments:
+#   run_all_sopc toolset design_name
+# example:
+#   run_all_sopc unb1 unb1_minimal
+
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+
+# treat unset variables as an error - better fail loudly.
+# implication is that "$1" and "$2" etc cannot be used in tests
+#   as they may be quite unset, eg when the user did not enter 
+#   them on the commandline.
+#   now you get to parse the commandline and explicitly extract
+#   the info you want or fill in with defaults
+# bonus: extragratis failure if, for some reason, the ${UNB}
+#   directory is not set.
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+project=
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                unb_error $0 "You cannot pass more than one project names"
+            fi
+            project=${arg}
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+# run the commands we're supposed to run
+unb_exec $0 run_sopc  ${toolset} $* 
+unb_exec $0 run_app   ${toolset} $* 
+unb_exec $0 run_qcomp ${toolset} $*
+
+unb_info $0 "All operations completed successfully"

@@ -1,0 +1,33 @@
+# VHDL
+altera = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altera
+altera_lnsim = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altera_lnsim
+altera_mf = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altera_mf
+altgxbf = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altgxb
+lpm = $MODEL_TECH_ALTERA_LIB/vhdl_libs/lpm
+sgate = $MODEL_TECH_ALTERA_LIB/vhdl_libs/sgate
+stratix = $MODEL_TECH_ALTERA_LIB/vhdl_libs/stratix
+stratixgx = $MODEL_TECH_ALTERA_LIB/vhdl_libs/stratixgx
+stratixiv = $MODEL_TECH_ALTERA_LIB/vhdl_libs/stratixiv
+stratixiv_hssi = $MODEL_TECH_ALTERA_LIB/vhdl_libs/stratixiv_hssi
+stratixiv_pcie_hip = $MODEL_TECH_ALTERA_LIB/vhdl_libs/stratixiv_pcie_hip
+altgxb = $MODEL_TECH_ALTERA_LIB/vhdl_libs/altgxb
+stratixgx_gxb = $MODEL_TECH_ALTERA_LIB/vhdl_libs/stratixgx_gxb
+
+# Verilog
+altera_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/altera_ver
+altera_lnsim_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/altera_lnsim_ver
+altera_mf_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/altera_mf_ver
+altgxb_ver =  $MODEL_TECH_ALTERA_LIB/verilog_libs/altgxb_ver
+lpm_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/lpm_ver
+sgate_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/sgate_ver
+stratix_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratix_ver
+stratixgx_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixgx_ver
+stratixgx_gxb_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixgx_gxb_ver
+stratixiigx_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixiigx_ver
+stratixiigx_hssi_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixiigx_hssi_ver
+stratixiv_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixiv_ver
+stratixiv_hssi_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixiv_hssi_ver
+stratixiv_pcie_hip_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixiv_pcie_hip_ver
+stratixv_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixv_ver
+stratixv_hssi_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixv_hssi_ver
+stratixv_pcie_hip_ver = $MODEL_TECH_ALTERA_LIB/verilog_libs/stratixv_pcie_hip_ver

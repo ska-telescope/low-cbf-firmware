@@ -1,0 +1,155 @@
+#!/bin/bash 
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2012                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+
+# Run this tool with at least the commandline arguments:
+#   run_mif toolset design_name
+# example:
+#   run_mif unb2 unb2_minimal
+#
+
+# Convert character to ascii decimal value, print as hex
+ord ()
+{
+    printf "%02x" $(( ( 256 + $(printf '%d' "'$1"))%256 ))
+}
+
+
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+set -u
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ... ($0 is untouched)
+
+
+project=
+rev=
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+        --rev=*)           
+           rev=`echo ${arg} | sed 's/^--rev=//'`
+            ;;
+        rev=*)           
+           rev=`echo ${arg} | sed 's/^rev=//'`
+            ;;  
+        --*) # some other option we don't care about
+            ;;     
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # only accept one non-option argument, the project name
+            if [ -n "${project}" ]; then
+                unb_error $0 "You cannot pass more than one project name"
+            fi
+            project=${arg}
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+quartusdir="${PRJ}/build/${toolset}/quartus/${project}"
+builddir="${quartusdir}/software"
+bspdstdir="${builddir}/bsp"
+
+if [ -z "${rev}" ]; then
+  project_rev="${project}"
+  unb_info $0 "No project revision passed, defaulting to ${project_rev}"
+else
+  if [ -f "${quartusdir}/${rev}.qsf" ]; then
+    project_rev="${rev}"
+    unb_info $0 "Selecting project revision ${project_rev}"
+  else
+    unb_error $0 "Invalid project revision"
+  fi
+fi
+
+reg_file=${quartusdir}/${project_rev}.reg
+if [ ! -f "${reg_file}" ]; then
+	unb_error $0 "${project_rev}.reg file not found in [${quartusdir}]."
+	exit 1
+fi
+
+echo "DEPTH = 1024;" > ${quartusdir}/${project_rev}.mif
+echo "WIDTH = 32;" >> ${quartusdir}/${project_rev}.mif
+echo "ADDRESS_RADIX = DEC;" >> ${quartusdir}/${project_rev}.mif
+echo "DATA_RADIX = HEX;" >> ${quartusdir}/${project_rev}.mif
+echo "CONTENT BEGIN" >> ${quartusdir}/${project_rev}.mif
+
+unb_info $0 "Writing ${quartusdir}/${project_rev}.reg contents to ${quartusdir}/${project_rev}.mif"
+
+tr '\n' '\0' < ${quartusdir}/${project_rev}.reg > ${quartusdir}/${project_rev}.reg_tmp
+cat ${quartusdir}/${project_rev}.reg_tmp > ${quartusdir}/${project_rev}.reg
+rm -f ${quartusdir}/${project_rev}.reg_tmp
+
+address=0
+charcnt=0
+while IFS= read -r -d $'\0' -n1 char
+do
+  # 4 bytes per word address: print one address per 4 chars
+  if [ $charcnt -eq 0 ] ; then
+    printf "%s" "$address" >> ${quartusdir}/${project_rev}.mif
+    printf " : " >> ${quartusdir}/${project_rev}.mif
+  fi
+ 
+  ord "${char}" >> ${quartusdir}/${project_rev}.mif
+
+  charcnt=`expr $charcnt + 1`
+
+  # last char of word, print semicolon and newline, increment word address
+  if [ $(( $charcnt % 4 )) -eq 0 ] ; then
+    printf ";\n" >> ${quartusdir}/${project_rev}.mif
+    address=`expr $address + 1`
+    charcnt=0
+  fi
+
+done < "${reg_file}"
+
+printf "\n" >> ${quartusdir}/${project_rev}.mif
+echo "END;" >> ${quartusdir}/${project_rev}.mif
+
+unb_info $0 "Done"
+

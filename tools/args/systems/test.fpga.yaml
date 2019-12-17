@@ -1,0 +1,14 @@
+schema_name   : args
+schema_version: 1.0
+schema_type   : fpga
+
+fpga_name: test
+fpga_description : |
+  "Test system configuration for fpga.py and gen_bus.py"
+  
+peripherals : 
+  - peripheral_name   : demo
+    # peripheral_group  : G1
+    
+  - peripheral_name   : gemini_subscription
+    # peripheral_group  : G2

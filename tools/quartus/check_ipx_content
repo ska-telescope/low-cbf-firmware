@@ -1,0 +1,66 @@
+#!/bin/bash
+###############################################################################
+#
+# Copyright (C) 2015
+# Station de Radioastronomie de Nançay
+# Observatoire de Paris - CNRS/INSU, USR 704 - Univ. Orléans, OSUC
+# Route de Souesmes, 18330 Nançay, France.
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+###############################################################################
+
+# Purpose:
+#   Check that the ipx file used in the currently defined Quartus seems correct
+#
+# Description:
+#   Will check if all the pathes present in:
+#   $UNB/Firmware/synth/quartus/user_components.ipx
+#   are also present in:
+#   ~/.altera.quartus/ip/<current quartus>/ip_search_path/user_components.ipx
+#   Other pathes can also be present there and will not raise errors but a
+#   warning is issued
+
+QUARTUS_VERSION=${QUARTUS_DIR##*/}
+ipx_svn=$RADIOHDL/tools/quartus/user_components.ipx
+#current_ipx=${HOME}/.altera.quartus/ip/${QUARTUS_VERSION}/ip_search_path/user_components.ipx
+current_ipx=${ipx_svn}
+
+# for each path found in $ipx_svn, try to find it in $current_ipx
+grep "<path path=" $ipx_svn | while read -r this_path
+do
+    this_path=`echo $this_path | cut --delimiter='"' -f2`
+    if grep -q "$this_path" $current_ipx ; then
+      :
+      # echo "Found $this_path in $current_ipx"
+    else
+      echo "error: can't find $this_path in $current_ipx.  Check your ipx setting."
+      exit 1
+    fi    
+done
+
+# print a warning for each path found in $current_ipx but not in $ipx_svn
+grep "<path path=" $current_ipx | while read -r this_path
+do
+    this_path=`echo $this_path | cut --delimiter='"' -f2`
+    if grep -q "$this_path" $ipx_svn ; then
+      :
+      # echo "Found $this_path in $current_ipx"
+    else
+      echo "warning: Found extra path $this_path"
+      echo "                       in $current_ipx"
+    fi    
+done
+
+

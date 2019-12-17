@@ -1,0 +1,325 @@
+#!/bin/bash
+# -------------------------------------------------------------------------- #
+#
+# Copyright (C) 2011                                                        
+# ASTRON (Netherlands Institute for Radio Astronomy) <http://www.astron.nl/>
+# JIVE (Joint Institute for VLBI in Europe) <http://www.jive.nl/>           
+# P.O.Box 2, 7990 AA Dwingeloo, The Netherlands                             
+#                                                                           
+# This program is free software: you can redistribute it and/or modify      
+# it under the terms of the GNU General Public License as published by      
+# the Free Software Foundation, either version 3 of the License, or         
+# (at your option) any later version.                                       
+#                                                                           
+# This program is distributed in the hope that it will be useful,           
+# but WITHOUT ANY WARRANTY; without even the implied warranty of            
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             
+# GNU General Public License for more details.                              
+#                                                                           
+# You should have received a copy of the GNU General Public License         
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.     
+#
+# -------------------------------------------------------------------------- #
+#
+# Run this tool with at least the commandline arguments:
+#   run_sof toolset design_name
+# example:
+#   run_sof unb2 unb2_minimal
+
+if [ ! $1 ]; then
+    echo "error: missing argument for toolset"
+    exit 1
+fi
+
+
+# read generic functions/definitions
+. ${RADIOHDL}/tools/quartus/generic.sh
+
+toolset=$1
+. ${RADIOHDL}/tools/quartus/set_quartus ${toolset}
+shift # shift left commandline args: $2 becomes $1 ...  ($0 is untouched)
+
+command=
+project=
+fpgas=
+cable=
+
+# Single board node ID's
+frontnodes="0 1 2 3"
+backnodes="4 5 6 7"
+
+# Multi board node ID's
+frontnodes0="00 01 02 03"
+backnodes0="04 05 06 07"
+frontnodes1="10 11 12 13"
+backnodes1="14 15 16 17"
+frontnodes2="20 21 22 23"
+backnodes2="24 25 26 27"
+frontnodes3="30 31 32 33"
+backnodes3="34 35 36 37"
+
+timelimited=
+rev=
+
+# parse cmdline
+for arg ; do
+    case ${arg} in
+       --timelimited)
+        timelimited="_time_limited"
+            ;;
+        --cable=*)           
+           cable=`echo ${arg} | sed 's/^cable=//'`
+            ;;
+        --rev=*)           
+           rev=`echo ${arg} | sed 's/^--rev=//'`
+            ;;
+        --sof=*)           
+           sof=`echo ${arg} | sed 's/^--sof=//'`
+            ;;
+        sof=*)           
+           sof=`echo ${arg} | sed 's/^sof=//'`
+            ;;
+        rev=*)           
+           rev=`echo ${arg} | sed 's/^rev=//'`
+            ;;
+        *=* )
+            # it was an option. skip it - if we wanted to,
+            # we could process them over here
+            ;;
+        * )
+            # first non-option argument is the project name,
+            # all other following non-option arguments are taken
+            # to be nodes
+            if [ -n "${project}" ]; then
+                # if we encounter one of the "magic" strings ..
+                # we shortcircuit. stop commandlineprocessing
+                # and set nodes to whatever we take them to mean
+                lcarg=`echo ${arg} | tr [A-Z] [a-z]`
+                # Single board arguments:
+                if [ "${lcarg}" = "all" ]; then
+                    nodes="${nodes} ${frontnodes} ${backnodes}"
+                elif [ "${lcarg}" = "fn" ]; then
+                    nodes="${nodes} ${frontnodes}"
+                elif [ "${lcarg}" = "bn" ]; then
+                    nodes="${nodes} ${backnodes}"
+
+                # Multi board arguments:
+                elif [ "${lcarg}" = "0all" ]; then
+                    nodes="${nodes} ${frontnodes0} ${backnodes0}"
+                elif [ "${lcarg}" = "0fn" ]; then
+                    nodes="${nodes} ${frontnodes0}"
+                elif [ "${lcarg}" = "0bn" ]; then
+                    nodes="${nodes} ${backnodes0}"
+
+                elif [ "${lcarg}" = "1all" ]; then
+                    nodes="${nodes} ${frontnodes1} ${backnodes1}"
+                elif [ "${lcarg}" = "1fn" ]; then
+                    nodes="${nodes} ${frontnodes1}"
+                elif [ "${lcarg}" = "1bn" ]; then
+                    nodes="${nodes} ${backnodes1}"
+
+                elif [ "${lcarg}" = "2all" ]; then
+                    nodes="${nodes} ${frontnodes2} ${backnodes2}"
+                elif [ "${lcarg}" = "2fn" ]; then
+                    nodes="${nodes} ${frontnodes2}"
+                elif [ "${lcarg}" = "2bn" ]; then
+                    nodes="${nodes} ${backnodes2}"
+
+                elif [ "${lcarg}" = "3all" ]; then
+                    nodes="${nodes} ${frontnodes3} ${backnodes3}"
+                elif [ "${lcarg}" = "3fn" ]; then
+                    nodes="${nodes} ${frontnodes3}"
+                elif [ "${lcarg}" = "3bn" ]; then
+                    nodes="${nodes} ${backnodes3}"
+
+                else
+                    nodes="${nodes} ${arg}"
+                fi
+            else
+                project=${arg}
+            fi
+            ;;
+    esac
+done
+
+PRJS="${RADIOHDL}"
+
+PRJ=
+for prj in ${PRJS}
+    do
+        if [ -d "${prj}/build/${toolset}/quartus/${project}" ]; then
+            PRJ=${prj}
+        fi  
+    done  
+if [ -z "${project}" -o -z "${PRJ}" ]; then
+    unb_error $0 "Please enter a valid project name as parameter"
+fi
+
+if [ -z "${nodes}" ]; then
+    unb_error $0 "Please specify one or more nodes: [0..7] (single board) or [0..3][0..7] (multi board)"
+fi
+
+# check if the quartusdirectory does exist 
+# (such that it won't fail with a cryptic error but with
+#  a readable one
+quartusdir[1]="${PRJ}/build/${toolset}/quartus/${project}"
+unb_exec $0 msg=no test -d ${quartusdir[1]}
+
+if [ -z "${rev}" ]; then
+  project_rev="${project}"
+  unb_info $0 "No project revision passed, defaulting to ${project_rev}"
+else
+  if [ -f "${quartusdir[1]}/${rev}.qsf" ]; then
+    project_rev="${rev}"
+    unb_info $0 "Selecting project revision ${project_rev}"
+  else
+    unb_error $0 "Invalid project revision"
+  fi
+fi
+
+if [ -z "${sof}" ]; then
+  :
+else
+  if [ -f "${quartusdir[1]}/${sof}.sof" ]; then
+    project_rev="${sof}"
+    unb_info $0 "Selecting programming file ${project_rev}.sof"
+  else
+    unb_error $0 "Invalid programming file"
+  fi
+fi
+
+#Convert user passed node to actual FPGA JTAG ID
+#===============================================
+
+# ..First detect if we're using single board or multi board (rack) notation
+charcount=
+digits=
+for node in ${nodes}; do
+  # Count digits
+  charcount=`echo ${node} | wc -c`
+  # Assign to $digits only the first time, compare to $digits the rest of the iterations
+  if [ -z "${digits}" ]; then
+    digits=${charcount}
+    if [ "${digits}" = 2 -o "${digits}" = 3 ]; then
+      # Do nothing
+      : 
+    else
+      unb_error $0 "Invalid node ID. Use [0..7] (single board) or [0..3][0..7] (multi board)"
+    fi  
+  else
+    # Check if the rest of the passed nodes have the same notation    
+    if [ "${charcount}" != "${digits}" ]; then
+      unb_error $0 "Inconsistent node IDs. Use either [0..7] (single board) or [0..3][0..7] (multi board)"
+    fi
+  fi  
+done
+
+# Now we have a proper list of nodes. Convert it to FPGA JTAG ID's.
+fpga=
+fpgas=
+if [ "${digits}" = 2 ]; then
+  unb_info $0 "Processing single-board node list." 
+  for node in ${nodes}; do
+    # don't accept node id>7
+    if [ ${node} -gt 7 ]; then
+      unb_error $0 "Node ID exceeds single UniBoard range [0..7]. If desired, use multi-board node IDs [0..3][0..7]"
+    fi
+    # Append node number plus 1 to fpga list
+    fpgas="${fpgas} $(expr ${node} + 1)"
+  done
+fi
+
+
+
+# In the UniRack, the JTAG board IDs for board 0 (JTAG ID 1..8) and board 1 (JTAG ID 9..16) are swapped.
+# This makes it use counter loops and such, so we'll just use an associative array to map 
+# the multi-board IDs to actual FPGA JTAG ID.
+match=
+if [ "${digits}" = 3 ]; then
+  unb_info $0 "Processing multi-board node list."
+  declare -A node_jtag=(\
+    ["00"]="9"\
+    ["01"]="10"\
+    ["02"]="11"\
+    ["03"]="12"\
+    ["04"]="13"\
+    ["05"]="14"\
+    ["06"]="15"\
+    ["07"]="16"\
+    ["10"]="1"\
+    ["11"]="2"\
+    ["12"]="3"\
+    ["13"]="4"\
+    ["14"]="5"\
+    ["15"]="6"\
+    ["16"]="7"\
+    ["17"]="8"\
+    ["20"]="17"\
+    ["21"]="18"\
+    ["22"]="19"\
+    ["23"]="20"\
+    ["24"]="21"\
+    ["25"]="22"\
+    ["26"]="23"\
+    ["27"]="24"\
+    ["30"]="25"\
+    ["31"]="26"\
+    ["32"]="27"\
+    ["33"]="28"\
+    ["34"]="29"\
+    ["35"]="30"\
+    ["36"]="31"\
+    ["37"]="32"\
+  )
+  # uncomment the following line to print the associative array (node ID - jtag ID)
+  # for node in "${!node_jtag[@]}"; do echo "$node - ${node_jtag["$node"]}"; done
+
+  # Now append an fpga JTAG ID to our fpga list for every match between the list of passed
+  # nodes (e.g. '00 01 02') and our associative array
+  for node in ${nodes}; do
+    match=0
+    # Loop through our array
+    for ar_node in "${!node_jtag[@]}"; do
+      # Look for matching node ID
+      if [ ${ar_node} = ${node} ]; then
+        # Found a match! Append corresponding JTAG ID to our FPGA list.
+        fpgas="${fpgas} ${node_jtag["$node"]}"
+        match=1
+      fi
+    done    
+    # Match should be 1, otherwise user passed non-existent node ID.
+    if [ "${match}" = 0 ]; then
+      unb_error $0 "Invalid node ID. Node IDs should be passed as [0..3][0..7]"
+    fi
+  done 
+fi
+
+#Prepare second part of command: '-o p;my_project.sof@1 -o p\;my_project.sof@2' etc.
+for fpga in ${fpgas}; do
+  command="${command} -o p;${quartusdir[1]}/${project_rev}${timelimited}.sof@${fpga}"
+done
+
+if [ "${timelimited}" != "_time_limited" ]; then
+  if [ -f "${quartusdir[1]}/${project_rev}_time_limited.sof" ]; then 
+    unb_warning $0 "Also a time-limited SOF file present. Add --timelimited to use that file" 
+  fi
+fi
+
+if [ -z "${cable}" ]; then
+  if [ -n "${UNB_DEFAULT_CABLE+x}" ]; then
+    unb_info $0 "Programming FPGAs @ JTAG IDs:${fpgas} on cable UNB_DEFAULT_CABLE"
+    unb_exec $0 quartus_pgm -m jtag ${command} --cable=${UNB_DEFAULT_CABLE}     
+  else
+    unb_info $0 "Programming FPGAs @ JTAG IDs:${fpgas} on default cable 1"
+    unb_exec $0 quartus_pgm -m jtag ${command} --cable=1
+  fi
+else
+  unb_info $0 "Programming FPGAs @ JTAG IDs:${fpgas} with argument ${cable}"
+  unb_exec $0 quartus_pgm -m jtag ${command} ${cable}
+fi
+
+#Example of full command to program fpgas 1 and 2 with unb_mesh_nios.sof:
+#quartus_pgm -c USB-BLASTER -m jtag -o p\;unb_mesh_nios.sof@1 -o p\;unb_mesh_nios.sof@2
+
+# Wish list: multi SOF support:
+# run_sof ${toolset} unb_mesh 1 unb_tr_nonbonded --rev=bn_tr_nonbonded bn

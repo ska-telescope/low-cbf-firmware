@@ -1,0 +1,46 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : ppsh
+hdl_library_description: " This is the description for the finppshge_stop library "
+
+peripherals: 
+  - 
+    peripheral_name: ppsh
+    parameters:
+      - { name: g_cross_clock_domain, value: TRUE }
+      - { name: g_st_clk_freq,        value: 200 * 10**6 }
+    
+    slave_ports:
+      - 
+        # actual hdl name: reg_ppsh
+        slave_prefix : PPSH 
+        slave_name   : PPSH  
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          - 
+            field_name    : status
+            access_mode   : RO
+            address_offset: 0x0
+            field_description: " ppsh status "
+          - 
+            field_name    : control
+            address_offset: 0x1
+            field_description: " ppsh control "
+        slave_discription: " "
+    
+    peripheral_description: |
+        "
+        . Report PPS toggle, stable and period capture count
+        . Set dp_clk capture edge for PPS
+          Set expected period capture count for PPS stable
+         +----------------------------------------------------------------------------+
+         |31   (byte3)   24|23   (byte2)   16|15   (byte1)    8|7    (byte0)    0| wi |
+         |-----------------------------------------------------------------------|----| 
+         |toggle[31], stable[30]   xxx                       capture_cnt = [29:0]|  0 |
+         |-----------------------------------------------------------------------|----|
+         |edge[31],                xxx                      expected_cnt = [29:0]|  1 |
+         +----------------------------------------------------------------------------+"
+    

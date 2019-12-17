@@ -1,0 +1,90 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : peripheral
+
+hdl_library_name       : remu
+hdl_library_description: " This is the description for the remu package "
+
+peripherals:
+ 
+  # peripheral, remu_reg
+  - 
+    peripheral_name: remu_reg
+
+    parameters:
+      - { name: g_data_w, value: 24 }
+
+    slave_ports:
+      - 
+        # actual hdl name: reg_remu
+        slave_prefix : WORK
+        slave_name   : REMU
+        slave_postfix: REG
+        slave_type   : REG
+        fields:
+          -
+            field_name    : reconfigure_key
+            width         : c_word_w
+            access_mode   : WO
+            address_offset: 0x0
+            field_description: " reconfigure key for safety "
+        
+          -
+            field_name    : param
+            width         : 3
+            access_mode   : WO
+            address_offset: 0x1
+            radix         : unsigned 
+            field_description: " "
+        
+          -
+            field_name    : read_param
+            width         : 1
+            access_mode   : WO
+            side_effect   : PW
+            address_offset: 0x2
+            field_description: " read_param "
+
+          -
+            field_name    : write_param
+            width         : 1
+            access_mode   : WO
+            side_effect   : PW
+            address_offset: 0x3
+            field_description: " write_param "
+
+          -
+            field_name    : data_out
+            width         : g_data_w
+            access_mode   : RO
+            address_offset: 0x4
+            field_description: " data_out "
+
+          -
+            field_name    : data_in
+            width         : g_data_w
+            access_mode   : WO
+            address_offset: 0x5
+            field_description: " data_in "
+
+          -
+            field_name    : busy
+            width         : 1
+            access_mode   : RO
+            address_offset: 0x6
+            field_description: " busy "
+
+        slave_description:  " Remote Upgrade "
+    
+    peripheral_description: |
+        "wi  Bits    R/W  SE  Name              Default  Description             |REG_EPCS|                      
+         =============================================================================
+         0   [31..0] WO       reconfigure_key   0x0
+         1   [2..0]  WO       param
+         2   [0]     WO   PW  read_param
+         3   [0]     WO   PW  write_param 
+         4   [23..0] RO       data_out
+         5   [23..0] WO       data_in
+         6   [0]     RO       busy
+         =============================================================================
+        "

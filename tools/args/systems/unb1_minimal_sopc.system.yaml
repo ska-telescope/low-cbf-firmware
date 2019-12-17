@@ -1,0 +1,72 @@
+protocol_name   : args
+protocol_version: 1.0
+protocol_type   : system
+
+hdl_library_name: unb1_minimal_sopc
+
+system_name       : unb1_minimal_sopc
+system_description: |
+        "unb1_minimal system for sopc"
+
+peripherals:
+  - peripheral_name: rom_system_info
+    subsystem_name : ''
+    slave_port_names:
+        - rom_system_info
+    parameters:
+      - { name: lock_base_address,  value: 0x1000 }    
+    
+  - peripheral_name: reg_system_info
+  
+    subsystem_name : ''
+    slave_port_names:
+        - pio_system_info
+    parameters:
+      - { name: lock_base_address, value: 0x0 }    
+
+  - peripheral_name: ctrl_unb1_board
+    subsystem_name : ''
+    slave_port_names:
+        - pio_wdi
+
+  - peripheral_name: unb1_board_wdi_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_wdi
+  
+  - peripheral_name: eth1g
+    subsystem_name : ''
+    slave_port_names:
+        - avs_eth_0_mms_tse
+        - avs_eth_0_mms_reg
+        - avs_eth_0_mms_ram
+    
+  - peripheral_name: ppsh
+    subsystem_name : ''
+    slave_port_names:
+        - pio_pps
+
+  - peripheral_name: epcs_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_epcs
+        - reg_mmdp_ctrl
+        - reg_mmdp_data
+        - reg_dpmm_ctrl
+        - reg_dpmm_data
+    parameters:
+      - { name : g_sim_flash_model, value: FALSE }
+
+  - peripheral_name: remu_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_remu
+
+  - peripheral_name: unb1_board_sens_reg
+    subsystem_name : ''
+    slave_port_names:
+        - reg_unb_sens
+    parameters:
+      - { name : g_sim,       value: FALSE }
+      - { name : g_clk_freq,  value: 125E6 }
+      - { name : g_temp_high, value: 85 }
